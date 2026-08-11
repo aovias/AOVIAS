@@ -1,0 +1,88 @@
+/* Shared task status / priority / risk pills — used by table and drawer */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.tag-oe {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  border-color: color-mix(in srgb, var(--color-brand-primary) 55%, transparent);
+  color: var(--color-brand-primary);
+  background: color-mix(in srgb, var(--color-brand-primary) 12%, transparent);
+}
+.st-pending {
+  border-color: color-mix(in srgb, var(--color-status-warning) 55%, transparent);
+  color: var(--color-status-warning);
+  background: color-mix(in srgb, var(--color-status-warning) 12%, transparent);
+}
+.st-active {
+  border-color: color-mix(in srgb, var(--color-status-info) 55%, transparent);
+  color: var(--color-status-info);
+  background: color-mix(in srgb, var(--color-status-info) 12%, transparent);
+}
+.st-blocked {
+  border-color: color-mix(in srgb, var(--color-status-danger) 50%, transparent);
+  color: var(--color-status-danger);
+  background: color-mix(in srgb, var(--color-status-danger) 10%, transparent);
+}
+.st-done {
+  border-color: color-mix(in srgb, var(--color-status-success) 50%, transparent);
+  color: var(--color-status-success);
+  background: color-mix(in srgb, var(--color-status-success) 10%, transparent);
+}
+.pr-high {
+  border-color: color-mix(in srgb, var(--color-status-danger) 55%, transparent);
+  color: var(--color-status-danger);
+  background: color-mix(in srgb, var(--color-status-danger) 12%, transparent);
+}
+.pr-mid {
+  border-color: color-mix(in srgb, var(--color-status-warning) 55%, transparent);
+  color: var(--color-status-warning);
+  background: color-mix(in srgb, var(--color-status-warning) 12%, transparent);
+}
+.pr-low {
+  border-color: color-mix(in srgb, var(--color-text-muted) 45%, transparent);
+  color: var(--color-text-secondary);
+  background: color-mix(in srgb, var(--color-text-muted) 8%, transparent);
+}
+.pr-urgent {
+  border-color: color-mix(in srgb, var(--color-status-danger) 70%, transparent);
+  color: var(--color-text-inverse);
+  background: color-mix(in srgb, var(--color-status-danger) 78%, transparent);
+}
+.rk-low {
+  border-color: color-mix(in srgb, var(--color-status-success) 45%, transparent);
+  color: var(--color-status-success);
+  background: color-mix(in srgb, var(--color-status-success) 10%, transparent);
+}
+.rk-medium {
+  border-color: color-mix(in srgb, var(--color-status-warning) 45%, transparent);
+  color: var(--color-status-warning);
+  background: color-mix(in srgb, var(--color-status-warning) 10%, transparent);
+}
+.rk-high {
+  border-color: color-mix(in srgb, var(--color-status-danger) 45%, transparent);
+  color: var(--color-status-danger);
+  background: color-mix(in srgb, var(--color-status-danger) 10%, transparent);
+}
+.rk-critical {
+  border-color: color-mix(in srgb, var(--color-status-danger) 65%, transparent);
+  color: var(--color-text-inverse);
+  background: color-mix(in srgb, var(--color-status-danger) 75%, transparent);
+}
+.risk-num {
+  font-weight: 600;
+  opacity: 0.9;
+  text-transform: none;
+  letter-spacing: 0;
+}

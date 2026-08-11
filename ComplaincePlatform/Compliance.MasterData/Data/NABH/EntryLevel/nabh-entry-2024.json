@@ -1,0 +1,128 @@
+{
+  "framework": {
+    "name": "NABH",
+    "version": "Entry Level",
+    "authority": "QCI"
+  },
+  "chapters": [
+    {
+      "code": "PRE",
+      "name": "Patient Rights & Education",
+      "sequence": 1,
+      "objectiveElements": [
+        {
+          "code": "PRE.1",
+          "description": "The organization defines and displays the rights and responsibilities of patients.",
+          "severity": "Major",
+          "requirements": [
+            {
+              "text": "Patient rights and responsibilities policy is documented.",
+              "department": "Administration",
+              "role": "Administrator",
+              "frequency": "Continuous",
+              "evidenceType": "Document"
+            },
+            {
+              "text": "Patient rights are displayed prominently in local language.",
+              "department": "OPD/IPD",
+              "role": "Administrator",
+              "frequency": "Continuous",
+              "evidenceType": "Photo"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ACC",
+      "name": "Access, Assessment and Continuity of Care",
+      "sequence": 2,
+      "objectiveElements": [
+        {
+          "code": "ACC.1",
+          "description": "Patients are assessed and cared for in a uniform manner.",
+          "severity": "Major",
+          "requirements": [
+            {
+              "text": "Initial patient assessment is documented for all patients.",
+              "department": "OPD/IPD",
+              "role": "Medical Officer",
+              "frequency": "Per Visit",
+              "evidenceType": "PatientRecord"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ICC",
+      "name": "Infection Control",
+      "sequence": 3,
+      "objectiveElements": [
+        {
+          "code": "ICC.1",
+          "description": "The organization has a documented infection control programme.",
+          "severity": "Critical",
+          "requirements": [
+            {
+              "text": "Infection control policy is documented and approved.",
+              "department": "Hospital",
+              "role": "Administrator",
+              "frequency": "Annual",
+              "evidenceType": "Document"
+            },
+            {
+              "text": "Biomedical waste segregation is followed as per guidelines.",
+              "department": "All",
+              "role": "Nursing Staff",
+              "frequency": "Daily",
+              "evidenceType": "Photo"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "HRM",
+      "name": "Human Resource Management",
+      "sequence": 4,
+      "objectiveElements": [
+        {
+          "code": "HRM.1",
+          "description": "Staff are adequately trained and competent.",
+          "severity": "Major",
+          "requirements": [
+            {
+              "text": "Staff qualification and training records are maintained.",
+              "department": "HR",
+              "role": "HR Manager",
+              "frequency": "Annual",
+              "evidenceType": "Document"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "FMS",
+      "name": "Facility Management and Safety",
+      "sequence": 5,
+      "objectiveElements": [
+        {
+          "code": "FMS.1",
+          "description": "The organization ensures safe and secure environment.",
+          "severity": "Critical",
+          "requirements": [
+            {
+              "text": "Fire safety equipment is installed and maintained.",
+              "department": "Facility",
+              "role": "Facility Manager",
+              "frequency": "Monthly",
+              "evidenceType": "InspectionReport"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

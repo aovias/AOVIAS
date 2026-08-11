@@ -1,0 +1,34 @@
+<div class="oe-execution-route">
+  <div class="oe-execution-route__main">
+    @if (store.maturityStageFilter(); as stage) {
+      <div class="oe-execution-route__stage-context" [attr.data-stage]="stage">
+        <span class="oe-execution-route__stage-label">
+          {{ stageLabel(stage) }} Stage
+        </span>
+        <span class="oe-execution-route__stage-hint">
+          This objective element is part of your {{ stageLabel(stage) }} compliance stage.
+        </span>
+        <button
+          type="button"
+          class="oe-execution-route__back"
+          (click)="navigateBackToExecution()"
+        >
+          ← Return to {{ stageLabel(stage) }} Stage
+        </button>
+      </div>
+    }
+
+    @if (store.loadError()) {
+      <section class="oe-execution-route__state oe-execution-route__state--error">
+        <p>{{ store.loadError() }}</p>
+        <button type="button" class="oe-execution-route__retry" (click)="store.retryLoad()">Retry</button>
+      </section>
+    } @else if (store.loading() && !store.snapshot()) {
+      <section class="oe-execution-route__state" aria-busy="true">Loading workspace…</section>
+    } @else {
+      <div class="oe-execution-route__wizard-host">
+        <app-oe-execution-wizard />
+      </div>
+    }
+  </div>
+</div>

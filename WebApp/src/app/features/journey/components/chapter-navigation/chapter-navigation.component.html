@@ -1,0 +1,30 @@
+<section class="chapter-nav" aria-label="Chapter navigation panel">
+  <header class="chapter-nav__header">
+    <h2>Chapters</h2>
+    <label class="sr-only" for="chapter-search">Search chapters</label>
+    <input
+      id="chapter-search"
+      type="search"
+      class="chapter-nav__search"
+      [value]="searchTerm()"
+      (input)="onSearch($any($event.target).value)"
+      placeholder="Search by code or title"
+    />
+    <button type="button" class="chapter-nav__sort" (click)="toggleSort()">
+      Sort: {{ sortMode() === 'risk' ? 'Risk' : 'Code' }}
+    </button>
+  </header>
+
+  <div class="chapter-nav__list praman-scrollbar praman-scrollbar--panel" role="list">
+    @for (chapter of chapters(); track chapter.id) {
+      <app-chapter-item
+        role="listitem"
+        [chapter]="chapter"
+        [active]="selectedChapterId() === chapter.id"
+        (selectChapter)="chapterSelected.emit($event)"
+      />
+    } @empty {
+      <p class="chapter-nav__empty">No chapters match your filters.</p>
+    }
+  </div>
+</section>

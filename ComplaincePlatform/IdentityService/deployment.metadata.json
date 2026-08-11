@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "identity-service",
+  "displayName": "Identity Service",
+  "releaseLibraryCategory": "Identity",
+  "includeInDemoBundle": true,
+  "includeInSolutionDeployment": true,
+  "ports": {
+    "containerPort": 5062
+  },
+  "health": {
+    "endpoint": "/health",
+    "expectedStatus": 200,
+    "timeoutSeconds": 15,
+    "retries": 3,
+    "requiresHttpProbe": true
+  },
+  "dependencies": [
+    { "service": "gateway", "required": true, "type": "service" }
+  ]
+}

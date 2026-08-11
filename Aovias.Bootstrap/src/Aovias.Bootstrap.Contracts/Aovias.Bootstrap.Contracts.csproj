@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.Bootstrap.Contracts</RootNamespace>
+    <AssemblyName>Aovias.Bootstrap.Contracts</AssemblyName>
+    <Description>Wire and domain models for Zero-Touch Environment Bootstrap (Sprint M4.1).</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Aovias.Release\src\Aovias.Release.Contracts\Aovias.Release.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Aovias.Bootstrap.Core.Tests" />
+  </ItemGroup>
+</Project>

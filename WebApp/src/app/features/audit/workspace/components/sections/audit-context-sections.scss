@@ -1,0 +1,84 @@
+/*
+ * Shared list vocabulary for the Audit context drawer sections.
+ *
+ * A stylesheet rather than a shared TS const: Angular resolves component
+ * `styles` statically at build time, so a const reference or concatenation
+ * fails to compile. `styleUrl` gives the four sections one source of truth
+ * without fighting the compiler.
+ */
+.sec {
+  padding: var(--space-3);
+}
+
+.sec + .sec {
+  border-block-start: var(--border-width-hairline) solid var(--border-color);
+}
+
+h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1);
+  font-size: var(--font-size-caption);
+}
+
+.lbl {
+  color: var(--text-primary);
+}
+
+.val {
+  margin-inline-start: auto;
+  color: var(--text-secondary);
+  font-variant-numeric: var(--font-variant-numeric-tabular);
+}
+
+.hint {
+  inline-size: 100%;
+  color: var(--text-muted);
+  font-size: var(--font-size-micro);
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--primary-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+.muted {
+  margin: 0;
+  padding: var(--space-3);
+  color: var(--text-muted);
+  font-size: var(--font-size-caption);
+}
+
+/* Timeline entries carry a leading rule so the sequence reads as continuous. */
+.tl {
+  padding-inline-start: var(--space-2);
+  border-inline-start: var(--border-width-hairline) solid var(--border-color);
+}

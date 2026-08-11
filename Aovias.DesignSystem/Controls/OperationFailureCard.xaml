@@ -1,0 +1,76 @@
+<UserControl x:Class="Aovias.DesignSystem.Controls.OperationFailureCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Aovias.DesignSystem.Converters"
+             x:Name="Root">
+    <UserControl.Resources>
+        <converters:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Border Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource DangerBrush}"
+            BorderThickness="1"
+            CornerRadius="{DynamicResource RadiusMd}"
+            Padding="18">
+        <StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <Border Width="34" Height="34" CornerRadius="9" Background="{DynamicResource SurfaceInsetBrush}" Margin="0,0,12,0">
+                    <TextBlock Text="&#xEA39;" FontFamily="{DynamicResource IconFont}" FontSize="15" Foreground="{DynamicResource DangerBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <TextBlock Text="{Binding Problem, ElementName=Root}" Style="{DynamicResource HeadingTextStyle}" FontSize="14" VerticalAlignment="Center" />
+            </StackPanel>
+
+            <StackPanel Margin="46,0,0,10">
+                <TextBlock Text="Cause" Style="{DynamicResource CaptionTextStyle}" FontWeight="SemiBold" Margin="0,0,0,4" />
+                <TextBlock Text="{Binding Cause, ElementName=Root}" Style="{DynamicResource BodyTextStyle}" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <StackPanel Margin="46,0,0,14">
+                <TextBlock Text="Recommended Action" Style="{DynamicResource CaptionTextStyle}" FontWeight="SemiBold" Margin="0,0,0,4" />
+                <TextBlock Text="{Binding RecommendedAction, ElementName=Root}" Style="{DynamicResource BodyTextStyle}" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="46,0,0,0">
+                <Button Content="Retry"
+                        Style="{DynamicResource PrimaryButtonStyle}"
+                        Command="{Binding RetryCommand, ElementName=Root}"
+                        IsEnabled="{Binding CanRetry, ElementName=Root}"
+                        Margin="0,0,10,0" />
+            </StackPanel>
+
+            <Expander Margin="46,14,0,0"
+                      Foreground="{DynamicResource TextSecondaryBrush}"
+                      Visibility="{Binding Details, ElementName=Root, Converter={StaticResource StringNotEmptyToVisibilityConverter}}">
+                <Expander.Header>
+                    <TextBlock Text="Advanced Details" Style="{DynamicResource CaptionTextStyle}" FontWeight="SemiBold" />
+                </Expander.Header>
+                <Border Background="{DynamicResource SurfaceInsetBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusSm}"
+                        Padding="12"
+                        Margin="0,8,0,0">
+                    <StackPanel>
+                        <Button HorizontalAlignment="Right" Padding="10,4" MinHeight="26" Click="OnCopyDetails">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE8C8;" FontFamily="{DynamicResource IconFont}" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                <TextBlock Text="Copy" FontSize="11" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <TextBox Text="{Binding Details, ElementName=Root, Mode=OneWay}"
+                                 IsReadOnly="True"
+                                 TextWrapping="Wrap"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 Foreground="{DynamicResource TextSecondaryBrush}"
+                                 FontFamily="Consolas"
+                                 FontSize="11"
+                                 MaxHeight="220"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+            </Expander>
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Aovias.Platform.Core/Aovias.Platform.Core.csproj" />
+    <Project Path="src/Aovias.Orchestration.Contracts/Aovias.Orchestration.Contracts.csproj" />
+    <Project Path="src/Aovias.Orchestration/Aovias.Orchestration.csproj" />
+  </Folder>
+</Solution>

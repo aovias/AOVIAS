@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <RootNamespace>Aovias.CommandCenter.Api</RootNamespace>
+    <AssemblyName>Aovias.CommandCenter.Api</AssemblyName>
+    <Description>HTTP API host for the AOVIAS Operations Command Center (Sprint M2.7).</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Aovias.CommandCenter.Infrastructure\Aovias.CommandCenter.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
+  </ItemGroup>
+</Project>

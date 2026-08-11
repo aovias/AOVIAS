@@ -1,0 +1,21 @@
+<article class="progress-card" aria-label="Journey progress card">
+  <header class="progress-card__header">
+    <h3>Journey Progress</h3>
+    <span class="progress-card__score">{{ scoreLabel }}</span>
+  </header>
+
+  <div class="progress-card__bar-wrap">
+    <progress class="progress-card__bar" [value]="completionPercent" max="100">
+      {{ completionPercent }}%
+    </progress>
+    <span class="progress-card__percent">{{ completionPercent }}%</span>
+  </div>
+
+  <div class="progress-card__meta">
+    <span class="progress-card__badge" [ngClass]="'progress-card__badge--' + complianceTone">{{
+      complianceLabel
+    }}</span>
+    <span>{{ evidenceSummary }}</span>
+    <span>Last updated: {{ lastUpdatedLabel }}</span>
+  </div>
+</article>

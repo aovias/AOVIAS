@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "aovias.fullname" . }}-config
+  labels:
+    {{- include "aovias.labels" . | nindent 4 }}
+data:
+  ASPNETCORE_ENVIRONMENT: {{ .Values.global.aspnetcoreEnvironment | quote }}
+  CORRELATION_HEADER: {{ .Values.config.correlationHeader | quote }}
+  Services__GlobalProxy__DefaultHttpClientTimeoutSeconds: {{ .Values.config.defaultHttpClientTimeoutSeconds | quote }}
+  {{- if .Values.gateway.enabled }}
+  Services__ComplianceService__BaseUrl: {{ .Values.gateway.env.Services__ComplianceService__BaseUrl | quote }}
+  {{- end }}

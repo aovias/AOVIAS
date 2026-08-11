@@ -1,0 +1,1141 @@
+@if (store.oeWizardOpen()) {
+  <div
+    class="oe-wizard"
+    [class.oe-wizard--context-open]="contextPanelOpen()"
+    role="region"
+    aria-labelledby="oe-wizard-title-main"
+    cdkTrapFocus
+    cdkTrapFocusAutoCapture
+  >
+    <header class="oe-wizard__control-bar">
+        <button
+          type="button"
+          class="oe-wizard__icon-btn oe-wizard__back-btn"
+          (click)="requestClose()"
+          aria-label="Back to execution workspace"
+        >
+          <ng-icon name="lucideArrowLeft" class="oe-wizard__icon" aria-hidden="true" />
+        </button>
+        @if (store.oeWizardHeaderVm(); as hMeta) {
+          <div class="oe-wizard__meta">
+            <div class="oe-wizard__title-block">
+              <h2 id="oe-wizard-title-main" class="oe-wizard__oe-heading oe-wizard-title-main">{{ hMeta.oeTitle }}</h2>
+              <div class="oe-wizard__meta-row">
+                <span class="oe-wizard__badge oe-wizard__badge--code">{{ hMeta.oeCode }}</span>
+                <span class="oe-wizard__journey-pill">{{ hMeta.journeyStatusLabel }}</span>
+              </div>
+              <p class="oe-wizard__autosave-hint">Progress is saved automatically when you continue.</p>
+            </div>
+          </div>
+        } @else {
+          <p class="oe-wizard__oe-title oe-wizard__oe-title--bar">Loading objective element…</p>
+        }
+        @if (store.oeWizardHeaderVm()) {
+          <div class="oe-wizard__control-left">
+            <app-journey-workspace-primary-header />
+          </div>
+        }
+      </header>
+
+      @if (store.knowledgeBaseError()) {
+        <div class="oe-wizard__kb-error" role="alert">
+          <p class="oe-wizard__kb-error-text">{{ store.knowledgeBaseError() }}</p>
+          <div class="oe-wizard__kb-error-actions">
+            <button type="button" mat-stroked-button (click)="retryKnowledgeBase()">Retry</button>
+            <button type="button" mat-button (click)="goToExecutionWorkspace()">Back to execution</button>
+          </div>
+        </div>
+      }
+
+      <nav class="oe-wizard__stepper" aria-label="OE compliance steps">
+        <ol class="oe-wizard__step-track" role="list">
+          @for (label of stepLabels; track label; let i = $index) {
+            <li class="oe-wizard__step-seg" role="listitem">
+              <button
+                type="button"
+                class="oe-wizard__step-seg-btn"
+                [class.oe-wizard__step-seg-btn--active]="store.oeWizardStepIndex() === i"
+                [class.oe-wizard__step-seg-btn--done]="
+                  store.oeWizardStepCompleted()(i) && store.oeWizardStepIndex() !== i
+                "
+                [class.oe-wizard__step-seg-btn--locked]="!store.oeWizardCanAccessStep()(i)"
+                [disabled]="!store.oeWizardCanAccessStep()(i)"
+                [attr.aria-current]="store.oeWizardStepIndex() === i ? 'step' : null"
+                (click)="selectStep(i)"
+              >
+                <span class="oe-wizard__step-seg-main">
+                  @if (!store.oeWizardCanAccessStep()(i)) {
+                    <ng-icon name="lucideLock" class="oe-wizard__step-ico" aria-hidden="true" />
+                  } @else if (store.oeWizardStepCompleted()(i) && store.oeWizardStepIndex() !== i) {
+                    <ng-icon name="lucideCheck" class="oe-wizard__step-ico oe-wizard__step-ico--ok" aria-hidden="true" />
+                  }
+                  <span class="oe-wizard__step-seg-label">{{ label }}</span>
+                </span>
+                <span class="oe-wizard__step-seg-state">{{ stepStateLabel(i) }}</span>
+              </button>
+            </li>
+          }
+        </ol>
+      </nav>
+
+      <div class="oe-wizard__body">
+        @if (store.loading() && !store.oeWizardHeaderVm()) {
+          <div class="oe-wizard__main-col oe-wizard__main-col--solo" aria-busy="true" aria-live="polite">
+            <div class="oe-wizard__skeleton oe-wizard__skeleton--title"></div>
+            <div class="oe-wizard__skeleton oe-wizard__skeleton--line"></div>
+            <div class="oe-wizard__skeleton oe-wizard__skeleton--line"></div>
+            <div class="oe-wizard__skeleton oe-wizard__skeleton--card"></div>
+          </div>
+        } @else if (!store.loading() && !store.oeWizardHeaderVm()) {
+          <div class="oe-wizard__main-col oe-wizard__main-col--solo">
+            <div class="oe-wizard__state oe-wizard__state--error" role="alert">
+              <p class="oe-wizard__state-title">Objective element unavailable</p>
+              <p class="oe-wizard__state-body">Close and try again from the journey map.</p>
+              <button type="button" mat-stroked-button (click)="requestClose()">Close</button>
+            </div>
+          </div>
+        } @else {
+          <div class="oe-wizard__tablet-dim" aria-hidden="true" (click)="closeContextPanel()"></div>
+          <div class="oe-wizard__main-col">
+            <main
+              #mainScroll
+              class="oe-wizard__main praman-scrollbar praman-scrollbar--dense"
+              [attr.aria-busy]="store.knowledgeBaseLoading()"
+            >
+              @switch (store.oeWizardStepIndex()) {
+                @case (0) {
+                  <section class="oe-wizard__step" aria-labelledby="step-understanding">
+                    <h2 id="step-understanding" class="oe-wizard__step-h2">Understanding</h2>
+                    @if (store.oeWizardHeaderVm(); as h) {
+                      <article class="oe-wizard__card">
+                        <h3 class="oe-wizard__card-title">
+                          <ng-icon name="lucideSparkles" class="oe-wizard__req-ico" aria-hidden="true" />
+                          Explanation
+                        </h3>
+                        <p class="oe-wizard__card-kicker">{{ store.oeWizardKnowledgeVm()?.nodeCodeLabel ?? h.oeCode }}</p>
+                        @if (store.oeWizardKnowledgeVm(); as kb) {
+                          @for (para of splitParagraphs(kb.explanation || h.oeTitle); track $index) {
+                            <p class="oe-wizard__prose">{{ para }}</p>
+                          }
+                        } @else {
+                          @for (para of splitParagraphs(h.oeTitle); track $index) {
+                            <p class="oe-wizard__prose">{{ para }}</p>
+                          }
+                        }
+                        <p class="oe-wizard__prose oe-wizard__prose--muted">
+                          Confirm what must be true for this objective element before you move into compliance work.
+                        </p>
+                      </article>
+                      <article class="oe-wizard__card">
+                        <h3 class="oe-wizard__card-title">
+                          <ng-icon name="lucideListChecks" class="oe-wizard__req-ico" aria-hidden="true" />
+                          Why it matters
+                        </h3>
+                        @if (store.oeWizardKnowledgeVm(); as kb) {
+                          @if (kb.whyItMatters) {
+                            <ul class="oe-wizard__req-list">
+                              @for (line of splitLines(kb.whyItMatters); track $index) {
+                                <li class="oe-wizard__req-item">
+                                  <ng-icon name="lucideListChecks" class="oe-wizard__req-ico" aria-hidden="true" />
+                                  <span>{{ line }}</span>
+                                </li>
+                              }
+                            </ul>
+                          } @else {
+                            <ul class="oe-wizard__req-list">
+                              <li class="oe-wizard__req-item">
+                                <ng-icon name="lucideListChecks" class="oe-wizard__req-ico" aria-hidden="true" />
+                                <span>Meet documented objective element criteria for this audit phase.</span>
+                              </li>
+                            </ul>
+                          }
+                        } @else {
+                          <ul class="oe-wizard__req-list">
+                            <li class="oe-wizard__req-item">
+                              <ng-icon name="lucideListChecks" class="oe-wizard__req-ico" aria-hidden="true" />
+                              <span>Meet documented objective element criteria for this audit phase.</span>
+                            </li>
+                            <li class="oe-wizard__req-item">
+                              <ng-icon name="lucideListChecks" class="oe-wizard__req-ico" aria-hidden="true" />
+                              <span>Maintain evidence aligned to expectations for the assigned department.</span>
+                            </li>
+                            <li class="oe-wizard__req-item">
+                              <ng-icon name="lucideListChecks" class="oe-wizard__req-ico" aria-hidden="true" />
+                              <span>Complete evaluation and checklist items before sign-off.</span>
+                            </li>
+                          </ul>
+                        }
+                      </article>
+                      @if (store.oeWizardKnowledgeVm(); as kb) {
+                        @if (kb.riskLevel || kb.impactLevel || kb.tags) {
+                          <div class="oe-wizard__kb-badges" role="list" aria-label="Knowledge base indicators">
+                            @if (kb.riskLevel) {
+                              <span class="oe-wizard__chip oe-wizard__chip--kb" role="listitem"
+                                >Risk: {{ kb.riskLevel }}</span
+                              >
+                            }
+                            @if (kb.impactLevel) {
+                              <span class="oe-wizard__chip oe-wizard__chip--kb" role="listitem"
+                                >Impact: {{ kb.impactLevel }}</span
+                              >
+                            }
+                            @if (kb.tags) {
+                              <span class="oe-wizard__chip oe-wizard__chip--kb" role="listitem">{{ kb.tags }}</span>
+                            }
+                          </div>
+                        }
+                        @if (
+                          kb.requirementIntent ||
+                          kb.requirementMeasurableElements ||
+                          kb.requirementClassification
+                        ) {
+                          <article class="oe-wizard__card oe-wizard__card--kb-req">
+                            <h3 class="oe-wizard__card-title">Requirement</h3>
+                            @if (kb.requirementClassification) {
+                              <p class="oe-wizard__card-kicker">{{ kb.requirementClassification }}</p>
+                            }
+                            @if (kb.requirementIntent) {
+                              @for (para of splitParagraphs(kb.requirementIntent); track $index) {
+                                <p class="oe-wizard__prose">{{ para }}</p>
+                              }
+                            }
+                            @if (kb.requirementMeasurableElements) {
+                              <p class="oe-wizard__prose oe-wizard__prose--muted">
+                                <strong>Measurable elements:</strong> {{ kb.requirementMeasurableElements }}
+                              </p>
+                            }
+                            @if (kb.requirementApplicableDepartments) {
+                              <p class="oe-wizard__prose oe-wizard__prose--muted">
+                                <strong>Departments:</strong> {{ kb.requirementApplicableDepartments }}
+                              </p>
+                            }
+                            @if (kb.requirementIsMandatory === true || kb.requirementRequiresDocumentation === true) {
+                              <ul class="oe-wizard__req-list">
+                                @if (kb.requirementIsMandatory === true) {
+                                  <li class="oe-wizard__req-item">Mandatory requirement</li>
+                                }
+                                @if (kb.requirementRequiresDocumentation === true) {
+                                  <li class="oe-wizard__req-item">Documentation required</li>
+                                }
+                              </ul>
+                            }
+                          </article>
+                        }
+                      }
+                      @if (store.journeyContextPanelVm(); as ctx) {
+                        @if (!ctx.empty) {
+                          <article class="oe-wizard__card oe-wizard__card--meta">
+                            <h3 class="oe-wizard__card-title">Metadata</h3>
+                            <div class="oe-wizard__chips" role="list">
+                              <span class="oe-wizard__chip" role="listitem">Dept: {{ ctx.departmentLabel ?? '—' }}</span>
+                              <span class="oe-wizard__chip" role="listitem">Role: {{ ctx.assigneeDisplayName ?? '—' }}</span>
+                              <span class="oe-wizard__chip" role="listitem">Frequency: {{ ctx.frequencyLabel }}</span>
+                            </div>
+                          </article>
+                        }
+                      }
+                      <aside class="oe-wizard__card oe-wizard__card--assist" aria-label="Smart assist">
+                        <div class="oe-wizard__assist-head">
+                          <ng-icon name="lucideSparkles" class="oe-wizard__assist-ico" aria-hidden="true" />
+                          <h3 class="oe-wizard__card-title oe-wizard__card-title--inline">Smart assist</h3>
+                        </div>
+                        <p class="oe-wizard__assist-body">
+                          Summary and suggested actions will appear here when AI assist is enabled for this journey.
+                        </p>
+                      </aside>
+                    }
+                  </section>
+                }
+                @case (1) {
+                  <section class="oe-wizard__step" aria-labelledby="step-guidance">
+                    <h2 id="step-guidance" class="oe-wizard__step-h2">Compliance Guidance</h2>
+                    <article class="oe-wizard__card oe-wizard__card--reading">
+                      <h3 class="oe-wizard__card-title">How to comply</h3>
+                      @if (store.oeWizardKnowledgeVm(); as kb) {
+                        @if (kb.howToComply.trim()) {
+                          @for (para of splitParagraphs(kb.howToComply); track $index) {
+                            <p class="oe-wizard__prose">{{ para }}</p>
+                          }
+                        } @else {
+                          <p class="oe-wizard__prose">
+                            Follow the tasks and evidence expectations below. Mark this step complete when your team is
+                            ready to attach evidence and proceed.
+                          </p>
+                        }
+                      } @else {
+                        <p class="oe-wizard__prose">
+                          Follow the tasks and evidence expectations below. Mark this step complete when your team is
+                          ready to attach evidence and proceed.
+                        </p>
+                      }
+                    </article>
+                    @if (store.operationalModeUi().wizard.tasksSection !== 'hidden') {
+                      <article class="oe-wizard__card">
+                        <h3 class="oe-wizard__card-title">Tasks</h3>
+                        <ul class="oe-wizard__task-list">
+                          <li class="oe-wizard__task-row">
+                            <span>Review policy alignment</span>
+                            <span class="oe-wizard__muted">To Do</span>
+                          </li>
+                          <li class="oe-wizard__task-row">
+                            <span>Collect ward-level samples</span>
+                            <span class="oe-wizard__muted">In progress</span>
+                          </li>
+                        </ul>
+                      </article>
+                    }
+                    @if (store.operationalModeUi().wizard.evidenceSection !== 'hidden') {
+                      <article class="oe-wizard__card oe-wizard__card--reading">
+                        <h3 class="oe-wizard__card-title">Evidence expectations</h3>
+                        @if (store.oeWizardKnowledgeVm()?.evidenceRequired) {
+                          <p class="oe-wizard__prose oe-wizard__prose--muted">
+                            {{ store.oeWizardKnowledgeVm()?.evidenceRequired }}
+                          </p>
+                        }
+                        <p class="oe-wizard__prose oe-wizard__prose--muted">
+                          @switch (store.operationalModeUi().wizard.evidenceSection) {
+                            @case ('readonly') {
+                              Evidence is read-only in this audit phase.
+                            }
+                            @case ('conditional') {
+                              Upload when surveillance flags this OE for re-validation.
+                            }
+                            @default {
+                              You will attach files in the Evidence step. A missing indicator appears when no files are
+                              attached.
+                            }
+                          }
+                        </p>
+                      </article>
+                    }
+                    @if (
+                      store.operationalModeUi().wizard.tasksSection === 'hidden' &&
+                      store.operationalModeUi().wizard.evidenceSection === 'hidden'
+                    ) {
+                      <p class="oe-wizard__prose oe-wizard__prose--muted">
+                        Tasks and evidence are introduced in Internal Audit and later phases.
+                      </p>
+                    }
+                  </section>
+                }
+                @case (2) {
+                  <section class="oe-wizard__step" aria-labelledby="step-evidence">
+                    <h2 id="step-evidence" class="oe-wizard__step-h2">Evidence</h2>
+                    <article class="oe-wizard__card">
+                      <h3 class="oe-wizard__card-title">
+                        <ng-icon name="lucideUpload" class="oe-wizard__req-ico" aria-hidden="true" />
+                        Evidence required
+                      </h3>
+                      @if (store.oeWizardKnowledgeVm(); as kb) {
+                        @if (kb.evidenceRequired.trim()) {
+                          @for (para of splitParagraphs(kb.evidenceRequired); track $index) {
+                            <p class="oe-wizard__prose oe-wizard__prose--muted">{{ para }}</p>
+                          }
+                        } @else {
+                          <p class="oe-wizard__prose oe-wizard__prose--muted">
+                            Upload supporting documents for this objective element. Drag and drop files here or use your
+                            browser file picker when upload is wired to the API.
+                          </p>
+                        }
+                      } @else {
+                        <p class="oe-wizard__prose oe-wizard__prose--muted">
+                          Upload supporting documents for this objective element. Drag and drop files here or use your
+                          browser file picker when upload is wired to the API.
+                        </p>
+                      }
+                      <div class="oe-wizard__uploaded-evidence" aria-labelledby="uploaded-evidence-heading">
+                        <h4 id="uploaded-evidence-heading" class="oe-wizard__uploaded-evidence-title">
+                          Uploaded Evidence
+                        </h4>
+                        @if (persistedWizardEvidence().length === 0) {
+                          <p class="oe-wizard__uploaded-evidence-empty" role="status">
+                            No files uploaded yet for this objective element.
+                          </p>
+                        } @else {
+                          <ul class="oe-wizard__uploaded-list" role="list">
+                            @for (item of persistedWizardEvidence(); track item.id) {
+                              <li class="oe-wizard__uploaded-row">
+                                <div class="oe-wizard__uploaded-type" aria-hidden="true">
+                                  @switch (evidenceKindForUploadedItem(item)) {
+                                    @case ('pdf') {
+                                      <ng-icon
+                                        name="lucideFileText"
+                                        class="oe-wizard__uploaded-ico oe-wizard__uploaded-ico--pdf"
+                                      />
+                                    }
+                                    @case ('spreadsheet') {
+                                      <ng-icon
+                                        name="lucideFileSpreadsheet"
+                                        class="oe-wizard__uploaded-ico oe-wizard__uploaded-ico--sheet"
+                                      />
+                                    }
+                                    @case ('word') {
+                                      <ng-icon
+                                        name="lucideFileText"
+                                        class="oe-wizard__uploaded-ico oe-wizard__uploaded-ico--word"
+                                      />
+                                    }
+                                    @case ('image') {
+                                      <ng-icon
+                                        name="lucideImage"
+                                        class="oe-wizard__uploaded-ico oe-wizard__uploaded-ico--image"
+                                      />
+                                    }
+                                    @default {
+                                      <ng-icon name="lucideFile" class="oe-wizard__uploaded-ico oe-wizard__uploaded-ico--other" />
+                                    }
+                                  }
+                                </div>
+                                <div class="oe-wizard__uploaded-main">
+                                  <span class="oe-wizard__uploaded-name">{{ item.name }}</span>
+                                  <span class="oe-wizard__uploaded-time">
+                                    @if (item.uploadedAt) {
+                                      {{ item.uploadedAt | date: 'medium' }}
+                                    } @else {
+                                      —
+                                    }
+                                  </span>
+                                </div>
+                                <div class="oe-wizard__uploaded-tail">
+                                  <span class="oe-wizard__uploaded-type-label">{{
+                                    evidenceTypeLabelForUploadedItem(item)
+                                  }}</span>
+                                  <button
+                                    type="button"
+                                    class="oe-wizard__uploaded-download"
+                                    [disabled]="evidenceDownloadBusyIds().has(item.id)"
+                                    (click)="downloadEvidenceItem(item); $event.stopPropagation()"
+                                    [attr.aria-label]="'Download ' + item.name"
+                                  >
+                                    <ng-icon
+                                      name="lucideDownload"
+                                      class="oe-wizard__uploaded-download-ico"
+                                      aria-hidden="true"
+                                    />
+                                    <span class="oe-wizard__sr-only">Download</span>
+                                  </button>
+                                </div>
+                              </li>
+                            }
+                          </ul>
+                        }
+                      </div>
+                      <input
+                        #evidenceFileInput
+                        type="file"
+                        multiple
+                        class="oe-wizard__evidence-input"
+                        (change)="onEvidenceFilesInputChange($event)"
+                        aria-hidden="true"
+                        tabindex="-1"
+                      />
+                      <div
+                        class="oe-wizard__dropzone"
+                        [class.oe-wizard__dropzone--disabled]="evidenceDropzoneDisabled()"
+                        [class.oe-wizard__dropzone--drag]="evidenceUploadDragActive()"
+                        [matTooltip]="evidenceDropzoneTooltip()"
+                        matTooltipPosition="above"
+                        role="button"
+                        [tabindex]="evidenceDropzoneDisabled() ? -1 : 0"
+                        [attr.aria-disabled]="evidenceDropzoneDisabled() ? 'true' : null"
+                        aria-label="Evidence upload area"
+                        (click)="onEvidenceDropzonePointer($event)"
+                        (keydown)="onEvidenceDropzoneKeydown($event)"
+                        (dragover)="onEvidenceDragOver($event)"
+                        (dragenter)="onEvidenceDragEnter($event)"
+                        (dragleave)="onEvidenceDragLeave($event)"
+                        (drop)="onEvidenceDrop($event)"
+                      >
+                        <ng-icon name="lucideUpload" class="oe-wizard__dropzone-ico" aria-hidden="true" />
+                        @if (evidenceUploadFeatureOn) {
+                          <span>Drop files or click to browse</span>
+                        } @else {
+                          <span>Drop files or click to browse (upload not enabled yet)</span>
+                        }
+                      </div>
+                      @if (
+                        evidenceUploadFeatureOn &&
+                        evidenceUploadFiles().length > 0 &&
+                        !evidenceDropzoneDisabled()
+                      ) {
+                        <div class="oe-wizard__evidence-actions">
+                          <button type="button" mat-flat-button color="primary" (click)="triggerUpload()">
+                            Upload
+                          </button>
+                        </div>
+                      }
+                      @if (evidenceUploadFiles().length > 1) {
+                        <p class="oe-wizard__evidence-bulk-label" role="status">
+                          Bulk upload mode ({{ evidenceUploadFiles().length }} files selected)
+                        </p>
+                      }
+                      @if (evidenceUploadValidationError(); as err) {
+                        <p class="oe-wizard__evidence-err" role="alert">{{ err }}</p>
+                      }
+                      @if (evidenceUploadFiles().length > 0) {
+                        <p class="oe-wizard__pending-heading">Ready to upload</p>
+                        <ul class="oe-wizard__evidence-files" aria-label="Selected files">
+                          @for (f of evidenceUploadFiles(); track f.name + f.size + $index) {
+                            <li class="oe-wizard__evidence-file-row">
+                              <div class="oe-wizard__evidence-file-main">
+                                <span class="oe-wizard__evidence-file-name">{{ f.name }}</span>
+                                <span class="oe-wizard__evidence-file-meta">
+                                  {{ formatEvidenceFileSize(f.size) }} · Pending
+                                </span>
+                              </div>
+                              @if (!evidenceDropzoneDisabled()) {
+                                <button
+                                  type="button"
+                                  class="oe-wizard__evidence-remove"
+                                  (click)="removeEvidenceFileAt($index); $event.stopPropagation()"
+                                  [attr.aria-label]="'Remove ' + f.name + ' from selection'"
+                                >
+                                  <ng-icon
+                                    name="lucideX"
+                                    class="oe-wizard__evidence-remove-ico"
+                                    aria-hidden="true"
+                                  />
+                                </button>
+                              }
+                            </li>
+                          }
+                        </ul>
+                      }
+                    </article>
+                    @if (store.operationalModeUi().wizard.evidenceSection === 'readonly') {
+                      <p class="oe-wizard__warn" role="status">Evidence is read-only in this audit phase.</p>
+                    }
+                  </section>
+                }
+                @case (3) {
+                  <section class="oe-wizard__step" aria-labelledby="step-audit">
+                    <article class="oe-wizard__card">
+                      @if (store.oeWizardKnowledgeVm(); as kb) {
+                        @if (kb.auditChecklist.trim()) {
+                          <h2 id="step-audit" class="oe-wizard__sr-only">Audit Checklist</h2>
+                          <div class="oe-wizard__kb-audit-block">
+                            <div class="oe-wizard__kb-audit-head">
+                              <div class="oe-wizard__kb-audit-head-ico" aria-hidden="true">
+                                <ng-icon name="lucideClipboardList" class="oe-wizard__kb-audit-head-ico-svg" />
+                              </div>
+                              <div class="oe-wizard__kb-audit-head-text">
+                                <h3 class="oe-wizard__kb-audit-title">Audit Checklist</h3>
+                                <p class="oe-wizard__kb-audit-sub">Verify all compliance requirements are met</p>
+                              </div>
+                            </div>
+                            <ul class="oe-wizard__kb-audit-list" role="list">
+                              @for (line of auditChecklistLines(); track $index) {
+                                <li
+                                  class="oe-wizard__kb-audit-item"
+                                  [class.oe-wizard__kb-audit-item--checked]="store.wizardAuditChecklistChecked()[$index]"
+                                >
+                                  <label class="oe-wizard__kb-audit-row">
+                                    <input
+                                      type="checkbox"
+                                      class="oe-wizard__kb-audit-cb"
+                                      [checked]="store.wizardAuditChecklistChecked()[$index]"
+                                      [disabled]="store.wizardInputsLocked()"
+                                      (change)="onAuditCheckChange($index, $event)"
+                                    />
+                                    <span class="oe-wizard__kb-audit-text">{{ line }}</span>
+                                    @if (store.wizardAuditChecklistChecked()[$index]) {
+                                      <span class="oe-wizard__kb-audit-done" aria-hidden="true">
+                                        <ng-icon name="lucideCheck" class="oe-wizard__kb-audit-done-ico" />
+                                      </span>
+                                    } @else {
+                                      <span class="oe-wizard__kb-audit-done oe-wizard__kb-audit-done--spacer" aria-hidden="true"></span>
+                                    }
+                                  </label>
+                                </li>
+                              }
+                            </ul>
+                          </div>
+                        } @else {
+                          <h2 id="step-audit" class="oe-wizard__step-h2">Audit Checklist</h2>
+                        }
+                        @if (kb.kbRequirementMaxScore != null) {
+                          <p class="oe-wizard__prose oe-wizard__prose--muted">
+                            {{ kbScoreScaleNote }} Reference max score: {{ kb.kbRequirementMaxScore }}.
+                          </p>
+                        }
+                      }
+                      <div class="oe-wizard__field">
+                        <label for="wiz-score">Score (1–5)</label>
+                        @if (auditChecklistLines().length > 0) {
+                          <p class="oe-wizard__kb-audit-score-hint">Score follows checklist completion.</p>
+                        }
+                        <input
+                          id="wiz-score"
+                          type="range"
+                          min="1"
+                          max="5"
+                          [disabled]="
+                            store.wizardInputsLocked() ||
+                            auditChecklistLines().length > 0
+                          "
+                          [ngModel]="store.wizardEvalScore()"
+                          (ngModelChange)="store.setWizardEvalScore($event)"
+                        />
+                        <span class="oe-wizard__field-value">{{ store.wizardEvalScore() }}</span>
+                      </div>
+                      <div class="oe-wizard__field">
+                        <span class="oe-wizard__field-label">Status</span>
+                        <div class="oe-wizard__radio-row" role="radiogroup" aria-labelledby="eval-tone-label">
+                          <span id="eval-tone-label" class="oe-wizard__sr-only">Evaluation tone</span>
+                          <label
+                            ><input
+                              type="radio"
+                              name="evalTone"
+                              [disabled]="store.wizardInputsLocked()"
+                              [checked]="store.wizardEvalTone() === 'compliant'"
+                              (change)="store.setWizardEvalTone('compliant')"
+                            />
+                            Compliant</label
+                          >
+                          <label
+                            ><input
+                              type="radio"
+                              name="evalTone"
+                              [disabled]="store.wizardInputsLocked()"
+                              [checked]="store.wizardEvalTone() === 'partial'"
+                              (change)="store.setWizardEvalTone('partial')"
+                            />
+                            Partial</label
+                          >
+                          <label
+                            ><input
+                              type="radio"
+                              name="evalTone"
+                              [disabled]="store.wizardInputsLocked()"
+                              [checked]="store.wizardEvalTone() === 'non'"
+                              (change)="store.setWizardEvalTone('non')"
+                            />
+                            Non-compliant</label
+                          >
+                        </div>
+                      </div>
+                      @if (store.wizardEvalTone() === 'partial' || store.wizardEvalTone() === 'non') {
+                        <div class="oe-wizard__field">
+                          <label for="wiz-just">Justification (required)</label>
+                          <textarea
+                            id="wiz-just"
+                            rows="3"
+                            class="oe-wizard__textarea"
+                            [disabled]="store.wizardInputsLocked()"
+                            [class.oe-wizard__textarea--invalid]="store.wizardEvalJustificationError()"
+                            [attr.aria-invalid]="store.wizardEvalJustificationError()"
+                            [ngModel]="store.wizardEvalJustification()"
+                            (ngModelChange)="store.setWizardEvalJustification($event)"
+                            placeholder="Explain rationale"
+                          ></textarea>
+                          @if (store.wizardEvalJustificationError()) {
+                            <p class="oe-wizard__error" role="alert">Add a short justification to continue.</p>
+                          }
+                        </div>
+                      }
+                    </article>
+                    @if (store.wizardEvalSubmitted() && store.wizardNeedsImprove()) {
+                      <article class="oe-wizard__card">
+                        <h3 class="oe-wizard__card-title">
+                          <ng-icon name="lucideClipboardList" class="oe-wizard__req-ico" aria-hidden="true" />
+                          Improvement checklist
+                        </h3>
+                        <ul class="oe-wizard__bullets">
+                          <li>Evidence gap — severity medium</li>
+                          <li>Task overdue — severity low</li>
+                        </ul>
+                        <label class="oe-wizard__check-row">
+                          <input
+                            type="checkbox"
+                            [disabled]="store.wizardInputsLocked()"
+                            [checked]="store.wizardImproveReady()"
+                            (change)="store.wizardSetImproveReady($any($event.target).checked)"
+                          />
+                          <span>I acknowledge open findings are tracked and ready for review</span>
+                        </label>
+                      </article>
+                    }
+                  </section>
+                }
+                @case (4) {
+                  <section class="oe-wizard__step" aria-labelledby="step-review">
+                    <h2 id="step-review" class="oe-wizard__sr-only">Review &amp; Submit</h2>
+                    <div class="oe-wizard__review">
+                      <article class="oe-wizard__review-hero oe-wizard__card">
+                        <div class="oe-wizard__review-hero-head">
+                          <div
+                            class="oe-wizard__review-hero-ico oe-wizard__review-hero-ico--summary"
+                            aria-hidden="true"
+                          >
+                            <ng-icon name="lucideClipboardCheck" class="oe-wizard__review-hero-ico-svg" />
+                          </div>
+                          <div class="oe-wizard__review-hero-text">
+                            <h3 class="oe-wizard__review-hero-title">Review Summary</h3>
+                            <p class="oe-wizard__review-hero-sub">Verify all information before final submission</p>
+                          </div>
+                        </div>
+                      </article>
+
+                      <div class="oe-wizard__review-grid">
+                        <article class="oe-wizard__review-tile oe-wizard__card">
+                          <div class="oe-wizard__review-tile-head">
+                            <div
+                              class="oe-wizard__review-tile-ico oe-wizard__review-tile-ico--understanding"
+                              aria-hidden="true"
+                            >
+                              <ng-icon name="lucideBookOpen" class="oe-wizard__review-tile-ico-svg" />
+                            </div>
+                            <div class="oe-wizard__review-tile-text">
+                              <h4 class="oe-wizard__review-tile-title">Understanding</h4>
+                              <p class="oe-wizard__review-tile-sub">Reviewed explanation and compliance rationale</p>
+                            </div>
+                          </div>
+                          <div
+                            class="oe-wizard__review-tile-status"
+                            [class.oe-wizard__review-tile-status--ok]="reviewUnderstandingComplete()"
+                            [class.oe-wizard__review-tile-status--warn]="!reviewUnderstandingComplete()"
+                          >
+                            @if (reviewUnderstandingComplete()) {
+                              <ng-icon name="lucideCheck" class="oe-wizard__review-tile-status-ico" aria-hidden="true" />
+                              <span>Completed</span>
+                            } @else {
+                              <ng-icon
+                                name="lucideAlertCircle"
+                                class="oe-wizard__review-tile-status-ico"
+                                aria-hidden="true"
+                              />
+                              <span>Pending</span>
+                            }
+                          </div>
+                        </article>
+
+                        <article class="oe-wizard__review-tile oe-wizard__card">
+                          <div class="oe-wizard__review-tile-head">
+                            <div
+                              class="oe-wizard__review-tile-ico oe-wizard__review-tile-ico--guidance"
+                              aria-hidden="true"
+                            >
+                              <ng-icon name="lucideShield" class="oe-wizard__review-tile-ico-svg" />
+                            </div>
+                            <div class="oe-wizard__review-tile-text">
+                              <h4 class="oe-wizard__review-tile-title">Guidance</h4>
+                              <p class="oe-wizard__review-tile-sub">Implementation steps understood</p>
+                            </div>
+                          </div>
+                          <div
+                            class="oe-wizard__review-tile-status"
+                            [class.oe-wizard__review-tile-status--ok]="reviewGuidanceComplete()"
+                            [class.oe-wizard__review-tile-status--warn]="!reviewGuidanceComplete()"
+                          >
+                            @if (reviewGuidanceComplete()) {
+                              <ng-icon name="lucideCheck" class="oe-wizard__review-tile-status-ico" aria-hidden="true" />
+                              <span>Completed</span>
+                            } @else {
+                              <ng-icon
+                                name="lucideAlertCircle"
+                                class="oe-wizard__review-tile-status-ico"
+                                aria-hidden="true"
+                              />
+                              <span>Pending</span>
+                            }
+                          </div>
+                        </article>
+
+                        <article class="oe-wizard__review-tile oe-wizard__card">
+                          <div class="oe-wizard__review-tile-head">
+                            <div
+                              class="oe-wizard__review-tile-ico oe-wizard__review-tile-ico--evidence"
+                              aria-hidden="true"
+                            >
+                              <ng-icon name="lucideUpload" class="oe-wizard__review-tile-ico-svg" />
+                            </div>
+                            <div class="oe-wizard__review-tile-text">
+                              <h4 class="oe-wizard__review-tile-title">Evidence</h4>
+                              <p class="oe-wizard__review-tile-sub">
+                                {{ reviewEvidenceFileCount() }} file(s) uploaded
+                              </p>
+                              <div class="oe-wizard__review-evidence-badges" role="list" aria-label="Evidence review status counts">
+                                <span class="oe-wizard__review-evidence-badge oe-wizard__review-evidence-badge--approved" role="listitem">
+                                  Approved: {{ reviewEvidenceCounts().approved }}
+                                </span>
+                                <span class="oe-wizard__review-evidence-badge oe-wizard__review-evidence-badge--pending" role="listitem">
+                                  Pending review: {{ reviewEvidenceCounts().pending }}
+                                </span>
+                                <span class="oe-wizard__review-evidence-badge oe-wizard__review-evidence-badge--rejected" role="listitem">
+                                  Rejected: {{ reviewEvidenceCounts().rejected }}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="oe-wizard__review-tile-status"
+                            [class.oe-wizard__review-tile-status--ok]="reviewEvidenceComplete()"
+                            [class.oe-wizard__review-tile-status--warn]="!reviewEvidenceComplete()"
+                          >
+                            @if (reviewEvidenceComplete()) {
+                              <ng-icon name="lucideCheck" class="oe-wizard__review-tile-status-ico" aria-hidden="true" />
+                              <span>Completed</span>
+                            } @else {
+                              <ng-icon
+                                name="lucideAlertCircle"
+                                class="oe-wizard__review-tile-status-ico"
+                                aria-hidden="true"
+                              />
+                              <span>Pending</span>
+                            }
+                          </div>
+                        </article>
+
+                        <article class="oe-wizard__review-tile oe-wizard__card">
+                          <div class="oe-wizard__review-tile-head">
+                            <div
+                              class="oe-wizard__review-tile-ico oe-wizard__review-tile-ico--checklist"
+                              aria-hidden="true"
+                            >
+                              <ng-icon name="lucideListChecks" class="oe-wizard__review-tile-ico-svg" />
+                            </div>
+                            <div class="oe-wizard__review-tile-text">
+                              <h4 class="oe-wizard__review-tile-title">Checklist</h4>
+                              <p class="oe-wizard__review-tile-sub">{{ reviewChecklistSubtitle() }}</p>
+                              <p class="oe-wizard__review-tile-meta">
+                                Score {{ store.wizardEvalScore() }} / 5 · {{ store.wizardEvalTone() }}
+                              </p>
+                            </div>
+                          </div>
+                          <div
+                            class="oe-wizard__review-tile-status"
+                            [class.oe-wizard__review-tile-status--ok]="reviewChecklistComplete()"
+                            [class.oe-wizard__review-tile-status--warn]="!reviewChecklistComplete()"
+                          >
+                            @if (reviewChecklistComplete()) {
+                              <ng-icon name="lucideCheck" class="oe-wizard__review-tile-status-ico" aria-hidden="true" />
+                              <span>Completed</span>
+                            } @else {
+                              <ng-icon
+                                name="lucideAlertCircle"
+                                class="oe-wizard__review-tile-status-ico"
+                                aria-hidden="true"
+                              />
+                              <span>Pending</span>
+                            }
+                          </div>
+                        </article>
+                      </div>
+
+                      <div
+                        class="oe-wizard__review-banner"
+                        [class.oe-wizard__review-banner--ready]="reviewAlreadyCompleted() || reviewReadyForSubmission()"
+                        [class.oe-wizard__review-banner--pending]="!(reviewAlreadyCompleted() || reviewReadyForSubmission())"
+                        role="status"
+                      >
+                        @if (reviewAlreadyCompleted()) {
+                          <ng-icon
+                            name="lucideCheck"
+                            class="oe-wizard__review-banner-ico"
+                            aria-hidden="true"
+                          />
+                          <div class="oe-wizard__review-banner-text-wrap">
+                            <p class="oe-wizard__review-banner-title">Objective already completed</p>
+                            <p class="oe-wizard__review-banner-desc">
+                              Congratulations! This OE execution is already marked complete.
+                            </p>
+                          </div>
+                        } @else if (reviewReadyForSubmission()) {
+                          <ng-icon
+                            name="lucideCheck"
+                            class="oe-wizard__review-banner-ico"
+                            aria-hidden="true"
+                          />
+                          <div class="oe-wizard__review-banner-text-wrap">
+                            <p class="oe-wizard__review-banner-title">Ready for Submission</p>
+                            <p class="oe-wizard__review-banner-desc">
+                              All required information has been provided. Use <strong>Mark as complete</strong> below to
+                              finish this OE execution.
+                            </p>
+                          </div>
+                        } @else if (reviewSubmissionBlocked()) {
+                          <ng-icon
+                            name="lucideAlertCircle"
+                            class="oe-wizard__review-banner-ico"
+                            aria-hidden="true"
+                          />
+                          <div class="oe-wizard__review-banner-text-wrap">
+                            <p class="oe-wizard__review-banner-title">Submission blocked</p>
+                            <p class="oe-wizard__review-banner-desc">
+                              All review sections are complete, but this OE cannot be marked complete yet.
+                            </p>
+                            <p class="oe-wizard__review-banner-desc">
+                              <strong>Mark as complete is disabled:</strong> {{ markCompleteDisabledReason() }}
+                            </p>
+                          </div>
+                        } @else {
+                          <ng-icon
+                            name="lucideAlertCircle"
+                            class="oe-wizard__review-banner-ico"
+                            aria-hidden="true"
+                          />
+                          <div class="oe-wizard__review-banner-text-wrap">
+                            <p class="oe-wizard__review-banner-title">Complete required steps</p>
+                            <p class="oe-wizard__review-banner-desc">
+                              Finish the sections marked Pending before submitting.
+                            </p>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </section>
+                }
+              }
+            </main>
+
+            <footer class="oe-wizard__foot" aria-label="Step actions">
+              @switch (store.oeWizardStepIndex()) {
+                @case (0) {
+                  <div class="oe-wizard__foot-actions oe-wizard__foot-actions--split">
+                    <button
+                      type="button"
+                      mat-stroked-button
+                      [disabled]="store.wizardInputsLocked()"
+                      (click)="wizardSaveDraft()"
+                    >
+                      Save draft
+                    </button>
+                    <button
+                      type="button"
+                      mat-flat-button
+                      color="primary"
+                      [disabled]="store.operationalModeUi().wizard.blockStepNavigation"
+                      (click)="store.wizardFinishUnderstand()"
+                    >
+                      Continue
+                    </button>
+                  </div>
+                }
+                @case (1) {
+                  <div class="oe-wizard__foot-actions oe-wizard__foot-actions--split">
+                    <button
+                      type="button"
+                      mat-stroked-button
+                      [disabled]="wizardPreviousDisabled()"
+                      (click)="wizardGoPrevious()"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      type="button"
+                      mat-stroked-button
+                      [disabled]="store.wizardInputsLocked()"
+                      (click)="wizardSaveDraft()"
+                    >
+                      Save draft
+                    </button>
+                    <button
+                      type="button"
+                      mat-stroked-button
+                      [disabled]="store.wizardInputsLocked()"
+                      (click)="store.wizardMarkExecuteReady()"
+                    >
+                      Mark guidance complete
+                    </button>
+                    <button
+                      type="button"
+                      mat-flat-button
+                      color="primary"
+                      [disabled]="
+                        !store.wizardExecuteReady() || store.wizardInputsLocked()
+                      "
+                      (click)="store.wizardProceedToEvidence()"
+                    >
+                      Continue
+                    </button>
+                  </div>
+                }
+                @case (2) {
+                  <div class="oe-wizard__foot-actions oe-wizard__foot-actions--split">
+                    <button
+                      type="button"
+                      mat-stroked-button
+                      [disabled]="wizardPreviousDisabled()"
+                      (click)="wizardGoPrevious()"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      type="button"
+                      mat-stroked-button
+                      [disabled]="store.wizardInputsLocked()"
+                      (click)="wizardSaveDraft()"
+                    >
+                      Save draft
+                    </button>
+                    <button
+                      type="button"
+                      mat-flat-button
+                      color="primary"
+                      [disabled]="store.wizardInputsLocked()"
+                      (click)="store.wizardCompleteEvidenceStep()"
+                    >
+                      Continue to audit checklist
+                    </button>
+                  </div>
+                }
+                @case (3) {
+                  <div class="oe-wizard__foot-actions oe-wizard__foot-actions--split">
+                    <button
+                      type="button"
+                      mat-stroked-button
+                      [disabled]="wizardPreviousDisabled()"
+                      (click)="wizardGoPrevious()"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      type="button"
+                      mat-stroked-button
+                      [disabled]="store.wizardInputsLocked()"
+                      (click)="wizardSaveDraft()"
+                    >
+                      Save draft
+                    </button>
+                    @if (!store.wizardEvalSubmitted()) {
+                      <button
+                        type="button"
+                        mat-flat-button
+                        color="primary"
+                        [disabled]="store.wizardInputsLocked()"
+                        (click)="store.wizardSubmitEvaluation()"
+                      >
+                        Submit evaluation
+                      </button>
+                    } @else if (store.wizardNeedsImprove() && !store.wizardImproveReady()) {
+                      <button type="button" mat-flat-button color="primary" [disabled]="true">
+                        Continue to review
+                      </button>
+                    } @else if (store.wizardNeedsImprove() && store.wizardImproveReady()) {
+                      <button
+                        type="button"
+                        mat-flat-button
+                        color="primary"
+                        (click)="store.wizardProceedToReviewFromAudit()"
+                      >
+                        Continue to review
+                      </button>
+                    }
+                  </div>
+                }
+                @case (4) {
+                  <div class="oe-wizard__foot-actions oe-wizard__foot-actions--split">
+                    <button
+                      type="button"
+                      mat-stroked-button
+                      [disabled]="wizardPreviousDisabled()"
+                      (click)="wizardGoPrevious()"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      type="button"
+                      mat-stroked-button
+                      [disabled]="store.wizardInputsLocked()"
+                      (click)="wizardSaveDraft()"
+                    >
+                      Save draft
+                    </button>
+                    @if (!store.oeWizardRemoteCompleted()) {
+                      <button
+                        type="button"
+                        mat-flat-button
+                        color="primary"
+                        [disabled]="store.oeWizardMarkCompleteDisabled()"
+                        (click)="store.completeOeWizardOnServer()"
+                      >
+                        Mark as complete
+                      </button>
+                    }
+                    <button type="button" mat-stroked-button (click)="onExitWorkspace()">
+                      Exit workspace
+                    </button>
+                  </div>
+                }
+              }
+            </footer>
+          </div>
+
+          <aside id="oe-wizard-context" class="oe-wizard__context" aria-label="Guidance and progress">
+            <button
+              type="button"
+              class="oe-wizard__context-toggle"
+              (click)="toggleContextPanel()"
+              [attr.aria-expanded]="contextPanelOpen()"
+              aria-controls="oe-wizard-context-inner"
+            >
+              <ng-icon name="lucidePanelRightClose" aria-hidden="true" />
+              Guidance
+            </button>
+            <div id="oe-wizard-context-inner" class="oe-wizard__context-inner praman-scrollbar praman-scrollbar--panel">
+              @if (store.oeWizardHeaderVm(); as h) {
+                <section class="oe-wizard__ctx-block">
+                  <h2 class="oe-wizard__ctx-h">Summary</h2>
+                  <p class="oe-wizard__ctx-code">{{ h.oeCode }}</p>
+                  <p class="oe-wizard__ctx-title">{{ h.oeTitle }}</p>
+                </section>
+                <section class="oe-wizard__ctx-block" aria-labelledby="ctx-progress-h">
+                  <h2 id="ctx-progress-h" class="oe-wizard__ctx-h">Progress</h2>
+                  <div class="oe-wizard__ctx-progress-row">
+                    <span class="oe-wizard__ctx-step-label">{{ stepFractionLabel() }}</span>
+                    <span
+                      class="oe-wizard__badge oe-wizard__badge--compact"
+                      [class.oe-wizard__badge--compliant]="h.statusTone === 'compliant'"
+                      [class.oe-wizard__badge--partial]="h.statusTone === 'partial'"
+                      [class.oe-wizard__badge--non]="h.statusTone === 'non-compliant'"
+                      [class.oe-wizard__badge--na]="h.statusTone === 'not-applicable'"
+                      >{{ h.statusLabel }}</span
+                    >
+                  </div>
+                  <div
+                    class="oe-wizard__ctx-bar"
+                    role="progressbar"
+                    [attr.aria-valuenow]="store.oeWizardProgress()"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  >
+                    <div class="oe-wizard__ctx-bar-fill" [style.width.%]="store.oeWizardProgress()"></div>
+                  </div>
+                </section>
+                <section class="oe-wizard__ctx-next" aria-labelledby="ctx-next-h">
+                  <h2 id="ctx-next-h" class="oe-wizard__ctx-next-kicker">Next action</h2>
+                  <p class="oe-wizard__ctx-next-text">{{ store.oeWizardNextAction() }}</p>
+                </section>
+                <app-oe-remediation-context />
+                <section class="oe-wizard__ctx-block" aria-labelledby="ctx-quick-h">
+                  <h2 id="ctx-quick-h" class="oe-wizard__ctx-h">Quick actions</h2>
+                  <div class="oe-wizard__quick">
+                    <button type="button" class="oe-wizard__quick-btn" (click)="quickAction('upload')">
+                      <ng-icon name="lucideBookOpen" aria-hidden="true" />
+                      <span>Evidence Library</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="oe-wizard__quick-btn"
+                      [disabled]="store.oeWizardRemoteCompleted()"
+                      (click)="quickAction('task')"
+                    >
+                      <ng-icon name="lucideClipboardList" aria-hidden="true" />
+                      <span>Add task</span>
+                    </button>
+                    <button type="button" class="oe-wizard__quick-btn" (click)="quickAction('timeline')">
+                      <ng-icon name="lucideHistory" aria-hidden="true" />
+                      <span>View timeline</span>
+                    </button>
+                  </div>
+                </section>
+              }
+            </div>
+          </aside>
+        }
+      </div>
+  </div>
+  @if (store.taskAssignmentDrawerOpen()) {
+    <app-create-assign-task-drawer />
+  }
+}

@@ -1,0 +1,16 @@
+WARD HAND HYGIENE COMPLIANCE — MONTHLY AUDIT RESULT
+
+Finding: FND-2026-00004  |  Deficiency: DEF-FND-2026-B8BD8B26  |  CAPA: CAPA-2026-00002
+Objective Element: PSQ.1.c — Staff are trained and competent
+
+Audit period: 01-31 Aug 2026, all 3 previously non-compliant wards.
+Method: direct observation, WHO 5 Moments, 120 opportunities per ward.
+
+Ward A  91% compliance
+Ward B  88% compliance
+Ward C  90% compliance
+Aggregate 89.7% against an 85% NABH target.
+
+Conclusion: corrective and preventive actions effective; compliance sustained above threshold.
+
+Compiled by: Ekta Gupta (Quality Manager), 07 Aug 2026

@@ -1,0 +1,99 @@
+<div class="approval-card" [class.approval-card--urgent]="isUrgent"
+     [attr.data-status]="proposal.statusEnum">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <div class="approval-card__header">
+    <span class="approval-card__type-icon material-icons-outlined">{{ typeIcon }}</span>
+    <div class="approval-card__meta">
+      <span class="approval-card__type-label">{{ typeLabel }}</span>
+      <span class="approval-card__status-badge"
+            [class]="'badge badge--' + statusColor">
+        {{ statusLabel }}
+      </span>
+    </div>
+    <div class="approval-card__ttl" *ngIf="proposal.statusEnum === ProposalStatus.Proposed">
+      <span *ngIf="!proposal.isExpired; else expiredLabel">
+        {{ isUrgent ? '⚠ ' : '' }}Expires in {{ expiresInDays }}d
+      </span>
+      <ng-template #expiredLabel>
+        <span class="text-muted">Expired</span>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- ── Title + Description ──────────────────────────────────────────────── -->
+  <div class="approval-card__body">
+    <h3 class="approval-card__title">{{ proposal.title }}</h3>
+    <p  class="approval-card__description">{{ proposal.description }}</p>
+  </div>
+
+  <!-- ── Source trace ───────────────────────────────────────────────────── -->
+  <div class="approval-card__trace">
+    <button class="btn-link"
+            (click)="onViewSource()"
+            title="Open source recommendation">
+      <span class="material-icons-outlined" aria-hidden="true">lightbulb</span>
+      View Recommendation
+    </button>
+    <button class="btn-link" *ngIf="proposal.draftId"
+            (click)="onOpenDraft()"
+            title="Open source draft">
+      <span class="material-icons-outlined" aria-hidden="true">description</span>
+      View Draft
+    </button>
+  </div>
+
+  <!-- ── Execution result (after execute) ─────────────────────────────────── -->
+  <div class="approval-card__result" *ngIf="proposal.resultEntityId">
+    <span class="material-icons-outlined text-success">check_circle</span>
+    <span>
+      {{ proposal.resultEntityType }} created:
+      <strong>{{ proposal.resultEntityId }}</strong>
+    </span>
+    <p *ngIf="proposal.executionNotes" class="approval-card__exec-notes">
+      {{ proposal.executionNotes }}
+    </p>
+  </div>
+
+  <!-- ── Rejection reason ───────────────────────────────────────────────── -->
+  <div class="approval-card__rejection" *ngIf="proposal.rejectionReason">
+    <span class="material-icons-outlined text-danger">cancel</span>
+    <em>{{ proposal.rejectionReason }}</em>
+  </div>
+
+  <!-- ── Proposed by + timestamp ───────────────────────────────────────── -->
+  <div class="approval-card__footer">
+    <span class="approval-card__proposed-by">
+      Proposed by {{ proposal.proposedBy }}
+    </span>
+    <span class="approval-card__timestamp">
+      {{ proposal.proposedAtUtc | date:'medium' }}
+    </span>
+  </div>
+
+  <!-- ── Actions ────────────────────────────────────────────────────────── -->
+  <div class="approval-card__actions" *ngIf="proposal.canApprove || proposal.canReject || proposal.canExecute">
+
+    <button class="btn btn--primary"
+            *ngIf="proposal.canApprove"
+            (click)="onApprove()">
+      <span class="material-icons-outlined" aria-hidden="true">thumb_up</span>
+      Approve
+    </button>
+
+    <button class="btn btn--danger-outline"
+            *ngIf="proposal.canReject"
+            (click)="onReject()">
+      <span class="material-icons-outlined" aria-hidden="true">thumb_down</span>
+      Reject
+    </button>
+
+    <button class="btn btn--success"
+            *ngIf="proposal.canExecute"
+            (click)="onExecute()">
+      <span class="material-icons-outlined" aria-hidden="true">play_arrow</span>
+      Execute Workflow
+    </button>
+
+  </div>
+</div>

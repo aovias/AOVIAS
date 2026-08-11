@@ -1,0 +1,64 @@
+{
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "Phases": [
+    {
+      "Phase": 1,
+      "Outcome": 0,
+      "Message": "Target host is reachable, running a supported Ubuntu release (24.04), passed disk/network checks, and privilege mode is PasswordRequired.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T02:09:50.1380995+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 2,
+      "Outcome": 1,
+      "Message": "Docker is already installed (Docker version 29.6.0, build fb59821).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T02:09:50.2524192+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 3,
+      "Outcome": 0,
+      "Message": "Docker network \u0027aovias-net\u0027 was created.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T02:09:59.0739898+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 4,
+      "Outcome": 0,
+      "Message": "Profile directory \u0027/opt/aovias/config/profiles/demo\u0027 was created.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T02:09:59.4559924+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 5,
+      "Outcome": 0,
+      "Message": "Generated and uploaded \u0027/opt/aovias/config/profiles/demo/settings.deployment-host.json\u0027 and \u0027/opt/aovias/config/profiles/demo/settings.environment-registration.json\u0027 as needed.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T02:10:01.1885723+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 6,
+      "Outcome": 2,
+      "Message": "Runtime Agent failed to start.",
+      "RootCause": "time=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_LOGS_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_CONFIG_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_ACTIVE_PROFILE\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_DEPLOYMENTS_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_HOST_DEPLOYMENTS_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_HOST_CONFIG_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_HOST_LOGS_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_HOST_PACKAGES_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_DOCKER_NETWORK\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ninvalid spec: :/opt/aovias/deployments: empty section between colons\n",
+      "CompletedUtc": "2026-07-09T02:10:08.867585+00:00",
+      "Succeeded": false
+    }
+  ],
+  "OverallSuccess": false,
+  "FirstFailure": {
+    "Phase": 6,
+    "Outcome": 2,
+    "Message": "Runtime Agent failed to start.",
+    "RootCause": "time=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_LOGS_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_CONFIG_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_ACTIVE_PROFILE\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_DEPLOYMENTS_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_HOST_DEPLOYMENTS_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_HOST_CONFIG_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_HOST_LOGS_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_HOST_PACKAGES_ROOT\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ntime=\u00222026-07-09T07:40:09\u002B05:30\u0022 level=warning msg=\u0022The \\\u0022AOVIAS_DOCKER_NETWORK\\\u0022 variable is not set. Defaulting to a blank string.\u0022\ninvalid spec: :/opt/aovias/deployments: empty section between colons\n",
+    "CompletedUtc": "2026-07-09T02:10:08.867585+00:00",
+    "Succeeded": false
+  },
+  "GeneratedUtc": "2026-07-09T02:10:08.8699355+00:00",
+  "ReportPath": null
+}

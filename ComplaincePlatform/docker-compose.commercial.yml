@@ -1,0 +1,61 @@
+# Commercial / pilot overlay for AOVIAS PRAMAN.
+# Extends docker-compose.dev.yml — do not invent a second deploy plane.
+#
+# Usage:
+#   docker compose -f docker-compose.dev.yml -f docker-compose.commercial.yml up -d --build
+#   ./scripts/deploy.ps1
+#
+# Requires .env with SA_PASSWORD (and optionally ASPNETCORE_CERT_PASSWORD).
+
+version: '3.9'
+
+services:
+  # Reuse SQL + Identity / Organization / Compliance / AI from docker-compose.dev.yml.
+  # This overlay adds Gateway and pins commercial-oriented env defaults.
+
+  gateway-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev.dotnet
+    container_name: gateway-dev
+    volumes:
+      - .:/app
+      - ${USERPROFILE}/.aspnet/https:/https:ro
+      - ./Gateway/App_Data:/app/Gateway/App_Data
+    working_dir: /app/Gateway
+    command: dotnet watch run --project Gateway.csproj --urls "https://0.0.0.0:7216;http://0.0.0.0:5212;http://0.0.0.0:5000"
+    ports:
+      - "7216:7216"
+      - "5212:5212"
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERT_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ConnectionStrings__DefaultConnection=Server=sqlserver-dev;Database=Gateway;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=True
+      - Authentication__Authority=https://identity-service-dev:7135
+      # Match Gateway appsettings Services:* / InternalServices:* keys; use docker DNS + HTTP where services expose cleartext ports
+      - Services__IdentityService__BaseUrl=http://identity-service-dev:5062
+      - Services__OrganizationService__BaseUrl=https://organization-service-dev:7181
+      - Services__ComplianceService__BaseUrl=http://compliance-service-dev:5016
+      - Services__AIService__BaseUrl=https://ai-orchestrator-service-dev:7097
+      - InternalServices__IdentityBaseUrl=http://identity-service-dev:5062
+      - InternalServices__OrganizationBaseUrl=https://organization-service-dev:7181
+      # Optional Redis (start with: docker compose --profile redis ...). Uncomment when redis-dev is up:
+      # - ConnectionStrings__Redis=redis-dev:6379
+    depends_on:
+      sqlserver-dev:
+        condition: service_healthy
+      identity-service-dev:
+        condition: service_started
+      organization-service-dev:
+        condition: service_started
+      compliance-service-dev:
+        condition: service_started
+      ai-orchestrator-service-dev:
+        condition: service_started
+
+  # Optional Redis overlay note: redis-dev is defined in docker-compose.dev.yml under profile "redis".
+  # Example:
+  #   docker compose -f docker-compose.dev.yml -f docker-compose.commercial.yml --profile redis up -d

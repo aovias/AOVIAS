@@ -1,0 +1,64 @@
+{
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "Phases": [
+    {
+      "Phase": 1,
+      "Outcome": 1,
+      "Message": "Phase \u0027Preflight\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:06:34.1115973+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 2,
+      "Outcome": 1,
+      "Message": "Phase \u0027DockerInstallation\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:06:34.1172838+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 3,
+      "Outcome": 1,
+      "Message": "Phase \u0027DockerNetworkCreation\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:06:34.1178509+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 4,
+      "Outcome": 1,
+      "Message": "Phase \u0027RuntimeDirectoryCreation\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:06:34.1197562+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 5,
+      "Outcome": 1,
+      "Message": "Phase \u0027RuntimeConfigurationGeneration\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:06:34.1206662+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 6,
+      "Outcome": 2,
+      "Message": "Runtime Agent package could not be extracted.",
+      "RootCause": "error:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/.env.template\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/certificate.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/checksums.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/config-template.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/configuration.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/database.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/dependency.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/deployment-readiness.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/deployment.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/docker-compose.yml\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/feature.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/filesystem.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/health.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/health.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/infrastructure.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/manifest.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/metadata.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/network.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/publishing-build-manifest.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/publishing-report.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/runtime-capabilities.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/secret.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/service-image.tar\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/service.manifest.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/volume.contract.json\n        Permission denied\ntar: This does not look like a tar archive\ntar: Skipping to next header\ntar: Exiting with failure status due to previous errors\n",
+      "CompletedUtc": "2026-07-09T03:06:40.8884467+00:00",
+      "Succeeded": false
+    }
+  ],
+  "OverallSuccess": false,
+  "FirstFailure": {
+    "Phase": 6,
+    "Outcome": 2,
+    "Message": "Runtime Agent package could not be extracted.",
+    "RootCause": "error:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/.env.template\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/certificate.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/checksums.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/config-template.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/configuration.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/database.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/dependency.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/deployment-readiness.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/deployment.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/docker-compose.yml\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/feature.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/filesystem.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/health.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/health.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/infrastructure.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/manifest.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/metadata.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/network.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/publishing-build-manifest.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/publishing-report.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/runtime-capabilities.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/secret.contract.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/service-image.tar\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/service.manifest.json\n        Permission denied\nerror:  cannot delete old /opt/aovias/packages/runtime-agent-extracted/volume.contract.json\n        Permission denied\ntar: This does not look like a tar archive\ntar: Skipping to next header\ntar: Exiting with failure status due to previous errors\n",
+    "CompletedUtc": "2026-07-09T03:06:40.8884467+00:00",
+    "Succeeded": false
+  },
+  "GeneratedUtc": "2026-07-09T03:06:40.8908058+00:00",
+  "ReportPath": null
+}

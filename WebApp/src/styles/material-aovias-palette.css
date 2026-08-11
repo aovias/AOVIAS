@@ -1,0 +1,87 @@
+/*
+ * AOVIAS Primary overrides for Angular Material azure-blue prebuilt theme.
+ * Forces Repository Blue and removes Material indigo tertiary accents.
+ * Must load AFTER @angular/material/prebuilt-themes/azure-blue.css.
+ */
+
+html {
+  --mat-sys-primary: #2f6bff;
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: #d6e4ff;
+  --mat-sys-on-primary-container: #1e4bc7;
+  --mat-sys-inverse-primary: #abc7ff;
+  --mat-sys-primary-fixed: #d6e4ff;
+  --mat-sys-primary-fixed-dim: #abc7ff;
+  --mat-sys-on-primary-fixed: #001b3f;
+  --mat-sys-on-primary-fixed-variant: #1e4bc7;
+  --mat-sys-surface-tint: #2f6bff;
+
+  /* Replace Material tertiary indigo accents with Primary */
+  --mat-sys-tertiary: #2f6bff;
+  --mat-sys-on-tertiary: #ffffff;
+  --mat-sys-tertiary-container: #d6e4ff;
+  --mat-sys-on-tertiary-container: #1e4bc7;
+  --mat-sys-tertiary-fixed: #d6e4ff;
+  --mat-sys-tertiary-fixed-dim: #abc7ff;
+  --mat-sys-on-tertiary-fixed: #001b3f;
+  --mat-sys-on-tertiary-fixed-variant: #1e4bc7;
+}
+
+html[data-theme='light'],
+:root[data-theme='light'] {
+  --mat-sys-primary: var(--color-primary, #2f6bff);
+  --mat-sys-on-primary: var(--color-text-inverse, #ffffff);
+  --mat-sys-primary-container: var(--color-primary-100, #d6e4ff);
+  --mat-sys-on-primary-container: var(--color-primary-700, #1e4bc7);
+  --mat-sys-inverse-primary: #abc7ff;
+  --mat-sys-primary-fixed: var(--color-primary-100, #d6e4ff);
+  --mat-sys-primary-fixed-dim: #abc7ff;
+  --mat-sys-on-primary-fixed: #001b3f;
+  --mat-sys-on-primary-fixed-variant: var(--color-primary-700, #1e4bc7);
+  --mat-sys-surface-tint: var(--color-primary, #2f6bff);
+  --mat-sys-tertiary: var(--color-primary, #2f6bff);
+  --mat-sys-on-tertiary: var(--color-text-inverse, #ffffff);
+  --mat-sys-tertiary-container: var(--color-primary-100, #d6e4ff);
+  --mat-sys-on-tertiary-container: var(--color-primary-700, #1e4bc7);
+  --mat-sys-tertiary-fixed: var(--color-primary-100, #d6e4ff);
+  --mat-sys-tertiary-fixed-dim: #abc7ff;
+  --mat-sys-on-tertiary-fixed: #001b3f;
+  --mat-sys-on-tertiary-fixed-variant: var(--color-primary-700, #1e4bc7);
+}
+
+html[data-theme='dark'],
+:root[data-theme='dark'] {
+  --mat-sys-primary: var(--color-primary, #2f6bff);
+  --mat-sys-on-primary: var(--color-text-inverse, #ffffff);
+  --mat-sys-primary-container: color-mix(in srgb, var(--color-primary, #2f6bff) 28%, var(--color-bg-surface, #1e293b));
+  --mat-sys-on-primary-container: #d6e4ff;
+  --mat-sys-inverse-primary: #abc7ff;
+  --mat-sys-primary-fixed: #d6e4ff;
+  --mat-sys-primary-fixed-dim: #abc7ff;
+  --mat-sys-on-primary-fixed: #001b3f;
+  --mat-sys-on-primary-fixed-variant: #1e4bc7;
+  --mat-sys-surface-tint: var(--color-primary, #2f6bff);
+  --mat-sys-tertiary: var(--color-primary, #2f6bff);
+  --mat-sys-on-tertiary: var(--color-text-inverse, #ffffff);
+  --mat-sys-tertiary-container: color-mix(in srgb, var(--color-primary, #2f6bff) 28%, var(--color-bg-surface, #1e293b));
+  --mat-sys-on-tertiary-container: #d6e4ff;
+  --mat-sys-tertiary-fixed: #d6e4ff;
+  --mat-sys-tertiary-fixed-dim: #abc7ff;
+  --mat-sys-on-tertiary-fixed: #001b3f;
+  --mat-sys-on-tertiary-fixed-variant: #1e4bc7;
+}
+
+/* Accent palette → Primary (avoid Material pink/indigo accent surfaces) */
+.mat-accent,
+.mat-mdc-button.mat-accent,
+.mat-mdc-unelevated-button.mat-accent,
+.mat-mdc-raised-button.mat-accent,
+.mat-mdc-outlined-button.mat-accent,
+.mat-mdc-icon-button.mat-accent,
+.mat-mdc-checkbox.mat-accent,
+.mat-mdc-slide-toggle.mat-accent,
+.mat-mdc-radio-button.mat-accent,
+.mat-mdc-progress-bar.mat-accent {
+  --mat-sys-primary: var(--color-primary, #2f6bff);
+  --mdc-linear-progress-active-indicator-color: var(--color-primary, #2f6bff);
+}

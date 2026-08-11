@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.Bootstrap.Core</RootNamespace>
+    <AssemblyName>Aovias.Bootstrap.Core</AssemblyName>
+    <Description>Zero-Touch Environment Bootstrap orchestrator and phase implementations (Sprint M4.1).</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aovias.Bootstrap.Contracts\Aovias.Bootstrap.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Configuration\Aovias.Configuration.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Release\src\Aovias.Release.Contracts\Aovias.Release.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Deployment.Contracts\Aovias.Deployment.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Aovias.Bootstrap.Core.Tests" />
+  </ItemGroup>
+</Project>

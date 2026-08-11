@@ -1,0 +1,247 @@
+/*
+ * PRAMAN foundation tokens.
+ * Theme-independent primitives: typography, spacing, radius, breakpoints, z-index.
+ */
+
+:root {
+  --font-family-base:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+    sans-serif;
+
+  --font-family-mono:
+    'JetBrains Mono', 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace;
+
+  /* type scale */
+  --font-size-display-lg: 2rem; /* 32px */
+  --font-size-heading-md: 1.25rem; /* 20px */
+  --font-size-heading-sm: 1rem; /* 16px */
+  --font-size-body: 0.875rem; /* 14px */
+  --font-size-caption: 0.75rem; /* 12px */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /*
+   * UI-1 — Enterprise type scale (single source of truth for every screen).
+   * Page title is deliberately ~20% smaller than the previous 28px Control Center
+   * heading so page chrome yields vertical space to actual content.
+   * Roles are named by intent; do not introduce new px literals in feature CSS.
+   */
+  --font-size-page-title: 1.375rem; /* 22px — H1, one per page */
+  --font-size-page-title-compact: 1.25rem; /* 20px — H1 below tablet */
+  --font-size-section-title: 1.125rem; /* 18px — H2, page sections */
+  --font-size-card-title: 1rem; /* 16px — H3, card + panel headings */
+  --font-size-subtitle: 0.875rem; /* 14px — page/section descriptions */
+  --font-size-body-sm: 0.8125rem; /* 13px — dense body, table cells, buttons */
+  --font-size-label: 0.8125rem; /* 13px — form labels, control labels */
+  --font-size-micro: 0.6875rem; /* 11px — eyebrows, table headers, badges */
+
+  --line-height-heading: 1.3;
+  --line-height-relaxed: 1.6;
+  --letter-spacing-tight: -0.01em; /* headings */
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.04em; /* micro/uppercase eyebrows */
+
+  /* Numerals: tabular alignment for metrics, tables, dates, IDs */
+  --font-variant-numeric-tabular: tabular-nums;
+
+  /* 4px spacing system */
+  --space-0: 0;
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-7: 1.75rem; /* 28px */
+  --space-8: 2rem; /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /* 48px */
+
+  /* radii */
+  --radius-xs: 0.25rem; /* 4px */
+  --radius-sm: 0.375rem; /* 6px */
+  --radius-md: 0.5rem; /* 8px */
+  /* Card / panel default (matches Control Center 12px surfaces) */
+  --radius-card: 0.75rem;
+  --radius-lg: 1rem; /* 16px */
+  --radius-pill: 999px;
+
+  /*
+   * UI-8 — Radius by component role. Every surface picks one of these;
+   * no component should declare its own px radius.
+   */
+  --radius-control: var(--radius-sm); /* buttons, inputs, selects, small controls */
+  --radius-surface: var(--radius-card); /* cards, panels, table shells */
+  --radius-dialog: var(--radius-lg); /* dialogs, drawers, sheets */
+  --radius-menu: var(--radius-md); /* menus, dropdowns, popovers, tooltips */
+  --radius-chip: var(--radius-pill); /* chips, tags, pills, badges */
+  --radius-table: var(--radius-surface);
+
+  /* layout — NAV-2A density */
+  --header-height: 4rem; /* 64px */
+  --header-control-height: 2.25rem; /* 36px — NAV-2 */
+  --header-gap: 1rem; /* 16px — NAV-2 */
+  --header-icon-size: 1.125rem; /* 18px */
+  --sidebar-width-expanded: 15rem; /* 240px */
+  --sidebar-width-collapsed: 4.5rem; /* 72px */
+  --sidebar-item-height: 2.25rem; /* 36px — NAV-2A */
+  --sidebar-icon-size: 1.125rem; /* 18px */
+  --sidebar-item-pad-x: 0.75rem; /* 12px */
+  --sidebar-section-gap: 0.75rem; /* 12px — NAV-2A */
+  --sidebar-section-header-size: 0.6875rem; /* 11px — NAV-2A */
+  --sidebar-motion-duration: 180ms;
+  --content-max-width: 90rem; /* 1440px */
+
+  /*
+   * UI-2 — Page layout template.
+   *
+   * One padding value on all four sides of every page container, at every
+   * screen size. The container itself is FLUID — it always fills the width the
+   * shell gives it, so pages never centre, never cap, and cannot shift left or
+   * right relative to one another.
+   *
+   * 25px is a deliberate product decision and is intentionally off the 4px
+   * grid; it is defined once here so it stays a token, not a literal.
+   */
+  --page-padding: 25px;
+  --page-padding-inline: var(--page-padding);
+  --page-padding-inline-compact: var(--page-padding);
+  --page-padding-block-start: var(--page-padding);
+  --page-padding-block-end: var(--page-padding);
+  /* Fluid by contract — no page caps or centres its content. */
+  --page-max-width: none;
+  --page-header-gap: var(--space-4); /* title block ↔ actions */
+  --page-header-margin-block-end: var(--space-6); /* header ↔ first section */
+  --page-section-gap: var(--space-6); /* between page sections */
+  --page-card-gap: var(--space-4); /* between sibling cards in a grid */
+
+  /* UI-7 — Component padding roles (no ad-hoc px) */
+  --dialog-padding: var(--space-6);
+  --dialog-padding-compact: var(--space-4);
+  --toolbar-padding-block: var(--space-3);
+  --toolbar-padding-inline: var(--space-4);
+  --toolbar-gap: var(--space-3);
+  --form-field-gap: var(--space-2); /* label ↔ control */
+  --form-row-gap: var(--space-4); /* field ↔ field */
+  --form-group-gap: var(--space-6); /* fieldset ↔ fieldset */
+  --grid-gap: var(--space-4);
+  --button-gap: var(--space-2); /* between adjacent buttons */
+  --icon-gap: var(--space-2); /* icon ↔ label */
+
+  /* UI-3 — Control sizing (heights are the same across every module) */
+  --control-height-sm: 2rem; /* 32px — dense toolbars, table row actions */
+  --control-height-md: 2.25rem; /* 36px — default enterprise density */
+  --control-height-lg: 2.5rem; /* 40px — primary CTAs, form inputs */
+  --control-padding-inline: var(--space-4);
+  --control-padding-inline-sm: var(--space-3);
+
+  /* UI-3 — Table density */
+  --table-header-font-size: var(--font-size-micro);
+  --table-body-font-size: var(--font-size-body-sm);
+  --table-cell-padding-block: var(--space-3);
+  --table-cell-padding-inline: var(--space-4);
+  --table-row-min-height: 2.75rem;
+  --table-header-min-height: 2.5rem;
+
+  /* UI-9 — Iconography */
+  --icon-size-xs: 0.625rem; /* 10px — inline with micro text */
+  --icon-size-lg: 1.25rem; /* 20px — page header + toolbar actions */
+  --icon-size-xl: 1.5rem; /* 24px — empty states, feature tiles */
+  --icon-stroke-width: 1.75; /* Lucide default weight across the app */
+
+  /* UI-10 — Motion (interaction states share one curve + duration family) */
+  --motion-duration-instant: 80ms;
+  --motion-duration-fast: 120ms;
+  --motion-duration-base: 180ms;
+  --motion-duration-slow: 240ms;
+  --motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --motion-easing-decelerate: cubic-bezier(0, 0, 0, 1);
+  --motion-easing-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --transition-control:
+    color var(--motion-duration-fast) var(--motion-easing-standard),
+    background-color var(--motion-duration-fast) var(--motion-easing-standard),
+    border-color var(--motion-duration-fast) var(--motion-easing-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-easing-standard);
+
+  /* UI-10 / UI-13 — Focus + disabled are identical for every interactive control */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --state-disabled-opacity: 0.55;
+
+  /*
+   * UI-11 — Elevation by role. Resolves through the theme --shadow-* scale, so
+   * surfaces stay consistent in light and dark. Feature CSS must not declare
+   * its own box-shadow literals.
+   */
+  --elevation-flat: none;
+  --elevation-card: var(--shadow-xs);
+  --elevation-card-hover: var(--shadow-sm);
+  --elevation-raised: var(--shadow-sm);
+  --elevation-menu: var(--shadow-md);
+  --elevation-popover: var(--shadow-md);
+  --elevation-dialog: var(--shadow-lg);
+  --elevation-drawer: var(--shadow-elevated-panel);
+  --elevation-fab: var(--shadow-lg);
+
+  /* breakpoints (documentation + utility usage) — NAV-1 shell map */
+  --bp-mobile-max: 767px;
+  --bp-tablet-min: 768px;
+  --bp-tablet-max: 1023px;
+  --bp-laptop-min: 1024px;
+  --bp-laptop-max: 1399px;
+  --bp-desktop-min: 1400px;
+  --bp-wide-min: 1601px;
+
+  /* z-index layers */
+  --z-base: 1;
+  --z-sticky: 100;
+  --z-dropdown: 200;
+  /* Shell bottom shortcuts: above content, below drawer (930) */
+  --z-shell-bottom-nav: 150;
+  /* Shell mobile overlay: above sticky headers/panels (100) but below global overlays/modals */
+  --z-shell-sidebar-backdrop: 920;
+  --z-shell-sidebar: 930;
+  --z-execution-context-sheet: 880;
+  --z-overlay: 900;
+  --z-modal: 1000;
+  --z-toast: 1100;
+
+  /* Aliases (Phase 38 Journey) — map stakeholder names to foundation scale */
+  --spacing-xs: var(--space-1);
+  --spacing-sm: var(--space-2);
+  --spacing-md: var(--space-4);
+  --spacing-lg: var(--space-6);
+  --border-radius-standard: var(--radius-sm);
+  --button-height: 2.5rem;
+  --input-height: 2.5rem;
+
+  /* Phase 39 — enterprise polish aliases (Journey + aligned surfaces) */
+  --border-width-hairline: 1px;
+  /* Default structural border: hairline + subtle token color — avoid 2px+ outlines on cards */
+  --border-width-default: var(--border-width-hairline);
+  --card-padding-compact: var(--space-3);
+  --card-padding-normal: var(--space-5);
+  --card-padding: var(--card-padding-normal);
+  --section-gap-y: var(--space-4);
+  --section-gap-y-loose: var(--space-6);
+  --icon-size-sm: 0.75rem; /* 12px — inline with caption, tight rows */
+  --icon-size-md: 1rem; /* 16px — default control / list icon */
+  /* Shell nav (sidebar + bottom bar icons) — NAV-1: 18px rail icons */
+  --icon-size-nav: var(--sidebar-icon-size);
+  --touch-target-min: 2.75rem; /* 44px — WCAG touch */
+  --shell-bottom-nav-height: 3.5rem; /* bar + padding; mobile shell only */
+
+  /* Phase 43 — scrollbar structure (colors in theme.tokens.css) */
+  --scrollbar-width: 0.375rem; /* 6px — desktop thin */
+  --scrollbar-width-touch: 0.5rem; /* 8px — tablet / touch-friendly */
+  --scrollbar-radius: var(--radius-sm);
+  --scrollbar-opacity-idle: 0.72;
+  --scrollbar-opacity-hover: 1;
+  --scrollbar-motion-duration: 0.16s;
+  --scrollbar-motion-duration-reduced: 0.01ms;
+  --scrollbar-motion-easing: ease-out;
+}

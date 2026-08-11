@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Aovias.Runtime.Agent.Api/Aovias.Runtime.Agent.Api.csproj" />
+    <Project Path="src/Aovias.Runtime.Agent.Application/Aovias.Runtime.Agent.Application.csproj" />
+    <Project Path="src/Aovias.Runtime.Agent.Domain/Aovias.Runtime.Agent.Domain.csproj" />
+    <Project Path="src/Aovias.Runtime.Agent.Infrastructure/Aovias.Runtime.Agent.Infrastructure.csproj" />
+    <Project Path="src/Aovias.Runtime.Contracts/Aovias.Runtime.Contracts.csproj" />
+    <Project Path="src/Aovias.Runtime.SDK/Aovias.Runtime.SDK.csproj" />
+  </Folder>
+  <!-- Sprint M3.2: completed to the full direct-external-reference closure of every project
+       above - Aovias.Runtime.Agent.Application/Infrastructure reach well beyond Configuration
+       (Orchestration, Deployment.Contracts, ReleaseManager/Release.Contracts) and none of those
+       were previously listed here. -->
+  <Project Path="../Aovias.Configuration/Aovias.Configuration.csproj" />
+  <Project Path="../Aovias.Deployment.Contracts/Aovias.Deployment.Contracts.csproj" />
+  <Project Path="../Aovias.Orchestration/src/Aovias.Orchestration.Contracts/Aovias.Orchestration.Contracts.csproj" />
+  <Project Path="../Aovias.Orchestration/src/Aovias.Orchestration/Aovias.Orchestration.csproj" />
+  <Project Path="../Aovias.Orchestration/src/Aovias.Platform.Core/Aovias.Platform.Core.csproj" />
+  <Project Path="../Aovias.Release/src/Aovias.Release.Contracts/Aovias.Release.Contracts.csproj" />
+  <Project Path="../Aovias.Release/src/Aovias.ReleaseManager/Aovias.ReleaseManager.csproj" />
+</Solution>

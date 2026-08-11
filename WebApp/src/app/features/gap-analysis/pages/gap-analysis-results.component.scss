@@ -1,0 +1,133 @@
+.gap-results-page {
+  padding: var(--page-padding-block-start) var(--page-padding-inline) var(--page-padding-block-end);
+  background: var(--bg-primary);
+  min-height: calc(100vh - 64px);
+  margin: 0 auto;
+}
+
+.gap-results-page__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.gap-results-page__title {
+  font-size: var(--font-size-page-title);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.gap-results-page__subtitle {
+  font-size: var(--font-size-subtitle);
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 640px;
+}
+
+.gap-results-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.gap-results-page__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.gap-results-page__btn--secondary {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.gap-results-page__btn--primary {
+  background: var(--primary-color, var(--color-primary));
+  color: #fff;
+}
+
+.gap-results-page__btn--primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.gap-results-page__content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.gap-results-page__gaps-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.gap-results-page__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-secondary);
+}
+
+.gap-results-page__state--error {
+  border-color: rgba(239, 68, 68, 0.4);
+  color: var(--danger-color, #dc2626);
+}
+
+.gap-results-page__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--primary-color, var(--color-primary));
+  border-radius: 50%;
+  animation: gap-spin 0.8s linear infinite;
+}
+
+@keyframes gap-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1199px) {
+  .gap-results-page__gaps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .gap-results-page {
+    padding: var(--page-padding-block-start) var(--page-padding-inline) var(--page-padding-block-end);
+  }
+
+  .gap-results-page__header {
+    flex-direction: column;
+  }
+
+  .gap-results-page__actions {
+    width: 100%;
+  }
+
+  .gap-results-page__btn {
+    flex: 1;
+  }
+}

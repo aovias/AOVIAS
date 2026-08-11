@@ -1,0 +1,64 @@
+{
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "Phases": [
+    {
+      "Phase": 1,
+      "Outcome": 1,
+      "Message": "Phase \u0027Preflight\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:16:59.2810607+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 2,
+      "Outcome": 1,
+      "Message": "Phase \u0027DockerInstallation\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:16:59.2864472+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 3,
+      "Outcome": 1,
+      "Message": "Phase \u0027DockerNetworkCreation\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:16:59.2879062+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 4,
+      "Outcome": 1,
+      "Message": "Phase \u0027RuntimeDirectoryCreation\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:16:59.2890447+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 5,
+      "Outcome": 1,
+      "Message": "Phase \u0027RuntimeConfigurationGeneration\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:16:59.2903739+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 6,
+      "Outcome": 2,
+      "Message": "Could not clear the previous extraction directory \u0027/opt/aovias/packages/runtime-agent-extracted\u0027.",
+      "RootCause": "rm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/feature.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/service.manifest.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/database.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/service-image.tar\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/secret.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/filesystem.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/runtime-capabilities.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/metadata.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/infrastructure.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/publishing-report.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/docker-compose.yml\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/certificate.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/dependency.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/volume.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/manifest.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/publishing-build-manifest.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/config-template.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/network.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/health.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/configuration.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/.env.template\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/checksums.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/health.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/deployment-readiness.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/deployment.contract.json\u0027: Permission denied\n",
+      "CompletedUtc": "2026-07-09T03:17:06.085057+00:00",
+      "Succeeded": false
+    }
+  ],
+  "OverallSuccess": false,
+  "FirstFailure": {
+    "Phase": 6,
+    "Outcome": 2,
+    "Message": "Could not clear the previous extraction directory \u0027/opt/aovias/packages/runtime-agent-extracted\u0027.",
+    "RootCause": "rm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/feature.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/service.manifest.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/database.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/service-image.tar\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/secret.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/filesystem.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/runtime-capabilities.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/metadata.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/infrastructure.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/publishing-report.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/docker-compose.yml\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/certificate.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/dependency.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/volume.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/manifest.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/publishing-build-manifest.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/config-template.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/network.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/health.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/configuration.contract.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/.env.template\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/checksums.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/health.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/deployment-readiness.json\u0027: Permission denied\nrm: cannot remove \u0027/opt/aovias/packages/runtime-agent-extracted/deployment.contract.json\u0027: Permission denied\n",
+    "CompletedUtc": "2026-07-09T03:17:06.085057+00:00",
+    "Succeeded": false
+  },
+  "GeneratedUtc": "2026-07-09T03:17:06.0872034+00:00",
+  "ReportPath": null
+}

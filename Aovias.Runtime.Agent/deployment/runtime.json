@@ -1,0 +1,104 @@
+{
+  "runtimeVersion": "1.0",
+  "environment": "PRAMAN-Local",
+  "hostname": "aovias-praman-local",
+  "serverName": "aovias-praman-local",
+  "serverId": "srv-aovias-praman-local",
+  "platformVersion": "2026.1",
+  "deploymentAgentVersion": "1.0.0",
+  "dockerNetwork": "aovias-runtime-net",
+  "startedAt": "2026-06-26T08:00:00+00:00",
+  "lastUpdated": "2026-06-26T12:00:00+00:00",
+  "infrastructureServices": [
+    {
+      "id": "docker-engine",
+      "name": "Docker",
+      "category": "Container Platform",
+      "version": "26.1.4",
+      "status": "Running",
+      "health": "Healthy"
+    },
+    {
+      "id": "nginx",
+      "name": "Nginx",
+      "category": "Reverse Proxy",
+      "version": "1.25.4",
+      "status": "Healthy",
+      "health": "Healthy"
+    },
+    {
+      "id": "sql-server",
+      "name": "SQL Server",
+      "category": "Database",
+      "version": "2022-CU12",
+      "status": "Healthy",
+      "health": "Healthy"
+    }
+  ],
+  "applicationServices": [
+    {
+      "id": "praman-gateway",
+      "name": "PRAMAN Gateway",
+      "category": "Gateway",
+      "version": "1.0.0",
+      "status": "Registered",
+      "health": "Unknown"
+    },
+    {
+      "id": "praman-identity",
+      "name": "PRAMAN Identity",
+      "category": "Identity",
+      "version": "1.0.0",
+      "status": "Registered",
+      "health": "Unknown"
+    },
+    {
+      "id": "praman-organization",
+      "name": "PRAMAN Organization",
+      "category": "Organization",
+      "version": "1.0.0",
+      "status": "Registered",
+      "health": "Unknown"
+    },
+    {
+      "id": "praman-compliance",
+      "name": "PRAMAN Compliance",
+      "category": "Compliance",
+      "version": "1.0.0",
+      "status": "Registered",
+      "health": "Unknown"
+    },
+    {
+      "id": "praman-audit",
+      "name": "PRAMAN Audit",
+      "category": "Audit",
+      "version": "1.0.0",
+      "status": "Registered",
+      "health": "Unknown"
+    },
+    {
+      "id": "praman-knowledgebase",
+      "name": "PRAMAN Knowledge Base",
+      "category": "KnowledgeBase",
+      "version": "1.0.0",
+      "status": "Registered",
+      "health": "Unknown"
+    },
+    {
+      "id": "praman-ai-orchestrator",
+      "name": "PRAMAN AI Orchestrator",
+      "category": "AI",
+      "version": "1.0.0",
+      "status": "Registered",
+      "health": "Unknown"
+    },
+    {
+      "id": "praman-web",
+      "name": "PRAMAN Web Application",
+      "category": "WebApp",
+      "version": "1.0.0",
+      "status": "Registered",
+      "health": "Unknown"
+    }
+  ]
+}

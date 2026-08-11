@@ -1,0 +1,68 @@
+<UserControl x:Class="Aovias.DesignSystem.Controls.OperationProgressHeader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Aovias.DesignSystem.Converters"
+             x:Name="Root">
+    <UserControl.Resources>
+        <converters:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Border Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="{DynamicResource RadiusMd}"
+            Padding="18">
+        <StackPanel>
+            <Grid Margin="0,0,0,10">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Overall Progress" Style="{DynamicResource HeadingTextStyle}" FontSize="13.5" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding StatusText, ElementName=Root}"
+                               Style="{DynamicResource CaptionTextStyle}"
+                               Margin="12,0,0,0"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+                <TextBlock Text="{Binding OverallProgressPercent, ElementName=Root, StringFormat={}{0}%}"
+                           Style="{DynamicResource HeadingTextStyle}"
+                           FontSize="16"
+                           HorizontalAlignment="Right" />
+            </Grid>
+
+            <ProgressBar Value="{Binding OverallProgressPercent, ElementName=Root, Mode=OneWay}"
+                         Maximum="100"
+                         Height="8"
+                         Margin="0,0,0,14" />
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                        <TextBlock Text="Current Stage" Style="{DynamicResource CaptionTextStyle}" FontWeight="SemiBold" Margin="0,0,8,0" />
+                        <TextBlock Text="{Binding CurrentStageName, ElementName=Root}" Style="{DynamicResource BodyTextStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                Visibility="{Binding CurrentTask, ElementName=Root, Converter={StaticResource StringNotEmptyToVisibilityConverter}}">
+                        <TextBlock Text="Current Task" Style="{DynamicResource CaptionTextStyle}" FontWeight="SemiBold" Margin="0,0,8,0" />
+                        <TextBlock Text="{Binding CurrentTask, ElementName=Root}" Style="{DynamicResource CaptionTextStyle}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock Text="Elapsed:" Style="{DynamicResource CaptionTextStyle}" Margin="0,0,6,0" />
+                        <TextBlock Text="{Binding ElapsedDisplay, ElementName=Root}" Style="{DynamicResource CaptionTextStyle}" FontWeight="SemiBold" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Visibility="{Binding EstimatedRemainingDisplay, ElementName=Root, Converter={StaticResource StringNotEmptyToVisibilityConverter}}">
+                        <TextBlock Text="Est. remaining:" Style="{DynamicResource CaptionTextStyle}" Margin="0,0,6,0" />
+                        <TextBlock Text="{Binding EstimatedRemainingDisplay, ElementName=Root}" Style="{DynamicResource CaptionTextStyle}" FontWeight="SemiBold" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -1,0 +1,14 @@
+<Solution>
+  <!--
+    Sprint M3.0 (Toolchain Restoration & Canonical Build Baseline): this is the platform's Windows
+    canonical build entry point, paired with `Aovias.Platform.slnx` (the cross-platform/CI leg) at
+    the repository root. Both net10.0-windows/UseWPF projects in the repository
+    (ComplianceServiceManager, Aovias.DesignSystem) belong here — CSM was previously in no
+    solution file at all; Aovias.DesignSystem was explicitly, deliberately excluded from
+    `Aovias.Platform.slnx` for the same Windows-Desktop-workload reason. `dotnet build
+    ComplianceServiceManager.slnx` requires a Windows agent with the .NET Desktop workload
+    installed; it is not expected to build on this repository's Linux CI leg.
+  -->
+  <Project Path="ComplianceServiceManager.csproj" />
+  <Project Path="../Aovias.DesignSystem/Aovias.DesignSystem.csproj" />
+</Solution>

@@ -1,0 +1,211 @@
+<UserControl x:Class="ComplianceServiceManager.Views.Settings.SettingsConfigurationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:helpers="clr-namespace:ComplianceServiceManager.Helpers"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="860"
+             d:DesignWidth="1120">
+    <UserControl.Resources>
+        <helpers:SectionVisibilityConverter x:Key="SectionVisibilityConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0"
+                Style="{StaticResource CardBorderStyle}"
+                Padding="12"
+                Margin="0,0,12,0">
+            <StackPanel>
+                <TextBlock Text="Runtime Configuration"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,12" />
+
+                <TextBlock Text="Current Runtime Profile"
+                           Foreground="{StaticResource TextSecondaryBrush}" />
+                <ComboBox ItemsSource="{Binding AvailableProfiles}"
+                          SelectedItem="{Binding SelectedProfile}"
+                          Margin="0,6,0,12" />
+                <Button Content="Activate Profile"
+                        Command="{Binding ActivateProfileCommand}"
+                        Margin="0,0,0,16" />
+
+                <ListBox SelectedValue="{Binding SelectedSection}"
+                         SelectedValuePath="Content">
+                    <ListBoxItem Content="Runtime" />
+                    <ListBoxItem Content="Infrastructure" />
+                    <ListBoxItem Content="Docker" />
+                    <ListBoxItem Content="API" />
+                    <ListBoxItem Content="Security" />
+                    <ListBoxItem Content="Logging" />
+                    <ListBoxItem Content="Certificates" />
+                    <ListBoxItem Content="Deployment" />
+                    <ListBoxItem Content="Monitoring" />
+                    <ListBoxItem Content="Execution" />
+                    <ListBoxItem Content="SignalR" />
+                    <ListBoxItem Content="Providers" />
+                    <ListBoxItem Content="Secrets" />
+                </ListBox>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1"
+                Style="{StaticResource CardBorderStyle}"
+                Padding="18">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,16">
+                    <TextBlock Text="{Binding SelectedSection}"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Margin="16,0,0,0"
+                               VerticalAlignment="Center" />
+                    <Button Content="Save Configuration"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Command="{Binding SaveCommand}"
+                            Margin="16,0,0,0" />
+                </StackPanel>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <StackPanel Visibility="{Binding SelectedSection, Converter={StaticResource SectionVisibilityConverter}, ConverterParameter=Runtime}">
+                            <TextBlock Text="Environment" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Runtime.Environment, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Server Name" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Runtime.ServerName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Hostname" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Runtime.Hostname, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Runtime Version" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Runtime.RuntimeVersion, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Platform Version" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Runtime.PlatformVersion, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding SelectedSection, Converter={StaticResource SectionVisibilityConverter}, ConverterParameter=Infrastructure}">
+                            <TextBlock Text="Public IP" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Infrastructure.PublicIp, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Domain" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Infrastructure.Domain, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="HTTPS Port" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Infrastructure.HttpsPort, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="HTTP Port" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Infrastructure.HttpPort, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <CheckBox Content="SSL Enabled" IsChecked="{Binding Infrastructure.SslEnabled}" />
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding SelectedSection, Converter={StaticResource SectionVisibilityConverter}, ConverterParameter=Docker}">
+                            <CheckBox Content="Enabled" IsChecked="{Binding Docker.Enabled}" Margin="0,0,0,10" />
+                            <TextBlock Text="Host" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Docker.Host, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Socket" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Docker.Socket, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Network" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Docker.Network, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding SelectedSection, Converter={StaticResource SectionVisibilityConverter}, ConverterParameter=API}">
+                            <TextBlock Text="Base URL" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Api.BaseUrl, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Public URL" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Api.PublicUrl, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Timeout Seconds" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Api.TimeoutSeconds, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Retry Count" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Api.RetryCount, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding SelectedSection, Converter={StaticResource SectionVisibilityConverter}, ConverterParameter=Security}">
+                            <TextBlock Text="JWT Issuer" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Security.JwtIssuer, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="JWT Audience" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Security.JwtAudience, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Certificate Thumbprint" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Security.CertificateThumbprint, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding SelectedSection, Converter={StaticResource SectionVisibilityConverter}, ConverterParameter=Logging}">
+                            <TextBlock Text="Log Directory" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Logging.LogDirectory, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Minimum Level" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Logging.MinimumLevel, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding SelectedSection, Converter={StaticResource SectionVisibilityConverter}, ConverterParameter=Certificates}">
+                            <TextBlock Text="Store Location" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Certificate.StoreLocation, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Certificate Path" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Certificate.CertificatePath, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding SelectedSection, Converter={StaticResource SectionVisibilityConverter}, ConverterParameter=Deployment}">
+                            <CheckBox Content="Enabled" IsChecked="{Binding Deployment.Enabled}" Margin="0,0,0,10" />
+                            <TextBlock Text="Agent Version" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Deployment.AgentVersion, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Package Root" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Deployment.PackageRoot, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding SelectedSection, Converter={StaticResource SectionVisibilityConverter}, ConverterParameter=Monitoring}">
+                            <CheckBox Content="Enabled" IsChecked="{Binding Monitoring.Enabled}" Margin="0,0,0,10" />
+                            <TextBlock Text="Metrics Endpoint" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Monitoring.MetricsEndpoint, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Collection Interval Seconds" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Monitoring.CollectionIntervalSeconds, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding SelectedSection, Converter={StaticResource SectionVisibilityConverter}, ConverterParameter=Secrets}">
+                            <TextBlock Text="API Key" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Secrets.ApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="JWT Signing Key" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Secrets.JwtSigningKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Database Connection String" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Secrets.DatabaseConnectionString, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding SelectedSection, Converter={StaticResource SectionVisibilityConverter}, ConverterParameter=Execution}">
+                            <TextBlock Text="Execution Timeout Seconds" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Orchestration.ExecutionTimeoutSeconds, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Workflow Timeout Seconds" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Orchestration.WorkflowTimeoutSeconds, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Maximum Workers" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Orchestration.MaximumWorkers, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <CheckBox Content="Parallel Execution Enabled" IsChecked="{Binding Orchestration.ParallelExecutionEnabled}" Margin="0,0,0,10" />
+                            <TextBlock Text="Retry Count" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Orchestration.RetryCount, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Retry Delay Milliseconds" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Orchestration.RetryDelayMilliseconds, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding SelectedSection, Converter={StaticResource SectionVisibilityConverter}, ConverterParameter=SignalR}">
+                            <CheckBox Content="Enabled" IsChecked="{Binding SignalR.Enabled}" Margin="0,0,0,10" />
+                            <TextBlock Text="Hub Path" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding SignalR.HubPath, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Keep Alive Seconds" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding SignalR.KeepAliveSeconds, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+                            <TextBlock Text="Client Timeout Seconds" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding SignalR.ClientTimeoutSeconds, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding SelectedSection, Converter={StaticResource SectionVisibilityConverter}, ConverterParameter=Providers}">
+                            <CheckBox Content="Docker Enabled" IsChecked="{Binding Providers.DockerEnabled}" Margin="0,0,0,8" />
+                            <CheckBox Content="File System Enabled" IsChecked="{Binding Providers.FileSystemEnabled}" Margin="0,0,0,8" />
+                            <CheckBox Content="Health Enabled" IsChecked="{Binding Providers.HealthEnabled}" Margin="0,0,0,8" />
+                            <CheckBox Content="Network Enabled" IsChecked="{Binding Providers.NetworkEnabled}" Margin="0,0,0,8" />
+                            <CheckBox Content="Nginx Enabled" IsChecked="{Binding Providers.NginxEnabled}" Margin="0,0,0,8" />
+                            <CheckBox Content="Certificate Enabled" IsChecked="{Binding Providers.CertificateEnabled}" Margin="0,0,0,8" />
+                            <TextBlock Text="Runtime Endpoint" Foreground="{StaticResource TextSecondaryBrush}" />
+                            <TextBox Text="{Binding Providers.RuntimeEndpoint, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>

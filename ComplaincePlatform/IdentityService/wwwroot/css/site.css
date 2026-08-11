@@ -1,0 +1,123 @@
+/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+a {
+  color: #0077cc;
+}
+
+.form-control:focus {
+    border-color: #0077cc;
+    box-shadow: 0 0 0 0.2rem #0077cc;
+}
+
+.btn-primary {
+  color: #fff !important;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:focus-visible {
+  color: #fff !important;
+}
+
+.nav-pills .nav-link:not(.active) {
+  color: #fff !important;
+  background-color: #8ebae8;
+  border-color: transparent;
+}
+
+.nav-pills .nav-link:not(.active):hover {
+  background-color: #7aadde;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff !important;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.show > .btn-primary.dropdown-toggle,
+.btn-danger,
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:focus-visible,
+.btn-danger:active,
+.btn-danger.active,
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:focus-visible,
+.btn-secondary:active,
+.btn-secondary.active,
+.btn-dark,
+.btn-dark:hover,
+.btn-dark:focus,
+.btn-dark:focus-visible,
+.btn-dark:active,
+.btn-dark.active {
+  color: #fff !important;
+}
+
+.btn-link.nav-link:focus {
+  outline: black auto 1px;
+}
+
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.container {
+  max-width: 960px;
+}
+
+.pricing-header {
+  max-width: 700px;
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  overflow: scroll;
+  white-space: nowrap;
+  line-height: 60px;
+}

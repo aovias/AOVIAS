@@ -1,0 +1,126 @@
+<div class="journey-page">
+  <div class="journey-page__main">
+    <div class="journey-page__header">
+      <div class="journey-page__header-lead">
+        @if (store.snapshot()) {
+          <header class="journey-page-intro" aria-labelledby="journey-page-title">
+            <h1 id="journey-page-title" class="journey-page-intro__title">Audit lifecycle operating mode</h1>
+            <p class="journey-page-intro__subtitle">
+              Select how the system behaves for this accreditation journey. The active mode drives workflows, permissions,
+              and reporting.
+            </p>
+          </header>
+        }
+      </div>
+      <aside class="journey-page__header-aside">
+        <app-journey-framework-context />
+      </aside>
+    </div>
+
+    @if (store.loading()) {
+    <section class="state-card" aria-busy="true">Loading journey dashboard...</section>
+  } @else if (store.loadError()) {
+    <section class="state-card state-card--error">
+      <p>{{ store.loadError() }}</p>
+      <button type="button" class="action-text-button" (click)="store.retryLoad()">Retry</button>
+    </section>
+  } @else if (store.snapshot(); as snap) {
+    <section
+      class="journey-mode-grid"
+      aria-label="Audit lifecycle mode selector. Lifecycle order: Self Assessment, Internal Audit, Final Audit, Surveillance."
+    >
+      @for (mode of modeCards(); track mode.mode) {
+        <div class="journey-mode-grid__cell">
+          <app-journey-card
+            [title]="mode.label"
+            [iconKey]="mode.iconKey"
+            [description]="mode.description"
+            [variant]="mode.variant"
+            [stepIndex]="mode.stepIndex"
+            [totalSteps]="mode.totalSteps"
+            [lockReason]="mode.lockReason"
+            [isNextPhase]="mode.isNextPhase"
+            [progress]="mode.variant === 'active' ? store.overview()?.coreCompliancePercent ?? null : null"
+            [progressClass]="getProgressClass(store.overview()?.coreCompliancePercent)"
+            (selectCard)="onModeSelected(mode.mode)"
+          />
+        </div>
+      }
+    </section>
+
+    <app-accreditation-progress-card
+      [title]="progressCardTitle()"
+      [subtitle]="progressCardSubtitle()"
+      [progress]="accreditationReadinessPercent()"
+      [loading]="store.loading()"
+      (refresh)="onAccreditationRefresh()"
+    />
+
+    <app-action-bar
+      primaryLabel="Continue Journey"
+      secondaryLabel="Resume Last OE"
+      dangerLabel="View High Risk OEs"
+      [dangerHidden]="actionBarDangerHidden()"
+      [dangerEmphasis]="actionBarDangerEmphasis()"
+      [dangerDisabled]="actionBarDangerDisabled()"
+      (actionClick)="onPrimaryAction($event)"
+    />
+
+    @if (store.maturityStages().length > 0) {
+      <app-stage-progress-strip [stages]="store.maturityStages()" />
+    }
+
+    <section class="metric-grid" aria-label="Journey KPI metrics">
+      @for (metric of metricCards(); track metric.id) {
+        <app-metric-card
+          [iconName]="metric.iconName"
+          [label]="metric.label"
+          [value]="metric.value"
+          [trendLabel]="metric.helperText"
+          [trendDirection]="
+            metric.tone === 'danger' ? 'down' : metric.tone === 'success' ? 'up' : 'neutral'
+          "
+        />
+      }
+    </section>
+
+    <section class="chart-grid" aria-label="Journey chart cards">
+      @for (chart of chartCards(); track chart.id) {
+        <app-chart-card
+          [title]="chart.title"
+          [subtitle]="chart.subtitle"
+          drilldownLabel="Open details"
+          (drilldown)="onChartDrilldown(chart.intent)"
+        >
+          <span chart-filter class="chart-filter-chip">Last 7 days</span>
+          <div chart-content class="trend-list" role="img" [attr.aria-label]="chart.title + ' mini trend chart'">
+            @for (
+              point of trendRows(
+                chart.id === 'oe-trend'
+                  ? snap.oeScoreTrend
+                  : chart.id === 'chapter-improvement'
+                    ? snap.chapterImprovementTrend
+                    : snap.riskEvolutionTrend,
+                chart.id === 'oe-trend'
+                  ? 'series-line-primary'
+                  : chart.id === 'chapter-improvement'
+                    ? 'series-bar-positive'
+                    : 'series-line-secondary'
+              );
+              track point.label
+            ) {
+              <div class="trend-list__row" [attr.title]="point.tooltip">
+                <span class="trend-list__label">{{ point.label }}</span>
+                <div class="trend-list__bar-track">
+                  <span class="trend-list__bar-fill" [ngClass]="[point.widthClass, point.toneClass]"></span>
+                </div>
+                <span class="trend-list__value">{{ point.valueLabel }}</span>
+              </div>
+            }
+          </div>
+        </app-chart-card>
+      }
+    </section>
+  }
+  </div>
+</div>

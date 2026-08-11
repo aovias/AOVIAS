@@ -1,0 +1,152 @@
+{
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "Phases": [
+    {
+      "Phase": 1,
+      "Outcome": 0,
+      "Message": "Target host is reachable over SSH.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T03:03:21.1543576+00:00",
+      "StartedUtc": "2026-07-11T03:03:20.7762937+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Connectivity probe is its own verification.",
+      "Succeeded": true
+    },
+    {
+      "Phase": 2,
+      "Outcome": 0,
+      "Message": "\u0027aovias\u0027 can elevate via sudo, but a password is required.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T03:03:21.6969782+00:00",
+      "StartedUtc": "2026-07-11T03:03:21.1552753+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Privilege-mode detection is its own verification.",
+      "Succeeded": true
+    },
+    {
+      "Phase": 3,
+      "Outcome": 1,
+      "Message": "Preflight previously passed for this target; host identity/resources do not drift session-to-session.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T03:03:21.6974101+00:00",
+      "StartedUtc": "2026-07-11T03:03:21.6972367+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Preflight previously passed for this target; host identity/resources do not drift session-to-session.",
+      "Succeeded": true
+    },
+    {
+      "Phase": 4,
+      "Outcome": 1,
+      "Message": "Docker is already installed (Docker version 29.6.0, build fb59821).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T03:03:21.7807989+00:00",
+      "StartedUtc": "2026-07-11T03:03:21.6975157+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Docker is already installed (Docker version 29.6.0, build fb59821).",
+      "Succeeded": true
+    },
+    {
+      "Phase": 5,
+      "Outcome": 1,
+      "Message": "Docker network \u0027aovias-net\u0027 already exists.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T03:03:21.9280508+00:00",
+      "StartedUtc": "2026-07-11T03:03:21.7810167+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Docker network \u0027aovias-net\u0027 already exists.",
+      "Succeeded": true
+    },
+    {
+      "Phase": 6,
+      "Outcome": 1,
+      "Message": "Profile directory exists and \u0027/opt/aovias\u0027 carries mode 777.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T03:03:22.0777158+00:00",
+      "StartedUtc": "2026-07-11T03:03:21.9282571+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Profile directory exists and \u0027/opt/aovias\u0027 carries mode 777.",
+      "Succeeded": true
+    },
+    {
+      "Phase": 7,
+      "Outcome": 0,
+      "Message": "Synchronized configuration \u2014 uploaded: settings.environment-registration.json; unchanged: 16.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T03:03:30.3965265+00:00",
+      "StartedUtc": "2026-07-11T03:03:22.0779442+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "17 file(s) checksum-verified, 0 present but unverifiable (no usable sha256sum on the host).",
+      "Succeeded": true
+    },
+    {
+      "Phase": 8,
+      "Outcome": 0,
+      "Message": "Validated 17 required configuration files \u2014 all required properties present.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T03:03:30.4038071+00:00",
+      "StartedUtc": "2026-07-11T03:03:30.3967992+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Configuration contract validation is its own verification.",
+      "Succeeded": true
+    },
+    {
+      "Phase": 9,
+      "Outcome": 0,
+      "Message": "Runtime Agent artifact was installed and the container was started.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T03:03:45.7406095+00:00",
+      "StartedUtc": "2026-07-11T03:03:30.4040538+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Runtime Agent container is running and healthy (status=running, health=healthy).",
+      "Succeeded": true
+    },
+    {
+      "Phase": 10,
+      "Outcome": 0,
+      "Message": "Agent self-registered (f292c0880de84cd0a516aa1650770197) and was added to the Fleet Registry.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T03:03:46.0621576+00:00",
+      "StartedUtc": "2026-07-11T03:03:45.740783+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Registration responses are their own verification.",
+      "Succeeded": true
+    },
+    {
+      "Phase": 11,
+      "Outcome": 2,
+      "Message": "Health Check Failed \u2014 the environment\u0027s API/Heartbeat did not report healthy after 10 attempts.",
+      "RootCause": "Request to \u0027http://187.127.154.201:7080/api/deployment/heartbeat\u0027 failed with status 401 (Unauthorized). {\u0022error\u0022:\u0022API key is required.\u0022}",
+      "CompletedUtc": "2026-07-11T03:04:13.6543526+00:00",
+      "StartedUtc": "2026-07-11T03:03:46.0679171+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": null,
+      "Succeeded": false
+    }
+  ],
+  "OverallSuccess": false,
+  "FirstFailure": {
+    "Phase": 11,
+    "Outcome": 2,
+    "Message": "Health Check Failed \u2014 the environment\u0027s API/Heartbeat did not report healthy after 10 attempts.",
+    "RootCause": "Request to \u0027http://187.127.154.201:7080/api/deployment/heartbeat\u0027 failed with status 401 (Unauthorized). {\u0022error\u0022:\u0022API key is required.\u0022}",
+    "CompletedUtc": "2026-07-11T03:04:13.6543526+00:00",
+    "StartedUtc": "2026-07-11T03:03:46.0679171+00:00",
+    "RetryCount": 0,
+    "RepairAttempts": [],
+    "VerificationResult": null,
+    "Succeeded": false
+  },
+  "GeneratedUtc": "2026-07-11T03:04:13.6546579+00:00",
+  "ReportPath": null
+}

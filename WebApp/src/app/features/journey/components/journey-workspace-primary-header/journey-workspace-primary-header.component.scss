@@ -1,0 +1,27 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.journey-workspace-primary-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+}
+
+.journey-workspace-primary-header__framework {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 20rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 639px) {
+  .journey-workspace-primary-header__framework {
+    max-width: 100%;
+  }
+}

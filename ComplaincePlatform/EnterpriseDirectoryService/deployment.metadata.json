@@ -1,0 +1,6 @@
+{
+  "serviceId": "praman-enterprise-directory",
+  "displayName": "PRAMAN Enterprise Directory",
+  "port": 7217,
+  "httpPort": 5217
+}

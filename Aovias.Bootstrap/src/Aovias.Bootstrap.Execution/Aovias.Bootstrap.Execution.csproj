@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RootNamespace>Aovias.Bootstrap.Execution</RootNamespace>
+    <AssemblyName>Aovias.Bootstrap.Execution</AssemblyName>
+    <Description>Real I/O (SSH, SFTP, HTTP) and the single composition root (BootstrapRunner) for Zero-Touch Environment Bootstrap. The CLI (Aovias.Bootstrap.Host) and AOVIAS Studio both call BootstrapRunner directly — this is the one place provisioning is invoked from, so there is exactly one provisioning implementation regardless of caller.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="SSH.NET" Version="2024.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.9" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aovias.Bootstrap.Contracts\Aovias.Bootstrap.Contracts.csproj" />
+    <ProjectReference Include="..\Aovias.Bootstrap.Core\Aovias.Bootstrap.Core.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Release\src\Aovias.Release.Contracts\Aovias.Release.Contracts.csproj" />
+  </ItemGroup>
+</Project>

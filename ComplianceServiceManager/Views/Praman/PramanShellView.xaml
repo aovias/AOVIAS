@@ -1,0 +1,103 @@
+<UserControl x:Class="ComplianceServiceManager.Views.Praman.PramanShellView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:complianceViews="clr-namespace:ComplianceServiceManager.Views.Compliance"
+             xmlns:controls="clr-namespace:Aovias.DesignSystem.Controls;assembly=Aovias.DesignSystem"
+             Loaded="PramanShellView_OnLoaded">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}" Padding="20" Margin="{StaticResource SectionSpacing}">
+            <controls:SectionHeader Title="PRAMAN"
+                                      Subtitle="{Binding StatusMessage}"
+                                      IconGlyph="{StaticResource IconCompliance}" />
+        </Border>
+
+        <Border Grid.Row="1" Style="{StaticResource InsetPanelStyle}" Margin="{StaticResource SectionSpacing}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Overview"
+                        Style="{StaticResource GhostButtonStyle}"
+                        Command="{Binding ShowOverviewCommand}"
+                        Margin="0,0,8,0" />
+                <Button Content="Compliance"
+                        Style="{StaticResource GhostButtonStyle}"
+                        Command="{Binding ShowComplianceCommand}"
+                        Margin="0,0,8,0" />
+                <Button Content="Evidence"
+                        Style="{StaticResource GhostButtonStyle}"
+                        Command="{Binding ShowEvidenceCommand}"
+                        Margin="0,0,8,0" />
+                <Button Content="Audit"
+                        Style="{StaticResource GhostButtonStyle}"
+                        Command="{Binding ShowAuditCommand}" />
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <ScrollViewer Visibility="{Binding IsOverviewSelected, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel>
+                    <TextBlock Text="{Binding ApplicationDisplayName}"
+                               Style="{StaticResource HeadingTextStyle}"
+                               Margin="0,0,0,12" />
+                    <DataGrid ItemsSource="{Binding RegisteredServices}" MinHeight="280">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Service" Binding="{Binding Name}" Width="*" />
+                            <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="120" />
+                            <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="80" />
+                            <DataGridTextColumn Header="Package" Binding="{Binding PackageId}" Width="180" />
+                            <DataGridTextColumn Header="Health" Binding="{Binding HealthEndpoint}" Width="100" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </ScrollViewer>
+
+            <complianceViews:ComplianceDashboardView DataContext="{Binding ComplianceViewModel}"
+                                                   Visibility="{Binding IsComplianceSelected, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+            <Border Style="{StaticResource CardBorderStyle}"
+                    Padding="24"
+                    Visibility="{Binding IsEvidenceSelected, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel MaxWidth="640">
+                    <controls:SectionHeader Title="Evidence"
+                                              Subtitle="Knowledge Base and evidence workloads"
+                                              IconGlyph="{StaticResource IconInfrastructure}" />
+                    <controls:MetricCard Title="Knowledge Base Service"
+                                         PrimaryMetric="{Binding EvidenceService.Name}"
+                                         SecondaryMetric="{Binding EvidenceService.PackageId}"
+                                         StatusText="Registered with AOVIAS"
+                                         Margin="0,16,0,0" />
+                    <TextBlock Text="Evidence artifacts, frameworks, and wizard content are hosted by the PRAMAN Knowledge Base service and deployed as an AOVIAS .aovpkg workload."
+                               Style="{StaticResource BodyTextStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,16,0,0" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}"
+                    Padding="24"
+                    Visibility="{Binding IsAuditSelected, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel MaxWidth="640">
+                    <controls:SectionHeader Title="Audit"
+                                              Subtitle="Audit trail and evidence integrity"
+                                              IconGlyph="{StaticResource IconObservability}" />
+                    <controls:MetricCard Title="Audit Service"
+                                         PrimaryMetric="{Binding AuditService.Name}"
+                                         SecondaryMetric="{Binding AuditService.PackageId}"
+                                         StatusText="Registered with AOVIAS"
+                                         Margin="0,16,0,0" />
+                    <TextBlock Text="Audit events flow into the AOVIAS Observability timeline through deployment and runtime health signals. Use Observability for live audit-adjacent platform events."
+                               Style="{StaticResource BodyTextStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,16,0,0" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

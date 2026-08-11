@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Aovias.Publishing.Contracts/Aovias.Publishing.Contracts.csproj" />
+    <Project Path="src/Aovias.Publishing.Core/Aovias.Publishing.Core.csproj" />
+    <Project Path="src/Aovias.Publishing.Providers.Angular/Aovias.Publishing.Providers.Angular.csproj" />
+    <Project Path="src/Aovias.Publishing.Providers.DotNet/Aovias.Publishing.Providers.DotNet.csproj" />
+    <Project Path="src/Aovias.Publishing.Providers.Static/Aovias.Publishing.Providers.Static.csproj" />
+    <Project Path="src/Aovias.Publishing.SDK/Aovias.Publishing.SDK.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Aovias.Publishing.Core.Tests/Aovias.Publishing.Core.Tests.csproj" />
+    <Project Path="tests/Aovias.Publishing.Providers.DotNet.Tests/Aovias.Publishing.Providers.DotNet.Tests.csproj" />
+  </Folder>
+  <Project Path="../Aovias.Configuration/Aovias.Configuration.csproj" />
+  <Project Path="../Aovias.Orchestration/src/Aovias.Platform.Core/Aovias.Platform.Core.csproj" />
+</Solution>

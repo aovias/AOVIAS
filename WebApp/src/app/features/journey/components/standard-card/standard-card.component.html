@@ -1,0 +1,338 @@
+<article
+  class="standard-card"
+  [class.standard-card--active]="isActive()"
+  [class.standard-card--expanded]="isExpanded()"
+  [class.standard-card--risk-low]="chapterRisk() === 'low'"
+  [class.standard-card--risk-medium]="chapterRisk() === 'medium'"
+  [class.standard-card--risk-high]="chapterRisk() === 'high'"
+  [attr.aria-label]="standard().code + ' ' + standard().title"
+>
+  <button
+    type="button"
+    class="standard-card__header"
+    [attr.aria-expanded]="isExpanded()"
+    [attr.aria-controls]="'standard-oe-' + standard().id"
+    (click)="onHeaderClick()"
+    (keydown)="onHeaderKeydown($event)"
+  >
+    <span class="standard-card__header-main">
+      <span class="standard-card__chevron-wrap" aria-hidden="true">
+        <ng-icon
+          class="standard-card__chevron"
+          [class.standard-card__chevron--open]="isExpanded()"
+          name="lucideChevronDown"
+        />
+      </span>
+      <span class="standard-card__copy">
+        <span class="standard-card__code">{{ standard().code }}</span>
+        <span class="standard-card__title">{{ standard().title }}</span>
+        @if (standard().description?.trim()) {
+          <p class="standard-card__desc">{{ standard().description }}</p>
+        }
+        @if (
+          standard().evidenceGapLabel ||
+          standard().complianceStatusLabel ||
+          standard().changeTrend ||
+          standard().previouslyFailed ||
+          standard().excellenceBadge
+        ) {
+          <p class="standard-card__mode-meta" role="status">
+            @if (standard().complianceStatusLabel) {
+              <span class="standard-card__mode-pill">Compliance {{ standard().complianceStatusLabel }}</span>
+            }
+            @if (standard().evidenceGapLabel) {
+              <span class="standard-card__mode-pill">{{ standard().evidenceGapLabel }}</span>
+            }
+            @if (standard().changeTrend) {
+              <span class="standard-card__mode-pill" [attr.aria-label]="'Change trend ' + standard().changeTrend">{{
+                standard().changeTrend === 'up' ? '↑' : standard().changeTrend === 'down' ? '↓' : '→'
+              }}</span>
+            }
+            @if (standard().previouslyFailed) {
+              <span class="standard-card__mode-pill standard-card__mode-pill--warn">Previously failed</span>
+            }
+            @if (standard().excellenceBadge) {
+              <span class="standard-card__mode-pill standard-card__mode-pill--accent">Excellence</span>
+            }
+          </p>
+        }
+      </span>
+    </span>
+    <span class="standard-card__header-aside">
+      <span
+        class="standard-card__ring"
+        [attr.aria-label]="'Compliance ' + standard().compliancePercent + ' percent'"
+      >
+        <svg viewBox="0 0 36 36" class="standard-card__ring-svg" aria-hidden="true">
+          <circle
+            cx="18"
+            cy="18"
+            r="15.5"
+            fill="none"
+            class="standard-card__ring-track"
+            stroke-width="3"
+          />
+          <circle
+            cx="18"
+            cy="18"
+            r="15.5"
+            fill="none"
+            class="standard-card__ring-value"
+            stroke-width="3"
+            stroke-dasharray="97.39"
+            [attr.stroke-dashoffset]="progressDashOffset()"
+            stroke-linecap="round"
+            transform="rotate(-90 18 18)"
+          />
+        </svg>
+        <span class="standard-card__ring-label">{{ standard().compliancePercent }}%</span>
+      </span>
+      <span
+        class="standard-card__core-badge"
+        [class.standard-card__core-badge--compliant]="coreBadge().tone === 'compliant'"
+        [class.standard-card__core-badge--partial]="coreBadge().tone === 'partial'"
+        [class.standard-card__core-badge--non-compliant]="coreBadge().tone === 'non-compliant'"
+      >
+        {{ coreBadge().label }}
+      </span>
+    </span>
+  </button>
+
+  <div
+    class="standard-card__expand"
+    [class.standard-card__expand--open]="isExpanded()"
+    [id]="'standard-oe-' + standard().id"
+    role="region"
+    [attr.aria-label]="'Objective elements for ' + standard().code"
+    [attr.aria-hidden]="!isExpanded()"
+  >
+    <div class="standard-card__expand-inner">
+      @if (standard().objectiveElements.length === 0) {
+        <p class="standard-card__empty">No objective elements in this standard.</p>
+      } @else {
+        <div
+          class="standard-card__oe-desktop"
+          [class.standard-card__oe-desktop--no-dept]="!showDepartmentColumn()"
+          [class.standard-card__oe-desktop--hide-risk]="modeUi()?.execution?.oeHideRiskLabels === true"
+          role="list"
+        >
+          @if (useVirtualOeScroll) {
+            <cdk-virtual-scroll-viewport
+              class="standard-card__oe-virtual-viewport"
+              [itemSize]="oeVirtualRowSize"
+            >
+              <button
+                *cdkVirtualFor="let oe of standard().objectiveElements; let i = index; trackBy: trackByOeId"
+                type="button"
+                class="standard-card__oe-row"
+                [class.standard-card__oe-row--alt]="i % 2 === 1"
+                [class.standard-card__oe-row--readonly]="!!modeUi()?.execution?.oeRowReadOnly"
+                [class.standard-card__oe-row--selected]="oe.isSelected"
+                [class.standard-card__oe-row--status-compliant]="oe.statusTone === 'compliant'"
+                [class.standard-card__oe-row--status-partial]="oe.statusTone === 'partial'"
+                [class.standard-card__oe-row--status-non-compliant]="oe.statusTone === 'non-compliant'"
+                [class.standard-card__oe-row--status-not-applicable]="oe.statusTone === 'not-applicable'"
+                [class.standard-card__oe-row--status-na]="oe.statusTone === 'na'"
+                role="listitem"
+                [attr.aria-pressed]="oe.isSelected"
+                [attr.aria-label]="'Select objective element ' + oe.code + ', ' + oe.statusLabel"
+                (click)="onOeRowActivate(oe)"
+              >
+                <span class="standard-card__cell standard-card__cell--code" data-label="OE Code">
+                  <span class="standard-card__code-line">{{ oe.code }}</span>
+                  @if (oe.changedSinceLastAudit) {
+                    <span class="standard-card__code-meta standard-card__delta">Changed</span>
+                  }
+                  @if (oe.excellenceNote) {
+                    <span class="standard-card__code-meta standard-card__excellence">{{ oe.excellenceNote }}</span>
+                  }
+                </span>
+                @if (showDepartmentColumn()) {
+                  <span class="standard-card__cell standard-card__hide-tablet" data-label="Department">
+                    @if (oe.departmentLabel) {
+                      <span class="standard-card__dept-pill">{{ oe.departmentLabel }}</span>
+                    } @else {
+                      <span class="standard-card__dept-empty">—</span>
+                    }
+                  </span>
+                }
+                @if (modeUi()?.execution?.oeHideRiskLabels !== true) {
+                  <span class="standard-card__cell standard-card__hide-tablet" data-label="Classification">{{
+                    oe.classification
+                  }}</span>
+                }
+                <span class="standard-card__cell" data-label="Score">
+                  <span [ngClass]="['standard-card__score-pill', scoreTierClass(oe.scoreLabel)]">{{
+                    oe.scoreLabel
+                  }}</span>
+                </span>
+                @if (modeUi()?.execution?.oeHideRiskLabels !== true) {
+                <span class="standard-card__cell" data-label="Status">
+                  <span class="standard-card__status" [ngClass]="'standard-card__status--' + oe.statusTone">
+                    @switch (oe.statusTone) {
+                      @case ('compliant') {
+                        <ng-icon name="lucideCheck" class="standard-card__status-ic" aria-hidden="true" />
+                      }
+                      @case ('partial') {
+                        <ng-icon name="lucideAlertTriangle" class="standard-card__status-ic" aria-hidden="true" />
+                      }
+                      @case ('non-compliant') {
+                        <ng-icon name="lucideCircleX" class="standard-card__status-ic" aria-hidden="true" />
+                      }
+                      @case ('not-applicable') {
+                        <ng-icon name="lucideAlertTriangle" class="standard-card__status-ic" aria-hidden="true" />
+                      }
+                      @case ('na') {
+                        <ng-icon name="lucideCircleAlert" class="standard-card__status-ic" aria-hidden="true" />
+                      }
+                    }
+                    {{ oe.statusLabel }}
+                  </span>
+                </span>
+                }
+                <span
+                  class="standard-card__cell standard-card__cell--journey"
+                  data-label="Journey Status"
+                >
+                  <span
+                    class="standard-card__journey-badge"
+                    [class.standard-card__journey-badge--not-started]="oe.journeyStatus === 'not_started'"
+                    [class.standard-card__journey-badge--in-progress]="oe.journeyStatus === 'in_progress'"
+                    [class.standard-card__journey-badge--completed]="oe.journeyStatus === 'completed'"
+                    >{{ oe.journeyStatusLabel }}</span
+                  >
+                </span>
+                <span class="standard-card__cell standard-card__cell--signals" data-label="Execution">
+                  <span class="standard-card__signal-row">
+                    <span class="standard-card__signal" data-kind="def">Def {{ oe.deficiencyCount ?? 0 }}</span>
+                    <span class="standard-card__signal" data-kind="task">Tasks {{ oe.openTaskCount ?? 0 }}</span>
+                    <span class="standard-card__signal" data-kind="ev">{{ oe.evidenceStatusLabel ?? '—' }}</span>
+                    <span class="standard-card__signal" data-kind="ver">{{ oe.verificationStatusLabel ?? '—' }}</span>
+                    <span class="standard-card__signal" data-kind="obl">{{ oe.obligationStatusLabel ?? '—' }}</span>
+                  </span>
+                </span>
+                @if (oe.readinessPercent != null) {
+                  <span class="standard-card__cell standard-card__cell--readiness" data-label="Readiness">
+                    <app-obligation-readiness-bar [score]="oe.readinessPercent" />
+                  </span>
+                } @else if (obligationStateFor(oe.id); as obl) {
+                  <span class="standard-card__cell standard-card__cell--readiness" data-label="Readiness">
+                    <app-obligation-readiness-bar [score]="obl.readinessScore" />
+                  </span>
+                }
+              </button>
+            </cdk-virtual-scroll-viewport>
+          } @else {
+          @for (oe of standard().objectiveElements; track oe.id; let i = $index) {
+            <button
+              type="button"
+              class="standard-card__oe-row"
+              [class.standard-card__oe-row--alt]="i % 2 === 1"
+              [class.standard-card__oe-row--readonly]="!!modeUi()?.execution?.oeRowReadOnly"
+              [class.standard-card__oe-row--selected]="oe.isSelected"
+              [class.standard-card__oe-row--status-compliant]="oe.statusTone === 'compliant'"
+              [class.standard-card__oe-row--status-partial]="oe.statusTone === 'partial'"
+              [class.standard-card__oe-row--status-non-compliant]="oe.statusTone === 'non-compliant'"
+              [class.standard-card__oe-row--status-not-applicable]="oe.statusTone === 'not-applicable'"
+              [class.standard-card__oe-row--status-na]="oe.statusTone === 'na'"
+              role="listitem"
+              [attr.aria-pressed]="oe.isSelected"
+              [attr.aria-label]="'Select objective element ' + oe.code + ', ' + oe.statusLabel"
+              (click)="onOeRowActivate(oe)"
+            >
+              <span class="standard-card__cell standard-card__cell--code" data-label="OE Code">
+                <span class="standard-card__code-line">{{ oe.code }}</span>
+                @if (oe.changedSinceLastAudit) {
+                  <span class="standard-card__code-meta standard-card__delta">Changed</span>
+                }
+                @if (oe.excellenceNote) {
+                  <span class="standard-card__code-meta standard-card__excellence">{{ oe.excellenceNote }}</span>
+                }
+              </span>
+              @if (showDepartmentColumn()) {
+                <span class="standard-card__cell standard-card__hide-tablet" data-label="Department">
+                  @if (oe.departmentLabel) {
+                    <span class="standard-card__dept-pill">{{ oe.departmentLabel }}</span>
+                  } @else {
+                    <span class="standard-card__dept-empty">—</span>
+                  }
+                </span>
+              }
+              @if (modeUi()?.execution?.oeHideRiskLabels !== true) {
+                <span class="standard-card__cell standard-card__hide-tablet" data-label="Classification">{{
+                  oe.classification
+                }}</span>
+              }
+              <span class="standard-card__cell" data-label="Score">
+                <span [ngClass]="['standard-card__score-pill', scoreTierClass(oe.scoreLabel)]">{{
+                  oe.scoreLabel
+                }}</span>
+              </span>
+              @if (modeUi()?.execution?.oeHideRiskLabels !== true) {
+              <span class="standard-card__cell" data-label="Status">
+                <span class="standard-card__status" [ngClass]="'standard-card__status--' + oe.statusTone">
+                  @switch (oe.statusTone) {
+                    @case ('compliant') {
+                      <ng-icon name="lucideCheck" class="standard-card__status-ic" aria-hidden="true" />
+                    }
+                    @case ('partial') {
+                      <ng-icon name="lucideAlertTriangle" class="standard-card__status-ic" aria-hidden="true" />
+                    }
+                    @case ('non-compliant') {
+                      <ng-icon name="lucideCircleX" class="standard-card__status-ic" aria-hidden="true" />
+                    }
+                    @case ('not-applicable') {
+                      <ng-icon name="lucideAlertTriangle" class="standard-card__status-ic" aria-hidden="true" />
+                    }
+                    @case ('na') {
+                      <ng-icon name="lucideCircleAlert" class="standard-card__status-ic" aria-hidden="true" />
+                    }
+                  }
+                  {{ oe.statusLabel }}
+                </span>
+              </span>
+              }
+              <span
+                class="standard-card__cell standard-card__cell--journey"
+                data-label="Journey Status"
+              >
+                <span
+                  class="standard-card__journey-badge"
+                  [class.standard-card__journey-badge--not-started]="oe.journeyStatus === 'not_started'"
+                  [class.standard-card__journey-badge--in-progress]="oe.journeyStatus === 'in_progress'"
+                  [class.standard-card__journey-badge--completed]="oe.journeyStatus === 'completed'"
+                  >{{ oe.journeyStatusLabel }}</span
+                >
+              </span>
+              <span class="standard-card__cell standard-card__cell--signals" data-label="Execution">
+                <span class="standard-card__signal-row">
+                  <span class="standard-card__signal" data-kind="def">Def {{ oe.deficiencyCount ?? 0 }}</span>
+                  <span class="standard-card__signal" data-kind="task">Tasks {{ oe.openTaskCount ?? 0 }}</span>
+                  <span class="standard-card__signal" data-kind="ev">{{ oe.evidenceStatusLabel ?? '—' }}</span>
+                  <span class="standard-card__signal" data-kind="ver">{{ oe.verificationStatusLabel ?? '—' }}</span>
+                  <span class="standard-card__signal" data-kind="obl">{{ oe.obligationStatusLabel ?? '—' }}</span>
+                </span>
+              </span>
+              @if (oe.readinessPercent != null) {
+                <span class="standard-card__cell standard-card__cell--readiness" data-label="Readiness">
+                  <app-obligation-readiness-bar [score]="oe.readinessPercent" />
+                </span>
+              } @else if (obligationStateFor(oe.id); as obl) {
+                <span class="standard-card__cell standard-card__cell--readiness" data-label="Readiness">
+                  <app-obligation-readiness-bar [score]="obl.readinessScore" />
+                  @if (obl.implementationStatus) {
+                    <span
+                      class="standard-card__impl-badge"
+                      [attr.data-status]="obl.implementationStatus.toLowerCase()"
+                    >{{ obl.implementationStatus }}</span>
+                  }
+                </span>
+              }
+            </button>
+          }
+          }
+        </div>
+      }
+    </div>
+  </div>
+</article>

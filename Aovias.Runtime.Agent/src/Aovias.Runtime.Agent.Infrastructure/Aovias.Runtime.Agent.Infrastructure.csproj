@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.Runtime.Agent.Infrastructure</RootNamespace>
+    <AssemblyName>Aovias.Runtime.Agent.Infrastructure</AssemblyName>
+    <Description>Infrastructure implementations for the AOVIAS Runtime Agent.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Aovias.Configuration\Aovias.Configuration.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Deployment.Contracts\Aovias.Deployment.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Orchestration\src\Aovias.Orchestration\Aovias.Orchestration.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Orchestration\src\Aovias.Orchestration.Contracts\Aovias.Orchestration.Contracts.csproj" />
+    <ProjectReference Include="..\Aovias.Runtime.Agent.Application\Aovias.Runtime.Agent.Application.csproj" />
+    <ProjectReference Include="..\Aovias.Runtime.Agent.Domain\Aovias.Runtime.Agent.Domain.csproj" />
+    <ProjectReference Include="..\Aovias.Runtime.Contracts\Aovias.Runtime.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Release\src\Aovias.ReleaseManager\Aovias.ReleaseManager.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Aovias.DeploymentValidation.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Docker.DotNet" Version="3.125.15" />
+    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+</Project>

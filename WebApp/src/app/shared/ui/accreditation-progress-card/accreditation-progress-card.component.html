@@ -1,0 +1,46 @@
+<section
+  class="apc"
+  [class.apc--loading]="loading"
+  [attr.aria-busy]="loading"
+  [attr.aria-label]="title + ', ' + clampedProgress + ' percent complete'"
+>
+  <div class="apc__header">
+    <div class="apc__titles">
+      <h2 class="apc__title">{{ title }}</h2>
+      <p class="apc__subtitle">{{ subtitle }}</p>
+    </div>
+    <button
+      type="button"
+      class="apc__refresh"
+      [disabled]="loading"
+      (click)="onRefreshClick()"
+      aria-label="Refresh Progress"
+    >
+      <ng-icon name="lucideRefreshCw" class="apc__refresh-icon" aria-hidden="true" />
+      <span>Refresh</span>
+    </button>
+  </div>
+
+  <div class="apc__progress-row">
+    <div
+      class="apc__track"
+      role="progressbar"
+      [attr.aria-valuenow]="valueNow"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-label]="'Audit readiness ' + clampedProgress + ' percent'"
+    >
+      <div
+        class="apc__fill"
+        [class.apc__fill--low]="progressTier === 'low'"
+        [class.apc__fill--mid]="progressTier === 'mid'"
+        [class.apc__fill--high]="progressTier === 'high'"
+        [style.width.%]="clampedProgress"
+      ></div>
+      @if (loading) {
+        <div class="apc__shimmer" aria-hidden="true"></div>
+      }
+    </div>
+    <span class="apc__pct">{{ clampedProgress }}% Complete</span>
+  </div>
+</section>

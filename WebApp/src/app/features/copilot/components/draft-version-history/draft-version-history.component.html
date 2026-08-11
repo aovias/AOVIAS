@@ -1,0 +1,60 @@
+<div class="draft-version-history" role="dialog" aria-labelledby="vh-title">
+
+  <header class="dvh__header">
+    <div class="dvh__title-group">
+      <span class="dvh__type-label">{{ typeLabel() }}</span>
+      <h3 id="vh-title" class="dvh__title">Version History</h3>
+      <p class="dvh__subtitle">{{ draftTitle() }}</p>
+    </div>
+    <button class="btn-icon btn-close" (click)="onClose()" aria-label="Close version history">✕</button>
+  </header>
+
+  <div class="dvh__info">
+    <span>{{ versions().length }} version{{ versions().length !== 1 ? 's' : '' }} total</span>
+    <span>Latest: v{{ latestVersion() }}</span>
+  </div>
+
+  <ul class="dvh__list" role="list">
+    <li
+      *ngFor="let version of sortedVersions()"
+      class="dvh__item"
+      [class.dvh__item--active]="isActive(version)"
+      [class.dvh__item--latest]="isLatest(version)"
+      role="listitem"
+    >
+      <button class="dvh__item-btn" (click)="onSelect(version)" [attr.aria-current]="isActive(version) ? 'true' : null">
+        <!-- Version header -->
+        <div class="dvh__item-header">
+          <span class="dvh__version-badge">
+            v{{ version.version }}
+            <span *ngIf="isLatest(version)" class="dvh__latest-tag">Latest</span>
+          </span>
+          <span class="dvh__status-badge" [ngClass]="statusClass(version.status)">
+            {{ version.status }}
+          </span>
+          <span *ngIf="isActive(version)" class="dvh__active-tag">Currently Viewing</span>
+        </div>
+
+        <!-- Version details -->
+        <div class="dvh__item-details">
+          <span class="dvh__date">{{ formatDate(version.generatedAtUtc) }}</span>
+          <span class="dvh__generator">{{ version.generatedBy || 'System' }}</span>
+          <span class="dvh__confidence">{{ formatConfidence(version.confidence) }}% confidence</span>
+        </div>
+
+        <!-- Summary if available -->
+        <p class="dvh__summary" *ngIf="version.summary">
+          {{ version.summary }}
+        </p>
+      </button>
+    </li>
+  </ul>
+
+  <div class="dvh__footer">
+    <p class="dvh__audit-note">
+      🔒 All versions are immutable audit records. Regeneration creates a new version;
+      previous versions are never overwritten.
+    </p>
+  </div>
+
+</div>

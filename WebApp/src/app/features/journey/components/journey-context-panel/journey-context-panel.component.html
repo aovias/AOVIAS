@@ -1,0 +1,159 @@
+<section class="journey-context" aria-label="Journey context">
+  @if (vm().empty && vm().contextLoading) {
+    <div class="journey-context__shell" aria-busy="true">
+      <div class="journey-context__skeleton journey-context__skeleton--title"></div>
+      <div class="journey-context__skeleton journey-context__skeleton--line"></div>
+      <div class="journey-context__skeleton journey-context__skeleton--line"></div>
+      <div class="journey-context__skeleton journey-context__skeleton--bar"></div>
+      <div class="journey-context__skeleton journey-context__skeleton--line"></div>
+    </div>
+  } @else if (vm().empty) {
+    <div class="journey-context__shell journey-context__shell--empty">
+      <p class="journey-context__empty-body">No OE selected</p>
+    </div>
+  } @else {
+    <div class="journey-context__shell">
+      <article class="journey-context__card journey-context__card--oe">
+        <p class="journey-context__selected-label">Selected OE</p>
+        <p class="journey-context__oe-code">{{ vm().code }}</p>
+        <h2 class="journey-context__oe-title">{{ vm().title }}</h2>
+        <div class="journey-context__chips" role="list" aria-label="Objective context">
+          <div class="journey-context__chip-wrap" role="listitem">
+            <span class="journey-context__chip-label">Department</span>
+            <span class="journey-context__chip journey-context__chip--dept">{{ vm().departmentLabel || '—' }}</span>
+          </div>
+          <div class="journey-context__chip-wrap" role="listitem">
+            <span class="journey-context__chip-label">Role</span>
+            <span class="journey-context__chip journey-context__chip--role">{{ vm().assigneeDisplayName || '—' }}</span>
+          </div>
+          <div class="journey-context__chip-wrap" role="listitem">
+            <span class="journey-context__chip-label">Frequency</span>
+            <span class="journey-context__chip journey-context__chip--freq">{{ vm().frequencyLabel }}</span>
+          </div>
+        </div>
+        @if (vm().kpiInsightLabel) {
+          <p class="journey-context__kpi">{{ vm().kpiInsightLabel }}</p>
+        }
+      </article>
+
+      <article class="journey-context__card journey-context__card--progress">
+        <h3 class="journey-context__card-title">Journey Progress</h3>
+        <div
+          class="journey-context__progress-track"
+          role="progressbar"
+          [attr.aria-valuenow]="vm().progressPercent ?? 0"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-label]="'Journey progress ' + (vm().progressPercent ?? 0) + ' percent'"
+        >
+          <div
+            class="journey-context__progress-fill"
+            [style.width.%]="vm().progressPercent ?? 0"
+          ></div>
+        </div>
+        <div class="journey-context__detail-row">
+          <span class="journey-context__detail-label">Current Score</span>
+          <span class="journey-context__detail-value">{{ vm().scoreLabel }}</span>
+          <span
+            class="journey-context__status-badge"
+            [ngClass]="'journey-context__status-badge--' + (vm().statusTone ?? 'na')"
+            >{{ vm().statusLabel }}</span
+          >
+        </div>
+        <div class="journey-context__detail-row">
+          <span class="journey-context__detail-label">Evidence</span>
+          <span class="journey-context__detail-value">{{ vm().evidenceCountLabel }}</span>
+        </div>
+        <div class="journey-context__detail-row">
+          <span class="journey-context__detail-label">Last Updated</span>
+          <span class="journey-context__detail-value">
+            @if (vm().lastEvidenceUpdated) {
+              {{ vm().lastEvidenceUpdated | date: 'mediumDate' }}
+            } @else {
+              —
+            }
+          </span>
+        </div>
+        <div class="journey-context__detail-row journey-context__detail-row--journey">
+          <span class="journey-context__detail-label">Journey status</span>
+          <span class="journey-context__journey-pill">{{ vm().journeyStatusLabel }}</span>
+        </div>
+      </article>
+
+      <app-obligation-state-section [obligationState]="vm().obligationState ?? null" />
+
+      <article class="journey-context__card journey-context__card--actions">
+        <div class="journey-context__primary-row">
+          <button
+            type="button"
+            class="journey-context__btn journey-context__btn--primary"
+            [disabled]="vm().readOnly"
+            (click)="onStartJourney()"
+          >
+            <ng-icon name="lucidePlay" aria-hidden="true" />
+            @if (vm().journeyStatus === 'in_progress') {
+              <span>Resume Journey</span>
+            } @else if (vm().journeyStatus === 'completed') {
+              <span>View Journey</span>
+            } @else {
+              <span>Start Journey</span>
+            }
+          </button>
+          <button
+            type="button"
+            class="journey-context__btn journey-context__btn--secondary"
+            [disabled]="vm().readOnly"
+            (click)="onViewHistory()"
+          >
+            <ng-icon name="lucideHistory" aria-hidden="true" />
+            <span>View History</span>
+          </button>
+        </div>
+        <h3 class="journey-context__card-title journey-context__card-title--quick">Quick Actions</h3>
+        <div class="journey-context__quick-grid" role="group" aria-label="Quick actions">
+          @if (modeUi()?.context?.showEvidenceUpload !== false) {
+            <button
+              type="button"
+              class="journey-context__quick-tile"
+              [disabled]="vm().readOnly || !!modeUi()?.context?.evidenceUploadDisabled"
+              [attr.title]="modeUi()?.context?.evidenceUploadDisabledReason ?? null"
+              (click)="uploadEvidence.emit()"
+            >
+              <ng-icon name="lucideUpload" aria-hidden="true" />
+              <span>Upload Evidence</span>
+            </button>
+          }
+          @if (modeUi()?.context?.showTasks !== false) {
+            <button
+              type="button"
+              class="journey-context__quick-tile"
+              [disabled]="vm().readOnly || !!modeUi()?.context?.tasksDisabled"
+              (click)="addTask.emit()"
+            >
+              <ng-icon name="lucideClipboardList" aria-hidden="true" />
+              <span>View Tasks</span>
+            </button>
+          }
+          <button
+            type="button"
+            class="journey-context__quick-tile"
+            [disabled]="vm().readOnly"
+            (click)="viewDeficiencies.emit()"
+          >
+            <ng-icon name="lucideClipboardList" aria-hidden="true" />
+            <span>View Deficiencies</span>
+          </button>
+          <button
+            type="button"
+            class="journey-context__quick-tile"
+            [disabled]="vm().readOnly"
+            (click)="viewTimeline.emit()"
+          >
+            <ng-icon name="lucideCalendarClock" aria-hidden="true" />
+            <span>View Timeline</span>
+          </button>
+        </div>
+      </article>
+    </div>
+  }
+</section>

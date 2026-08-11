@@ -1,0 +1,158 @@
+<UserControl x:Class="ComplianceServiceManager.Views.Observability.ObservabilityView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Aovias.DesignSystem.Controls;assembly=Aovias.DesignSystem"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="860"
+             d:DesignWidth="1200"
+             Loaded="ObservabilityView_OnLoaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}" Padding="18" Margin="0,0,0,14">
+            <controls:SectionHeader Title="Observability"
+                                      Subtitle="{Binding StatusMessage}"
+                                      IconGlyph="{StaticResource IconObservability}">
+                <controls:SectionHeader.ActionContent>
+                    <StackPanel HorizontalAlignment="Right">
+                        <TextBlock HorizontalAlignment="Right">
+                            <Run Text="SignalR: " Foreground="{StaticResource TextSecondaryBrush}" />
+                            <Run Text="{Binding ConnectionStatus}" Foreground="{StaticResource TextPrimaryBrush}" />
+                        </TextBlock>
+                        <Button Content="Refresh Timeline"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding SearchTimelineCommand}"
+                                Margin="0,8,0,0" />
+                    </StackPanel>
+                </controls:SectionHeader.ActionContent>
+            </controls:SectionHeader>
+        </Border>
+
+        <TabControl Grid.Row="1">
+            <TabItem Header="Timeline">
+                <DockPanel Margin="8">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBox Width="260"
+                                 Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="0,0,8,0" />
+                        <ComboBox Width="160"
+                                  ItemsSource="{Binding TimelineCategories}"
+                                  SelectedItem="{Binding SelectedTimelineCategory}"
+                                  Margin="0,0,8,0" />
+                        <Button Content="Search"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Command="{Binding SearchTimelineCommand}" />
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding TimelineEntries}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <controls:TimelineEntry Timestamp="{Binding Timestamp, StringFormat={}{0:HH:mm}}"
+                                                            Title="{Binding EventType}"
+                                                            Message="{Binding Message}"
+                                                            Category="{Binding Category}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+
+            <TabItem Header="Metrics">
+                <UniformGrid Columns="4" Margin="8">
+                    <controls:MetricCard Title="CPU"
+                                         PrimaryMetric="{Binding RuntimeState.CpuUsagePercent, StringFormat={}{0:F1}%}"
+                                         Margin="0,0,12,12" />
+                    <controls:MetricCard Title="Memory"
+                                         PrimaryMetric="{Binding RuntimeState.MemoryUsagePercent, StringFormat={}{0:F1}%}"
+                                         Margin="0,0,12,12" />
+                    <controls:MetricCard Title="Disk"
+                                         PrimaryMetric="{Binding RuntimeState.DiskUsagePercent, StringFormat={}{0:F1}%}"
+                                         Margin="0,0,12,12" />
+                    <controls:MetricCard Title="Docker"
+                                         PrimaryMetric="{Binding RuntimeState.DockerStatus}"
+                                         Margin="0,0,0,12" />
+                    <controls:MetricCard Title="Containers"
+                                         PrimaryMetric="{Binding RuntimeState.RunningContainerCount}"
+                                         Margin="0,0,12,12" />
+                    <controls:MetricCard Title="Workflows"
+                                         PrimaryMetric="{Binding RuntimeState.RunningWorkflowCount}"
+                                         Margin="0,0,12,12" />
+                    <controls:MetricCard Title="Deployments"
+                                         PrimaryMetric="{Binding RuntimeState.DeploymentQueueCount}"
+                                         Margin="0,0,12,12" />
+                    <controls:MetricCard Title="Health"
+                                         PrimaryMetric="{Binding RuntimeState.HealthStatus}"
+                                         Margin="0,0,0,12" />
+                </UniformGrid>
+            </TabItem>
+
+            <TabItem Header="Containers">
+                <DataGrid ItemsSource="{Binding Containers}" Margin="8">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
+                        <DataGridTextColumn Header="Image" Binding="{Binding Image}" Width="2*" />
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" />
+                        <DataGridTextColumn Header="Health" Binding="{Binding Health}" Width="*" />
+                        <DataGridTextColumn Header="Restarts" Binding="{Binding RestartCount}" Width="80" />
+                        <DataGridTextColumn Header="Network" Binding="{Binding Network}" Width="*" />
+                        <DataGridTextColumn Header="Volume" Binding="{Binding Volume}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Deployments">
+                <DataGrid ItemsSource="{Binding Releases}" Margin="8">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Release" Binding="{Binding ReleaseId}" Width="2*" />
+                        <DataGridTextColumn Header="Package" Binding="{Binding PackageId}" Width="*" />
+                        <DataGridTextColumn Header="Version" Binding="{Binding PackageVersion}" Width="*" />
+                        <DataGridTextColumn Header="State" Binding="{Binding State}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Events">
+                <ScrollViewer Margin="8" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding TimelineEntries}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <controls:TimelineEntry Timestamp="{Binding Timestamp, StringFormat={}{0:HH:mm:ss}}"
+                                                        Title="{Binding EventType}"
+                                                        Message="{Binding Message}"
+                                                        Category="{Binding Category}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Workflows">
+                <DataGrid ItemsSource="{Binding Workflows}" Margin="8">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Workflow" Binding="{Binding WorkflowId}" Width="2*" />
+                        <DataGridTextColumn Header="Type" Binding="{Binding WorkflowType}" Width="*" />
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" />
+                        <DataGridTextColumn Header="Step" Binding="{Binding CurrentStep}" Width="*" />
+                        <DataGridTextColumn Header="Progress" Binding="{Binding CompletedSteps}" Width="80" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Health">
+                <StackPanel Margin="16">
+                    <controls:HealthIndicator Label="{Binding RuntimeState.HealthStatus}" />
+                    <TextBlock Text="{Binding RuntimeState.HealthMessage}"
+                               Style="{StaticResource BodyTextStyle}"
+                               Margin="0,12,0,0"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

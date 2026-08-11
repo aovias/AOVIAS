@@ -1,0 +1,6 @@
+{
+  "serviceId": "praman-workforce-intelligence",
+  "displayName": "PRAMAN Workforce Intelligence",
+  "port": 7216,
+  "httpPort": 5216
+}

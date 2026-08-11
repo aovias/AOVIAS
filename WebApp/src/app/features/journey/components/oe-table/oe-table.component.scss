@@ -1,0 +1,22 @@
+.oe-table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  inline-size: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  padding: var(--space-2) var(--space-3);
+  border-block-end: var(--border-width-hairline) solid var(--color-border-subtle);
+}
+
+.oe-table-wrap__empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: var(--space-4);
+}

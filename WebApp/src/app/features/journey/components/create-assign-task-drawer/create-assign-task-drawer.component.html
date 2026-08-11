@@ -1,0 +1,210 @@
+<div class="task-drawer-host">
+  <div class="task-drawer-backdrop" role="presentation" (click)="onBackdropClick($event)"></div>
+  <aside
+    class="task-drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="task-drawer-title"
+    cdkTrapFocus
+    cdkTrapFocusAutoCapture
+    (click)="$event.stopPropagation()"
+  >
+    <header class="task-drawer__header">
+      <div class="task-drawer__header-text">
+        <h2 id="task-drawer-title" class="task-drawer__title">Create &amp; Assign Task</h2>
+        <p class="task-drawer__subtitle">Structured task with assignment and compliance linkage</p>
+      </div>
+      <button type="button" class="task-drawer__close" (click)="onCancel()" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </header>
+
+    <div class="task-drawer__body praman-scrollbar praman-scrollbar--dense">
+      <form [formGroup]="taskForm" novalidate class="task-drawer__form">
+        <section class="task-drawer__panel">
+          <div class="task-drawer__section-head">
+            <app-task-drawer-section-header title="Task details" iconName="lucideClipboardList" />
+          </div>
+          @if (!linkageIdsReady()) {
+            <p class="task-drawer__warn" role="status">
+              Standard and objective IDs are required to create a task. Open this drawer from the objective-element wizard (Add task).
+            </p>
+          }
+          <ng-container *ngIf="taskDraftVm() as d">
+            <div class="task-drawer__chips">
+              @if (d.standardLabel) {
+                <span class="task-drawer__chip" title="Standard">
+                  <span class="task-drawer__chip-k">Standard</span>
+                  <span class="task-drawer__chip-v">{{ sanitizeLinkageLabel(d.standardLabel) }}</span>
+                </span>
+              } @else {
+                <span class="task-drawer__chip task-drawer__chip--muted">Standard — not linked</span>
+              }
+              @if (d.objectiveLabel) {
+                <span class="task-drawer__chip" title="Objective element">
+                  <span class="task-drawer__chip-k">Objective</span>
+                  <span class="task-drawer__chip-v">{{ sanitizeLinkageLabel(d.objectiveLabel) }}</span>
+                </span>
+              } @else {
+                <span class="task-drawer__chip task-drawer__chip--muted">Objective — not linked</span>
+              }
+            </div>
+          </ng-container>
+
+          <div class="task-drawer__cols task-drawer__cols--split">
+            <div class="task-drawer__field">
+              <label for="task-drawer-title-input" class="task-drawer__lbl">
+                Title <span class="task-drawer__req" aria-hidden="true">*</span>
+              </label>
+              <mat-form-field appearance="fill" subscriptSizing="dynamic" class="task-drawer__ff">
+                <mat-label class="sr-only">Title</mat-label>
+                <input
+                  matInput
+                  id="task-drawer-title-input"
+                  formControlName="title"
+                  autocomplete="off"
+                />
+                @if (taskForm.controls.title.touched && taskForm.controls.title.errors?.['required']) {
+                  <mat-error>Title is required</mat-error>
+                }
+                @if (taskForm.controls.title.touched && taskForm.controls.title.errors?.['minlength']) {
+                  <mat-error>At least 2 characters</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="task-drawer__field">
+              <span id="task-drawer-priority-lbl" class="task-drawer__lbl">Priority</span>
+              <mat-form-field
+                appearance="fill"
+                subscriptSizing="dynamic"
+                class="task-drawer__ff"
+                [attr.aria-labelledby]="'task-drawer-priority-lbl'"
+              >
+                <mat-label class="sr-only">Priority</mat-label>
+                <mat-select formControlName="priority" [compareWith]="comparePriority" panelClass="task-drawer-panel">
+                  <mat-option [value]="1"><span [class]="priorityClass(1)">Urgent</span></mat-option>
+                  <mat-option [value]="2"><span [class]="priorityClass(2)">High</span></mat-option>
+                  <mat-option [value]="3"><span [class]="priorityClass(3)">Medium</span></mat-option>
+                  <mat-option [value]="4"><span [class]="priorityClass(4)">Low</span></mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="task-drawer__field">
+            <label for="task-drawer-desc-input" class="task-drawer__lbl">Description</label>
+            <mat-form-field appearance="fill" subscriptSizing="dynamic" class="task-drawer__ff task-drawer__ff--area">
+              <mat-label class="sr-only">Description</mat-label>
+              <textarea
+                matInput
+                id="task-drawer-desc-input"
+                formControlName="description"
+                rows="2"
+                placeholder="Add a description…"
+              ></textarea>
+            </mat-form-field>
+          </div>
+        </section>
+
+        <section class="task-drawer__panel">
+          <div class="task-drawer__section-head">
+            <app-task-drawer-section-header title="Assignment" iconName="lucideUsers" />
+          </div>
+          <div class="task-drawer__cols task-drawer__cols--assign">
+            <div class="task-drawer__field">
+              <span id="task-drawer-assign-lbl" class="task-drawer__lbl">Assign to</span>
+              <app-assignee-chips-field
+                [ariaLabelledBy]="'task-drawer-assign-lbl'"
+                [members]="members()"
+                [selectedUserId]="taskForm.controls.assignedToUserId.value"
+                [disabled]="membersLoading()"
+                (selectedUserIdChange)="onAssigneeChange($event)"
+              />
+            </div>
+            <div class="task-drawer__field">
+              <span
+                id="task-drawer-dept-lbl"
+                class="task-drawer__lbl task-drawer__lbl--tip"
+                matTooltip="Required to create a compliance task for this organization."
+                matTooltipShowDelay="300"
+                tabindex="-1"
+                >Department</span>
+              <mat-form-field
+                appearance="fill"
+                subscriptSizing="dynamic"
+                class="task-drawer__ff"
+                [attr.aria-labelledby]="'task-drawer-dept-lbl'"
+              >
+                <mat-label class="sr-only">Department</mat-label>
+                <mat-select
+                  formControlName="departmentId"
+                  [disabled]="departmentsLoading() || !!departmentsError()"
+                  placeholder="Select department"
+                >
+                  @for (d of departments(); track trackByDeptId($index, d)) {
+                    <mat-option [value]="d.id">{{ d.name }}</mat-option>
+                  }
+                </mat-select>
+                @if (departmentsLoading()) {
+                  <mat-hint>Loading departments…</mat-hint>
+                } @else if (departmentsError()) {
+                  <mat-error>{{ departmentsError() }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="task-drawer__field">
+              <label for="task-drawer-due-input" class="task-drawer__lbl">Due date</label>
+              <mat-form-field appearance="fill" subscriptSizing="dynamic" class="task-drawer__ff">
+                <mat-label class="sr-only">Due date</mat-label>
+                <input
+                  matInput
+                  id="task-drawer-due-input"
+                  [matDatepicker]="duePicker"
+                  formControlName="dueDate"
+                />
+                <mat-datepicker-toggle matIconSuffix [for]="duePicker" />
+                <mat-datepicker #duePicker />
+              </mat-form-field>
+            </div>
+            <div class="task-drawer__field">
+              <span id="task-drawer-effort-lbl" class="task-drawer__lbl">Effort</span>
+              <mat-form-field
+                appearance="fill"
+                subscriptSizing="dynamic"
+                class="task-drawer__ff"
+                [attr.aria-labelledby]="'task-drawer-effort-lbl'"
+              >
+                <mat-label class="sr-only">Effort</mat-label>
+                <mat-select formControlName="effortEstimate" panelClass="task-drawer-panel">
+                  <mat-option value="">Not set</mat-option>
+                  <mat-option value="15m">15 min</mat-option>
+                  <mat-option value="30m">30 min</mat-option>
+                  <mat-option value="45m">45 min</mat-option>
+                  <mat-option value="1h">1 hour</mat-option>
+                  <mat-option value="2h">2 hours</mat-option>
+                  <mat-option value="4h">4 hours</mat-option>
+                  <mat-option value="1d">1 day</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </section>
+      </form>
+    </div>
+
+    <footer class="task-drawer__footer">
+      <button type="button" mat-stroked-button class="task-drawer__btn" (click)="onCancel()">Cancel</button>
+      <button type="button" mat-stroked-button class="task-drawer__btn" (click)="onSaveDraft()">Save draft</button>
+      <button
+        type="button"
+        mat-flat-button
+        color="primary"
+        class="task-drawer__btn task-drawer__btn--primary"
+        (click)="onCreateTask()"
+        [disabled]="createTaskSubmitting() || !linkageIdsReady()"
+      >
+        Create task
+      </button>
+    </footer>
+  </aside>
+</div>

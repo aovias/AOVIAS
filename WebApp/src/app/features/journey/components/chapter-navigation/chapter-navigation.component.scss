@@ -1,0 +1,65 @@
+:host {
+  display: block;
+  min-block-size: 100%;
+}
+
+.chapter-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-block-size: 100%;
+}
+
+.chapter-nav__header h2 {
+  margin: 0;
+  font-size: var(--font-size-heading-sm);
+  color: var(--color-text-primary);
+}
+
+.chapter-nav__search,
+.chapter-nav__sort {
+  inline-size: 100%;
+  margin-block-start: var(--space-2);
+  border: var(--space-0);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface-alt);
+  color: var(--color-text-primary);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-body);
+  font-family: var(--font-family-base);
+}
+
+.chapter-nav__sort {
+  cursor: pointer;
+  text-align: left;
+}
+
+.chapter-nav__search:focus-visible,
+.chapter-nav__sort:focus-visible {
+  outline: var(--border-width-hairline) solid var(--color-brand-primary);
+  outline-offset: var(--space-1);
+}
+
+.chapter-nav__list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow-y: auto;
+  min-block-size: 0;
+  padding-inline-end: var(--space-1);
+}
+
+.chapter-nav__empty {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+.sr-only {
+  position: absolute;
+  inline-size: var(--space-1);
+  block-size: var(--space-1);
+  overflow: hidden;
+  clip: rect(var(--space-0), var(--space-0), var(--space-0), var(--space-0));
+  white-space: nowrap;
+}

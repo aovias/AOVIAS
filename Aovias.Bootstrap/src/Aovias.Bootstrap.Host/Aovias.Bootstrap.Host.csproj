@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RootNamespace>Aovias.Bootstrap.Host</RootNamespace>
+    <AssemblyName>aovias-bootstrap</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- SSH.NET remains a direct dependency here for the pre-existing, unmodified "deploy" verb,
+         which talks to SSH.NET directly and predates the Bootstrap Execution project. The
+         "bootstrap" verb below no longer touches SSH.NET itself — it delegates entirely to
+         Aovias.Bootstrap.Execution's BootstrapRunner. -->
+    <PackageReference Include="SSH.NET" Version="2024.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.9" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Aovias.Configuration\Aovias.Configuration.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Release\src\Aovias.Release.Contracts\Aovias.Release.Contracts.csproj" />
+    <ProjectReference Include="..\Aovias.Bootstrap.Contracts\Aovias.Bootstrap.Contracts.csproj" />
+    <ProjectReference Include="..\Aovias.Bootstrap.Execution\Aovias.Bootstrap.Execution.csproj" />
+  </ItemGroup>
+</Project>

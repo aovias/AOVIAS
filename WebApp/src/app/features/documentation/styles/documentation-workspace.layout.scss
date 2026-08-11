@@ -1,0 +1,194 @@
+.qdms-workspace {
+  padding: var(--page-padding-block-start) var(--page-padding-inline) var(--page-padding-block-end);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: var(--font-size-page-title);
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: var(--text-secondary, #6b7280);
+  font-size: var(--font-size-subtitle);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--grid-gap);
+  margin-bottom: var(--page-card-gap);
+}
+
+.kpi {
+  background: var(--card-bg);
+  border: var(--border-width-hairline) solid var(--border-color);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--elevation-card);
+  padding: var(--card-padding-compact);
+}
+
+.kpi__v {
+  display: block;
+  font-size: var(--font-size-heading-md);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  font-variant-numeric: var(--font-variant-numeric-tabular);
+  color: var(--text-primary);
+}
+
+.kpi__l {
+  font-size: var(--font-size-micro);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--text-secondary);
+}
+
+.kpi--warn .kpi__v {
+  color: var(--color-status-warning-fg);
+}
+.kpi--critical .kpi__v {
+  color: var(--color-status-danger-fg);
+}
+.kpi--ready .kpi__v {
+  color: var(--color-primary);
+}
+
+.panel {
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.panel h2 {
+  margin: 0 0 12px;
+  font-size: var(--font-size-section-title);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--table-body-font-size);
+}
+
+.data-table th {
+  text-align: start;
+  padding: var(--space-2) var(--table-cell-padding-inline);
+  font-size: var(--table-header-font-size);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  border-bottom: var(--border-width-hairline) solid var(--border-color);
+}
+
+.data-table td {
+  text-align: start;
+  padding: var(--table-cell-padding-block) var(--table-cell-padding-inline);
+  border-bottom: var(--border-width-hairline) solid var(--border-color);
+  vertical-align: middle;
+}
+
+.badge {
+  background: var(--color-status-neutral-soft);
+  color: var(--color-status-neutral-fg);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-chip);
+  font-size: var(--font-size-micro);
+  font-weight: var(--font-weight-semibold);
+}
+
+.badge--review {
+  background: var(--color-status-warning-soft);
+  color: var(--color-status-warning-fg);
+}
+.badge--effective {
+  background: var(--color-status-success-soft);
+  color: var(--color-status-success-fg);
+}
+.badge--draft {
+  background: var(--color-status-neutral-soft);
+  color: var(--color-status-neutral-fg);
+}
+
+.banner.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.banner.success {
+  background: #ecfdf5;
+  color: #047857;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.actions-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.actions-cell .btn-primary,
+.actions-cell .btn-secondary {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.muted {
+  color: var(--text-secondary, #6b7280);
+  font-size: 13px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.toolbar input,
+.toolbar select {
+  padding: 8px 10px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.btn-secondary {
+  border: 1px solid var(--border-color, #e5e7eb);
+  color: inherit;
+  background: transparent;
+}

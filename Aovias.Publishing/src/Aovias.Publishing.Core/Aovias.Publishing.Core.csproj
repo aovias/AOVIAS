@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.Publishing.Core</RootNamespace>
+    <AssemblyName>Aovias.Publishing.Core</AssemblyName>
+    <Description>Core publishing pipeline for the AOVIAS Publishing Engine.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aovias.Publishing.Contracts\Aovias.Publishing.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Configuration\Aovias.Configuration.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Orchestration\src\Aovias.Platform.Core\Aovias.Platform.Core.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.DeploymentValidation\Aovias.DeploymentValidation.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Deployment.Contracts\Aovias.Deployment.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.9" />
+    <PackageReference Include="Polly" Version="8.6.5" />
+    <PackageReference Include="YamlDotNet" Version="18.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Aovias.Publishing.Core.Tests" />
+  </ItemGroup>
+</Project>

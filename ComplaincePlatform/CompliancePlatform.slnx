@@ -1,0 +1,38 @@
+<Solution>
+  <Project Path="AIOrchestratorService/AIOrchestratorService.csproj" />
+  <Project Path="AuditService/AuditService.csproj" Id="1b36d61b-fdba-4c6f-82e8-e08e29cd9bd6" />
+  <Project Path="Compliance.MasterData/Compliance.MasterData.csproj" Id="a3f4b7d8-41e2-478a-8590-f8b576b48ee8" />
+  <Project Path="ComplianceService/ComplianceService.csproj" />
+  <Project Path="KnowledgeBase/KnowledgeBase.csproj" />
+  <Project Path="Knowledgebase.Tests/Knowledgebase.Tests.csproj" />
+  <Project Path="ComplianceService.Tests/ComplianceService.Tests.csproj" />
+  <Project Path="Gateway/Gateway.csproj" />
+  <Project Path="IdentityService/IdentityService.csproj" Id="e3d36657-2922-47c5-abcf-8441e829d6cb" />
+  <Project Path="IdentityService.Tests/IdentityService.Tests.csproj" />
+  <Project Path="OrganizationService/OrganizationService.csproj" />
+  <Project Path="OrganizationService.Tests/OrganizationService.Tests.csproj" />
+  <Project Path="PersonService/PersonService.csproj" />
+  <Project Path="PersonService.Tests/PersonService.Tests.csproj" />
+  <Project Path="WorkforceService/WorkforceService.csproj" />
+  <Project Path="WorkforceService.Tests/WorkforceService.Tests.csproj" />
+  <Project Path="ProfessionalService/ProfessionalService.csproj" />
+  <Project Path="ProfessionalService.Tests/ProfessionalService.Tests.csproj" />
+  <Project Path="AccessGovernanceService/AccessGovernanceService.csproj" />
+  <Project Path="AccessGovernanceService.Tests/AccessGovernanceService.Tests.csproj" />
+  <Project Path="Shared.Governance/Shared.Governance.csproj" />
+  <Project Path="GovernanceService/GovernanceService.csproj" />
+  <Project Path="GovernanceService.Tests/GovernanceService.Tests.csproj" />
+  <Project Path="Shared.Communication/Shared.Communication.csproj" />
+  <Project Path="CommunicationService/CommunicationService.csproj" />
+  <Project Path="CommunicationService.Tests/CommunicationService.Tests.csproj" />
+  <Project Path="WorkforceIntelligenceService/WorkforceIntelligenceService.csproj" />
+  <Project Path="WorkforceIntelligenceService.Tests/WorkforceIntelligenceService.Tests.csproj" />
+  <Project Path="EnterpriseDirectoryService/EnterpriseDirectoryService.csproj" />
+  <Project Path="EnterpriseDirectoryService.Tests/EnterpriseDirectoryService.Tests.csproj" />
+  <Project Path="IntegrationService/IntegrationService.csproj" />
+  <Project Path="IntegrationService.Tests/IntegrationService.Tests.csproj" />
+  <Project Path="OutboxRelayWorker/OutboxRelayWorker.csproj" />
+  <Project Path="Platform.Dashboard/Platform.Dashboard.csproj" />
+  <Project Path="Shared.Infrastructure/Shared.Infrastructure.csproj" />
+  <Project Path="Shared.Logging/Shared.Logging.csproj" />
+</Solution>

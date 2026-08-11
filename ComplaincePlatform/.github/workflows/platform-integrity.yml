@@ -1,0 +1,141 @@
+name: Platform Integrity
+
+# The Platform Integrity Program built guardrails that nothing executed automatically
+# (TD-17). This pipeline is what turns them from documentation into controls.
+#
+# Two deliberately separate jobs:
+#
+#   guardrails  — no infrastructure, runs on every PR, must always pass. These are the
+#                 architecture and contract tests: they fail when someone adds an
+#                 unapproved tenant-isolation bypass or breaks the execution-context
+#                 contract.
+#
+#   integration — needs a running platform, so it cannot gate every PR. Runs where one
+#                 is available and reports rather than blocks.
+#
+# Splitting them matters: a gate that is red for environmental reasons gets ignored,
+# and an ignored gate is worse than none.
+
+on:
+  pull_request:
+    branches: [master, main, develop]
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  guardrails:
+    name: Architecture Guardrails & Contract Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore Shared.Infrastructure/Shared.Infrastructure.csproj tests/Aovias.Platform.IntegrationTests/Aovias.Platform.IntegrationTests.csproj
+
+      - name: Build
+        run: dotnet build tests/Aovias.Platform.IntegrationTests/Aovias.Platform.IntegrationTests.csproj --no-restore -c Release
+
+      # The tenant-isolation ratchet. Fails when a file exceeds its approved bypass count
+      # or an unlisted file introduces one — see approved-query-bypasses.json.
+      - name: Query isolation governance
+        run: >
+          dotnet test tests/Aovias.Platform.IntegrationTests/Aovias.Platform.IntegrationTests.csproj
+          --no-build -c Release
+          --filter "FullyQualifiedName~QueryIsolationGovernanceTests"
+          --logger "trx;LogFileName=governance.trx"
+
+      # PlatformExecutionContext / TenantAuthority contract. Pure in-process, no platform needed.
+      - name: Execution context contract
+        run: >
+          dotnet test tests/Aovias.Platform.IntegrationTests/Aovias.Platform.IntegrationTests.csproj
+          --no-build -c Release
+          --filter "FullyQualifiedName~ExecutionContextTests"
+          --logger "trx;LogFileName=execution-context.trx"
+
+      - name: Publish results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: guardrail-results
+          path: '**/*.trx'
+          if-no-files-found: ignore
+
+  build-verification:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # Gateway and ComplianceService carry the tenant boundary; a break in either is a
+      # platform-integrity break, not just a compile error.
+      - name: Build Gateway
+        run: dotnet build Gateway/Gateway.csproj -c Release
+
+      - name: Build ComplianceService
+        run: dotnet build ComplianceService/ComplianceService.csproj -c Release
+
+  integration:
+    name: Tenant Isolation (requires running platform)
+    runs-on: ubuntu-latest
+    # Never gates a PR: these need a live Gateway + database. The suite reports skipped
+    # rather than passed when the platform is unreachable, so a green run here is
+    # meaningful and a skipped one is honest.
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Configure test credentials
+        # Two-tenant coverage activates only when TENANT_B_* secrets exist. Without them the
+        # cross-tenant data-visibility tests report Skipped — never a false pass.
+        run: |
+          cd tests/Aovias.Platform.IntegrationTests
+          python3 - <<'PY'
+          import json, os
+          with open('testsettings.json') as f:
+              raw = [l for l in f if not l.strip().startswith('"//')]
+          cfg = json.loads(''.join(raw))
+          cfg['gatewayBaseUrl'] = os.environ.get('GATEWAY_URL', cfg['gatewayBaseUrl'])
+          cfg['tenantA'] = {'email': os.environ.get('TENANT_A_EMAIL', ''), 'password': os.environ.get('TENANT_A_PASSWORD', '')}
+          cfg['tenantB'] = {'email': os.environ.get('TENANT_B_EMAIL', ''), 'password': os.environ.get('TENANT_B_PASSWORD', '')}
+          with open('testsettings.json', 'w') as f:
+              json.dump(cfg, f, indent=2)
+          PY
+        env:
+          GATEWAY_URL: ${{ secrets.GATEWAY_URL }}
+          TENANT_A_EMAIL: ${{ secrets.TENANT_A_EMAIL }}
+          TENANT_A_PASSWORD: ${{ secrets.TENANT_A_PASSWORD }}
+          TENANT_B_EMAIL: ${{ secrets.TENANT_B_EMAIL }}
+          TENANT_B_PASSWORD: ${{ secrets.TENANT_B_PASSWORD }}
+
+      - name: Tenant isolation suite
+        run: >
+          dotnet test tests/Aovias.Platform.IntegrationTests/Aovias.Platform.IntegrationTests.csproj
+          -c Release --filter "FullyQualifiedName~TenantIsolationTests"
+          --logger "trx;LogFileName=tenant-isolation.trx"
+
+      - name: Publish results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-results
+          path: '**/*.trx'
+          if-no-files-found: ignore

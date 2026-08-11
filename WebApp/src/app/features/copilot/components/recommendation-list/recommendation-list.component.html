@@ -1,0 +1,65 @@
+<section class="recommendation-list">
+  <!-- Header -->
+  <header class="rec-list-header">
+    <div class="rec-list-title-row">
+      <h2 class="rec-list-title">
+        Copilot Recommendations
+        <span *ngIf="hasCritical" class="critical-badge">
+          {{ counts.critical }} Critical
+        </span>
+      </h2>
+
+      <!-- Severity summary badges -->
+      <div class="severity-summary" *ngIf="counts.total > 0">
+        <span *ngIf="counts.critical" class="badge badge-critical">{{ counts.critical }} Critical</span>
+        <span *ngIf="counts.high"     class="badge badge-high">{{ counts.high }} High</span>
+        <span *ngIf="counts.medium"   class="badge badge-medium">{{ counts.medium }} Medium</span>
+        <span *ngIf="counts.low"      class="badge badge-low">{{ counts.low }} Low</span>
+      </div>
+
+      <!-- Refresh button -->
+      <button
+        *ngIf="showRefreshButton"
+        class="btn-refresh"
+        [disabled]="isRefreshing"
+        (click)="onRefresh()"
+        type="button"
+        title="Regenerate recommendations from operational data">
+        <span *ngIf="!isRefreshing">↻ Refresh</span>
+        <span *ngIf="isRefreshing">Generating…</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Loading state -->
+  <div class="rec-list-loading" *ngIf="isLoading && !isRefreshing">
+    Loading recommendations…
+  </div>
+
+  <!-- Empty state -->
+  <div class="rec-list-empty" *ngIf="!isLoading && displayedRecommendations.length === 0">
+    <p>No active recommendations. Click Refresh to generate recommendations from current operational data.</p>
+    <button class="btn-refresh-empty" (click)="onRefresh()" type="button">
+      Generate Recommendations
+    </button>
+  </div>
+
+  <!-- Recommendation cards -->
+  <ul class="rec-list-items" *ngIf="displayedRecommendations.length > 0">
+    <li
+      *ngFor="let rec of displayedRecommendations; trackBy: trackById"
+      class="rec-list-item"
+      (click)="onCardClick(rec)">
+      <app-recommendation-card
+        [recommendation]="rec"
+        [showRationale]="true"
+        (navigateToDeepLink)="onNavigate($event)">
+      </app-recommendation-card>
+    </li>
+  </ul>
+
+  <!-- Error state -->
+  <div class="rec-list-error" *ngIf="store.error() as err">
+    <p>{{ err }}</p>
+  </div>
+</section>

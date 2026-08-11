@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.Platform.Core</RootNamespace>
+    <AssemblyName>Aovias.Platform.Core</AssemblyName>
+    <Description>Shared kernel for the AOVIAS platform.</Description>
+  </PropertyGroup>
+</Project>

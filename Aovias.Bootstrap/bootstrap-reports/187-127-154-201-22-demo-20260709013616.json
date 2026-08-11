@@ -1,0 +1,24 @@
+{
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "Phases": [
+    {
+      "Phase": 1,
+      "Outcome": 2,
+      "Message": "Preflight found one or more blockers.",
+      "RootCause": "Required Permissions: user \u0027aovias\u0027 does not have passwordless root/sudo access on the target host.",
+      "CompletedUtc": "2026-07-09T01:36:16.6764376+00:00",
+      "Succeeded": false
+    }
+  ],
+  "OverallSuccess": false,
+  "FirstFailure": {
+    "Phase": 1,
+    "Outcome": 2,
+    "Message": "Preflight found one or more blockers.",
+    "RootCause": "Required Permissions: user \u0027aovias\u0027 does not have passwordless root/sudo access on the target host.",
+    "CompletedUtc": "2026-07-09T01:36:16.6764376+00:00",
+    "Succeeded": false
+  },
+  "GeneratedUtc": "2026-07-09T01:36:16.6791749+00:00",
+  "ReportPath": null
+}

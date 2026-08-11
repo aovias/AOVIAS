@@ -1,0 +1,94 @@
+@import 'tailwindcss';
+/* Only scan under src/ so tool folders outside are not used for class detection. */
+@source "./**/*.{html,ts,css,scss}";
+@import '@angular/material/prebuilt-themes/azure-blue.css';
+@import './styles/tokens/foundation.tokens.css';
+@import './styles/tokens/theme.tokens.css';
+@import './styles/material-aovias-palette.css';
+/* Enterprise UI system — loads after the Material palette so its token bindings win. */
+@import './styles/enterprise-ui.css';
+@import './styles/scrollbar.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.material-icons-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Snackbar Styles */
+.praman-error-snackbar {
+  background-color: var(--color-status-danger) !important;
+  color: var(--color-text-inverse) !important;
+}
+
+.praman-success-snackbar {
+  background-color: var(--color-status-success) !important;
+  color: var(--color-text-inverse) !important;
+}
+
+.praman-warning-snackbar {
+  background-color: var(--color-status-warning) !important;
+  color: var(--color-text-inverse) !important;
+}
+
+.praman-info-snackbar {
+  background-color: var(--color-status-info) !important;
+  color: var(--color-text-inverse) !important;
+}
+
+/* Hospital Selector Dialog */
+.hospital-selector-panel .mat-mdc-dialog-container {
+  padding: 0;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.hospital-selector-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+/* CDK overlays (datepicker, menus) must stack above high z-index shells (e.g. task drawer ~1020). */
+.cdk-overlay-container {
+  z-index: calc(var(--z-modal, 1000) + 100);
+}
+
+/* NAV-2 header overlays — transparent backdrop (click-outside to dismiss). */
+.cdk-overlay-backdrop.module-switcher-backdrop,
+.cdk-overlay-backdrop.role-selector-backdrop,
+.cdk-overlay-backdrop.header-overflow-backdrop {
+  background: transparent;
+}
+
+/* Create & Assign Task drawer — assignee multi-select panel (overlay is outside component DOM) */
+.cdk-overlay-container .task-drawer-assignee-panel.mat-mdc-select-panel {
+  max-height: 220px !important;
+  border-radius: var(--radius-md, 10px);
+}
+
+/* Material M3 disabled button look: src/styles/material-m3-button-overrides.css (last in angular.json) */

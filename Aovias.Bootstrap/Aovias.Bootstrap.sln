@@ -1,0 +1,55 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+# Sprint M3.0: this file previously listed only Aovias.Bootstrap.Host, three of its four projects
+# (Contracts/Core/Core.Tests) existed on disk but were not a member of this solution, so
+# `dotnet build`/`dotnet test` against this file alone never reached them (they still built via
+# Aovias.Platform.slnx, which was and remains complete). Restored to the full closure every other
+# per-area *.slnx already follows (project itself + full direct-external-reference closure:
+# Aovias.Configuration, Aovias.Release.Contracts) — solution-membership fix only, no source change.
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aovias.Bootstrap.Contracts", "src\Aovias.Bootstrap.Contracts\Aovias.Bootstrap.Contracts.csproj", "{F603FFEC-8214-4092-B815-FC7913FC4B1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aovias.Bootstrap.Core", "src\Aovias.Bootstrap.Core\Aovias.Bootstrap.Core.csproj", "{33CCCE5C-59D4-44FD-AE29-AE5B258E62C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aovias.Bootstrap.Host", "src\Aovias.Bootstrap.Host\Aovias.Bootstrap.Host.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aovias.Bootstrap.Core.Tests", "tests\Aovias.Bootstrap.Core.Tests\Aovias.Bootstrap.Core.Tests.csproj", "{9EE5A980-EC98-4F89-8B21-34983B129F82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aovias.Configuration", "..\Aovias.Configuration\Aovias.Configuration.csproj", "{1A2B3C4D-1111-4A4A-9999-000000000001}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aovias.Release.Contracts", "..\Aovias.Release\src\Aovias.Release.Contracts\Aovias.Release.Contracts.csproj", "{1A2B3C4D-2222-4A4A-9999-000000000002}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F603FFEC-8214-4092-B815-FC7913FC4B1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F603FFEC-8214-4092-B815-FC7913FC4B1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F603FFEC-8214-4092-B815-FC7913FC4B1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F603FFEC-8214-4092-B815-FC7913FC4B1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33CCCE5C-59D4-44FD-AE29-AE5B258E62C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33CCCE5C-59D4-44FD-AE29-AE5B258E62C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33CCCE5C-59D4-44FD-AE29-AE5B258E62C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33CCCE5C-59D4-44FD-AE29-AE5B258E62C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EE5A980-EC98-4F89-8B21-34983B129F82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EE5A980-EC98-4F89-8B21-34983B129F82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EE5A980-EC98-4F89-8B21-34983B129F82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EE5A980-EC98-4F89-8B21-34983B129F82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A2B3C4D-1111-4A4A-9999-000000000001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A2B3C4D-1111-4A4A-9999-000000000001}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A2B3C4D-1111-4A4A-9999-000000000001}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A2B3C4D-1111-4A4A-9999-000000000001}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A2B3C4D-2222-4A4A-9999-000000000002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A2B3C4D-2222-4A4A-9999-000000000002}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A2B3C4D-2222-4A4A-9999-000000000002}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A2B3C4D-2222-4A4A-9999-000000000002}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

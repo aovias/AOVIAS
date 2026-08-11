@@ -1,0 +1,159 @@
+version: '3.9'
+
+services:
+  sqlserver-dev:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver-dev
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD:?Set SA_PASSWORD in .env}
+      - MSSQL_PID=Developer
+    ports:
+      - "127.0.0.1:1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $$SA_PASSWORD -Q 'SELECT 1' -C || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  identity-service-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev.dotnet
+    container_name: identity-service-dev
+    volumes:
+      - .:/app
+      # Mount ASP.NET Core HTTPS dev cert (.pfx) into container at /https
+      - ${USERPROFILE}/.aspnet/https:/https:ro
+    working_dir: /app/IdentityService
+    command: dotnet watch run --project IdentityService.csproj --urls "https://0.0.0.0:7135;http://0.0.0.0:5062"
+    ports:
+      # Match Visual Studio ports: HTTPS 7135, HTTP 5062
+      - "7135:7135"  # Swagger UI: https://localhost:7135/swagger
+      - "5062:5062"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development  # Enables Swagger UI and auto-migrations (including PlatformSequences table)
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERT_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ConnectionStrings__DefaultConnection=Server=sqlserver-dev;Database=Identity;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=True
+    depends_on:
+      sqlserver-dev:
+        condition: service_healthy  # Waits for SQL Server to be healthy before starting
+
+  compliance-service-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev.dotnet
+    container_name: compliance-service-dev
+    volumes:
+      - .:/app
+      - ${USERPROFILE}/.aspnet/https:/https:ro
+    working_dir: /app/ComplianceService
+    command: dotnet watch run --project ComplianceService.csproj --urls "https://0.0.0.0:7087;http://0.0.0.0:5016"
+    ports:
+      - "7087:7087"  # API: https://localhost:7087
+      - "5016:5016"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development  # Enables auto-migrations
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERT_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ConnectionStrings__DefaultConnection=Server=sqlserver-dev;Database=Compliance;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=True
+      - Authentication__Authority=https://identity-service-dev:7135
+    depends_on:
+      sqlserver-dev:
+        condition: service_healthy
+      identity-service-dev:
+        condition: service_started
+
+  audit-service-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev.dotnet
+    container_name: audit-service-dev
+    volumes:
+      - .:/app
+      - ${USERPROFILE}/.aspnet/https:/https:ro
+    working_dir: /app/AuditService
+    command: dotnet watch run --project AuditService.csproj --urls "https://0.0.0.0:7006;http://0.0.0.0:5038"
+    ports:
+      - "7006:7006"  # Swagger UI: https://localhost:7006/swagger
+      - "5038:5038"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development  # Enables Swagger UI
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERT_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ConnectionStrings__DefaultConnection=Server=sqlserver-dev;Database=Audit;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=True
+    depends_on:
+      sqlserver-dev:
+        condition: service_healthy
+
+  organization-service-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev.dotnet
+    container_name: organization-service-dev
+    volumes:
+      - .:/app
+      - ${USERPROFILE}/.aspnet/https:/https:ro
+    working_dir: /app/OrganizationService
+    command: dotnet watch run --project OrganizationService.csproj --urls "https://0.0.0.0:7181;http://0.0.0.0:5085"
+    ports:
+      - "7181:7181"  # Swagger UI: https://localhost:7181/swagger
+      - "5085:5085"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development  # Enables Swagger UI
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERT_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ConnectionStrings__DefaultConnection=Server=sqlserver-dev;Database=Organization;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=True
+    depends_on:
+      sqlserver-dev:
+        condition: service_healthy
+
+  ai-orchestrator-service-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev.dotnet
+    container_name: ai-orchestrator-service-dev
+    volumes:
+      - .:/app
+      - ${USERPROFILE}/.aspnet/https:/https:ro
+    working_dir: /app/AIOrchestratorService
+    command: dotnet watch run --project AIOrchestratorService.csproj --urls "https://0.0.0.0:7097;http://0.0.0.0:5088"
+    ports:
+      - "7097:7097"  # Swagger UI: https://localhost:7097/swagger
+      - "5088:5088"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development  # Enables Swagger UI
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERT_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    depends_on:
+      sqlserver-dev:
+        condition: service_healthy
+
+  # Optional Redis — enable for distributed cache / SignalR backplane (Phase 7.2).
+  # Wire ConnectionStrings__Redis=redis-dev:6379 on gateway-dev / compliance-service-dev when using.
+  redis-dev:
+    image: redis:7-alpine
+    container_name: redis-dev
+    profiles: ["redis"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  sqlserver-data:
+  redis-data:

@@ -1,0 +1,36 @@
+{
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "Phases": [
+    {
+      "Phase": 1,
+      "Outcome": 2,
+      "Message": "Could not establish a connection to the target host.",
+      "RootCause": "Could not find a part of the path \u0027C:\\Users\\HP\\%USERPROFILE%\\.ssh\\id_ed25519\u0027.\r\n\r\n=== Automatic Repair Attempts ===\r\nRepair failed: Retried probe still failed: Could not establish a connection to the target host.",
+      "CompletedUtc": "2026-07-11T02:46:10.8890227+00:00",
+      "StartedUtc": "2026-07-11T02:46:08.7156531+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [
+        "Repair failed: Retried probe still failed: Could not establish a connection to the target host."
+      ],
+      "VerificationResult": null,
+      "Succeeded": false
+    }
+  ],
+  "OverallSuccess": false,
+  "FirstFailure": {
+    "Phase": 1,
+    "Outcome": 2,
+    "Message": "Could not establish a connection to the target host.",
+    "RootCause": "Could not find a part of the path \u0027C:\\Users\\HP\\%USERPROFILE%\\.ssh\\id_ed25519\u0027.\r\n\r\n=== Automatic Repair Attempts ===\r\nRepair failed: Retried probe still failed: Could not establish a connection to the target host.",
+    "CompletedUtc": "2026-07-11T02:46:10.8890227+00:00",
+    "StartedUtc": "2026-07-11T02:46:08.7156531+00:00",
+    "RetryCount": 0,
+    "RepairAttempts": [
+      "Repair failed: Retried probe still failed: Could not establish a connection to the target host."
+    ],
+    "VerificationResult": null,
+    "Succeeded": false
+  },
+  "GeneratedUtc": "2026-07-11T02:46:10.8899029+00:00",
+  "ReportPath": null
+}

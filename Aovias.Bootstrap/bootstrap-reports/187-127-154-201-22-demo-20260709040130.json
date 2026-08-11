@@ -1,0 +1,72 @@
+{
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "Phases": [
+    {
+      "Phase": 1,
+      "Outcome": 1,
+      "Message": "Phase \u0027Preflight\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:59:37.0961384+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 2,
+      "Outcome": 1,
+      "Message": "Phase \u0027DockerInstallation\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:59:37.1017731+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 3,
+      "Outcome": 1,
+      "Message": "Phase \u0027DockerNetworkCreation\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:59:37.1037039+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 4,
+      "Outcome": 1,
+      "Message": "Phase \u0027RuntimeDirectoryCreation\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:59:37.1048262+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 5,
+      "Outcome": 1,
+      "Message": "Phase \u0027RuntimeConfigurationGeneration\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:59:37.1055258+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 6,
+      "Outcome": 1,
+      "Message": "Phase \u0027RuntimeAgentInstallation\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:59:37.1073044+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 7,
+      "Outcome": 2,
+      "Message": "Agent self-registration failed after 5 attempts.",
+      "RootCause": "A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (187.127.154.201:7080)",
+      "CompletedUtc": "2026-07-09T04:01:30.5462096+00:00",
+      "Succeeded": false
+    }
+  ],
+  "OverallSuccess": false,
+  "FirstFailure": {
+    "Phase": 7,
+    "Outcome": 2,
+    "Message": "Agent self-registration failed after 5 attempts.",
+    "RootCause": "A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (187.127.154.201:7080)",
+    "CompletedUtc": "2026-07-09T04:01:30.5462096+00:00",
+    "Succeeded": false
+  },
+  "GeneratedUtc": "2026-07-09T04:01:30.5488854+00:00",
+  "ReportPath": null
+}

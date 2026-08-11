@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.Runtime.Agent.Domain</RootNamespace>
+    <AssemblyName>Aovias.Runtime.Agent.Domain</AssemblyName>
+    <Description>Domain model for the AOVIAS Runtime Agent control plane.</Description>
+  </PropertyGroup>
+</Project>

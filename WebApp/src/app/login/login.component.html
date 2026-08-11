@@ -1,0 +1,426 @@
+<div class="login-shell">
+  <div class="login-shell__workspace">
+    <div class="login__left">
+      <div class="medical-bg" aria-hidden="true"></div>
+      <div class="enterprise-mesh" aria-hidden="true"></div>
+      <div class="floating-particles" aria-hidden="true"></div>
+      <div class="healthcare-network" aria-hidden="true"></div>
+      <div class="login-shell__brand brand-panel login-shell__brand--embedded">
+        <div class="login-brand__inner">
+
+      <div class="login-brand__content">
+        <div class="login-brand__hero">
+          <div class="logo-container logo-container--prominent">
+            <img
+              src="/assets/logo_dark_background.png"
+              alt="AOVIAS Command"
+              width="378"
+              height="96"
+              class="logo-container__logo"
+            />
+          </div>
+
+          <div class="login-brand__statement">
+            <h1 class="login-brand__headline">Healthcare Intelligence Platform</h1>
+            <p class="login-brand__lede">
+              Command your organization's excellence through AI-powered governance, operational
+              intelligence and continuous improvement.
+            </p>
+          </div>
+        </div>
+
+        <div class="login-brand__divider" aria-hidden="true"></div>
+
+        <div class="feature-cards-container">
+          <article class="enterprise-card">
+            <div class="enterprise-card__icon" aria-hidden="true">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.75"
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                />
+              </svg>
+            </div>
+            <div class="enterprise-card__body">
+              <h2 class="enterprise-card__title">Enterprise Intelligence</h2>
+              <p class="enterprise-card__desc">
+                AI-powered operational insights and decision support.
+              </p>
+            </div>
+          </article>
+
+          <article class="enterprise-card">
+            <div class="enterprise-card__icon" aria-hidden="true">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.75"
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                />
+              </svg>
+            </div>
+            <div class="enterprise-card__body">
+              <h2 class="enterprise-card__title">Governance &amp; Command</h2>
+              <p class="enterprise-card__desc">
+                Centralized command center for quality, compliance and risk.
+              </p>
+            </div>
+          </article>
+
+          <article class="enterprise-card">
+            <div class="enterprise-card__icon" aria-hidden="true">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.75"
+                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                />
+              </svg>
+            </div>
+            <div class="enterprise-card__body">
+              <h2 class="enterprise-card__title">Continuous Excellence</h2>
+              <p class="enterprise-card__desc">
+                Accelerate accreditation, quality improvement and organizational maturity.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="compliance-badges-container">
+          <span class="trust-badge">NABH Ready</span>
+          <span class="trust-badge">JCI Ready</span>
+          <span class="trust-badge">AI Powered</span>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="login__right">
+    <div class="login__primary">
+      <div class="login login-content-wrapper login-card">
+        <div class="login-card__header" style="margin-bottom: 28px">
+          <h2 class="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+          <p class="text-sm text-gray-600">Sign in to access your AOVIAS Command workspace.</p>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <div style="margin-bottom: 18px">
+            <label
+              for="email"
+              class="block text-sm font-medium text-gray-700"
+              style="margin-bottom: 8px"
+              >Email Address</label
+            >
+            <div class="relative input-wrapper">
+              <div class="input-wrapper__leading-icon" aria-hidden="true">
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                  />
+                </svg>
+              </div>
+              <input
+                id="email"
+                data-testid="login-email"
+                type="email"
+                formControlName="email"
+                (blur)="onEmailBlur()"
+                (input)="onInputChange()"
+                class="input-field input-field--has-leading-icon"
+                [class.error]="emailControl.invalid && (emailControl.touched || emailTouched())"
+                [disabled]="isSubmitting()"
+              />
+            </div>
+            @if (emailControl.invalid && (emailControl.touched || emailTouched())) {
+              <p class="text-xs text-red-600 mt-1">
+                @if (emailControl.hasError('required')) {
+                  Email is required
+                } @else if (emailControl.hasError('email')) {
+                  Please enter a valid email address
+                }
+              </p>
+            }
+          </div>
+
+          <div style="margin-bottom: 18px">
+            <label
+              for="password"
+              class="block text-sm font-medium text-gray-700"
+              style="margin-bottom: 8px"
+              >Password</label
+            >
+            <div class="relative input-wrapper">
+              <div class="input-wrapper__leading-icon" aria-hidden="true">
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+              </div>
+              <input
+                id="password"
+                data-testid="login-password"
+                [type]="showPassword() ? 'text' : 'password'"
+                formControlName="password"
+                (input)="onInputChange()"
+                class="input-field input-field--has-leading-icon input-field--has-trailing-icon"
+                [class.error]="passwordControl.invalid && passwordControl.touched"
+                [disabled]="isSubmitting()"
+              />
+              <button
+                type="button"
+                (click)="togglePasswordVisibility()"
+                class="input-wrapper__trailing-icon text-gray-400 hover:text-gray-600 transition-colors"
+                [disabled]="isSubmitting()"
+              >
+                @if (showPassword()) {
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                    />
+                  </svg>
+                } @else {
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                }
+              </button>
+            </div>
+            @if (passwordControl.invalid && passwordControl.touched) {
+              <p class="text-xs text-red-600 mt-1">Password is required</p>
+            }
+          </div>
+
+          <div class="flex items-center justify-between" style="margin-bottom: 20px">
+            <div class="flex items-center">
+              <input
+                id="remember-me"
+                type="checkbox"
+                formControlName="rememberMe"
+                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer transition-all"
+                [disabled]="isSubmitting()"
+              />
+              <label
+                for="remember-me"
+                class="block text-sm text-gray-700 cursor-pointer"
+                style="margin-left: 8px"
+              >
+                Remember me
+              </label>
+            </div>
+
+            <div class="text-sm">
+              <a href="#" class="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+                Forgot password?
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              data-testid="login-submit"
+              [disabled]="loginForm.invalid || isSubmitting()"
+              class="primary-button group"
+            >
+              @if (isSubmitting()) {
+                <mat-progress-spinner diameter="20" mode="indeterminate" class="mr-2"></mat-progress-spinner>
+                <span>Signing in...</span>
+              } @else {
+                <span>Sign In</span>
+                <svg
+                  class="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
+              }
+            </button>
+          </div>
+        </form>
+
+        <div class="biometric-section login-biometric-after-form">
+          <div class="text-center" style="margin-bottom: 16px">
+            <p class="text-sm font-semibold text-gray-700 mb-1">Quick Secure Login</p>
+            <p class="text-xs text-gray-500">Tap fingerprint to authenticate</p>
+          </div>
+
+          <button type="button" (click)="biometricLogin()" class="biometric-button group">
+            <div class="fingerprint-container">
+              <svg
+                class="w-12 h-12 text-blue-600 transition-all duration-300 group-hover:scale-110"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"
+                />
+              </svg>
+              <div class="fingerprint-pulse"></div>
+              <div class="fingerprint-glow"></div>
+            </div>
+          </button>
+        </div>
+
+        <div style="margin-top: 28px">
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-200"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span
+                class="px-4 text-gray-500 font-medium"
+                style="
+                  background: linear-gradient(
+                    to bottom,
+                    transparent 0%,
+                    #f9fafb 50%,
+                    transparent 100%
+                  );
+                "
+                >Or continue with</span
+              >
+            </div>
+          </div>
+
+          <div style="margin-top: 24px" class="grid grid-cols-2 gap-3">
+            <button type="button" (click)="signInWithMicrosoft()" class="sso-button group">
+              <svg class="w-5 h-5" viewBox="0 0 23 23" fill="none">
+                <path d="M0 0h11v11H0z" fill="#f25022" />
+                <path d="M12 0h11v11H12z" fill="#00a4ef" />
+                <path d="M0 12h11v11H0z" fill="#7fba00" />
+                <path d="M12 12h11v11H12z" fill="#ffb900" />
+              </svg>
+              <span>Microsoft</span>
+            </button>
+
+            <button type="button" (click)="signInWithGoogle()" class="sso-button group">
+              <svg class="w-5 h-5" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
+              </svg>
+              <span>Google</span>
+            </button>
+          </div>
+
+          <div style="margin-top: 24px" class="text-center">
+            <p class="text-sm text-gray-600">Don't have an account?</p>
+            <a
+              routerLink="/signup"
+              class="font-semibold text-blue-600 hover:text-blue-500 transition-colors"
+              style="margin-top: 6px; display: inline-block"
+              >Create Hospital Account</a
+            >
+          </div>
+        </div>
+
+        <div style="margin-top: 24px; padding-top: 20px" class="border-t border-gray-100">
+          <div class="flex items-center justify-center gap-2 text-xs text-gray-500">
+            <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+              />
+            </svg>
+            <span>Secure access for authorized healthcare operators only</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px" class="text-center">
+          <p class="text-xs text-gray-400">
+            Need help signing in?
+            <a href="#" class="text-blue-600 hover:text-blue-500 font-medium transition-colors ml-1"
+              >Contact Support</a
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-badge">
+          <div class="flex items-center gap-2">
+            <svg
+              class="w-4 h-4 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
+            </svg>
+            <span class="text-xs font-semibold text-blue-700">AOVIAS AI Assistant</span>
+          </div>
+          <div class="flex items-center gap-2 mt-1">
+            <div class="status-indicator-enhanced"></div>
+            <span class="text-[10px] text-blue-600">AI Security Monitoring Active</span>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>

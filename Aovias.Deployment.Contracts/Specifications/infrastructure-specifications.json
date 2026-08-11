@@ -1,0 +1,99 @@
+{
+  "services": [
+    {
+      "serviceId": "_default", "profile": "http-api", "features": { "httpService": true, "requiresIdentity": true }, "runtime": { "docker": true },
+      "requirements": [ { "id": "health-monitoring", "category": "health-monitoring", "mandatory": true, "description": "HTTP liveness/readiness probing." } ]
+    },
+    {
+      "serviceId": "gateway", "profile": "http-api", "features": { "httpService": true, "requiresIdentity": true, "requiresSignalR": true }, "runtime": { "docker": true, "signalR": true },
+      "requirements": [ { "id": "health-monitoring", "category": "health-monitoring", "mandatory": true, "description": "HTTP liveness/readiness probing." } ]
+    },
+    {
+      "serviceId": "identity-service", "profile": "http-api", "filesystem": "certificates", "certificates": "identity-signing", "database": "sql-auto-dev", "secrets": "identity", "features": { "httpService": true, "requiresSqlServer": true }, "runtime": { "docker": true, "sqlServer": true, "certificates": true },
+      "requirements": [
+        { "id": "primary-database", "category": "sql-database", "mandatory": true, "versionConstraint": ">=2019.0", "description": "Identity store." },
+        { "id": "signing-certificate", "category": "tls-certificates", "mandatory": true, "description": "JWT signing certificate." },
+        { "id": "health-monitoring", "category": "health-monitoring", "mandatory": true, "description": "HTTP liveness/readiness probing." }
+      ]
+    },
+    {
+      "serviceId": "organization-service", "profile": "http-api", "database": "sql-dev-dev", "secrets": "sql", "features": { "httpService": true, "requiresIdentity": true, "requiresSqlServer": true }, "runtime": { "docker": true, "sqlServer": true, "certificates": true },
+      "requirements": [
+        { "id": "primary-database", "category": "sql-database", "mandatory": true, "description": "Organization data store." },
+        { "id": "health-monitoring", "category": "health-monitoring", "mandatory": true, "description": "HTTP liveness/readiness probing." }
+      ]
+    },
+    {
+      "serviceId": "compliance-service", "profile": "http-api", "filesystem": "evidence", "volumes": "evidence", "database": "sql-dev-always", "secrets": "compliance",
+      "features": { "httpService": true, "requiresIdentity": true, "requiresSqlServer": true, "requiresRabbitMq": true, "requiresWritableEvidence": true },
+      "runtime": { "docker": true, "sqlServer": true, "rabbitMq": true, "certificates": true },
+      "providers": [ { "id": "rabbitmq", "provider": "RabbitMQ", "required": true, "secretName": "RabbitMQ:Password", "configurationKey": "RabbitMQ:Password" } ],
+      "requirements": [
+        { "id": "primary-database", "category": "sql-database", "mandatory": true, "description": "Compliance evidence store." },
+        { "id": "event-broker", "category": "message-broker", "mandatory": true, "description": "Compliance event fan-out." },
+        { "id": "health-monitoring", "category": "health-monitoring", "mandatory": true, "description": "HTTP liveness/readiness probing." }
+      ]
+    },
+    {
+      "serviceId": "audit-service", "profile": "http-api", "database": "sql-auto-none", "secrets": "sql", "features": { "httpService": true, "requiresIdentity": true, "requiresSqlServer": true }, "runtime": { "docker": true, "sqlServer": true },
+      "requirements": [
+        { "id": "primary-database", "category": "sql-database", "mandatory": true, "description": "Audit log store." },
+        { "id": "health-monitoring", "category": "health-monitoring", "mandatory": true, "description": "HTTP liveness/readiness probing." }
+      ]
+    },
+    {
+      "serviceId": "ai", "profile": "http-api", "database": "sql-auto-none", "secrets": "ai",
+      "features": { "httpService": true, "requiresIdentity": true, "requiresSqlServer": true },
+      "runtime": { "docker": true, "sqlServer": true, "serviceBus": true },
+      "providers": [
+        { "id": "azure-openai", "provider": "AzureOpenAI", "required": false, "secretName": "AzureOpenAI:ApiKey", "configurationKey": "AzureOpenAI:ApiKey" },
+        { "id": "sarvam", "provider": "Sarvam", "required": false, "secretName": "Sarvam:ApiKey", "configurationKey": "Sarvam:ApiKey" }
+      ],
+      "requirements": [
+        { "id": "primary-database", "category": "sql-database", "mandatory": true, "description": "AI orchestration store." },
+        { "id": "ai-provider", "category": "external-ai-provider", "mandatory": false, "description": "External large language model provider." },
+        { "id": "health-monitoring", "category": "health-monitoring", "mandatory": true, "description": "HTTP liveness/readiness probing." }
+      ]
+    },
+    {
+      "serviceId": "knowledge-base", "profile": "http-api", "database": "sql-dev-none", "secrets": "sql", "features": { "httpService": true, "requiresIdentity": true, "requiresSqlServer": true }, "runtime": { "docker": true, "sqlServer": true },
+      "requirements": [
+        { "id": "primary-database", "category": "sql-database", "mandatory": true, "description": "Knowledge base store." },
+        { "id": "health-monitoring", "category": "health-monitoring", "mandatory": true, "description": "HTTP liveness/readiness probing." }
+      ]
+    },
+    {
+      "serviceId": "portal", "profile": "static-web",
+      "features": { "httpService": true, "requiresNginx": true, "requiresIdentity": true },
+      "runtime": { "docker": true, "nginx": true },
+      "providers": [ { "id": "nginx", "provider": "Nginx", "required": false, "configurationKey": "nginx" } ],
+      "requirements": [
+        { "id": "static-host", "category": "reverse-proxy", "mandatory": true, "description": "Static asset hosting and TLS termination." },
+        { "id": "health-monitoring", "category": "health-monitoring", "mandatory": true, "description": "HTTP liveness/readiness probing." }
+      ]
+    },
+    {
+      "serviceId": "outbox-worker", "profile": "worker-service", "database": "outbox", "secrets": "outbox", "configuration": "outbox",
+      "features": { "httpService": false, "workerService": true, "requiresServiceBus": true, "requiresSqlServer": true },
+      "runtime": { "docker": true, "sqlServer": true, "serviceBus": true },
+      "providers": [ { "id": "service-bus", "provider": "AzureServiceBus", "required": true, "secretName": "ConnectionStrings:ServiceBus", "configurationKey": "ConnectionStrings:ServiceBus" } ],
+      "requirements": [
+        { "id": "primary-database", "category": "sql-database", "mandatory": true, "description": "Outbox relay store." },
+        { "id": "relay-broker", "category": "message-broker", "mandatory": true, "description": "Outbox message relay transport." },
+        { "id": "health-monitoring", "category": "health-monitoring", "mandatory": false, "description": "Process-level health check (no HTTP endpoint)." }
+      ]
+    },
+    {
+      "serviceId": "runtime-agent", "profile": "runtime-agent",
+      "features": { "httpService": true, "requiresNginx": true, "requiresSignalR": true, "requiresBootstrapDiagnostics": true },
+      "runtime": { "docker": true, "certificates": true, "signalR": true, "nginx": true },
+      "providers": [ { "id": "nginx", "provider": "Nginx", "required": false, "configurationKey": "nginx" } ],
+      "publishedDependencies": false,
+      "requirements": [
+        { "id": "agent-front-door", "category": "reverse-proxy", "mandatory": true, "description": "TLS termination for the runtime agent API." },
+        { "id": "agent-certificate", "category": "tls-certificates", "mandatory": true, "description": "Agent TLS certificate." },
+        { "id": "health-monitoring", "category": "health-monitoring", "mandatory": true, "description": "HTTP liveness/readiness probing." }
+      ]
+    }
+  ]
+}

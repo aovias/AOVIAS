@@ -1,0 +1,8 @@
+{
+  "prompt": "Give me recommendation",
+  "useCase": 5,
+  "hospitalId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+  "contextVersionId": "ctx-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-v1",
+  "promptTemplateId": "TaskRecommendation",
+  "promptTemplateVersion": "1.0"
+}

@@ -1,0 +1,60 @@
+<UserControl x:Class="Aovias.DesignSystem.Controls.MetricCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Aovias.DesignSystem.Converters"
+             x:Name="Root">
+    <UserControl.Resources>
+        <converters:StatusKindToBrushConverter x:Key="StatusKindToBrushConverter" />
+        <converters:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Border Style="{DynamicResource MetricCardStyle}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="{Binding Title, ElementName=Root}"
+                       Style="{DynamicResource CaptionTextStyle}" />
+
+            <StackPanel Grid.Row="1" Margin="0,8,0,0">
+                <TextBlock Text="{Binding PrimaryMetric, ElementName=Root}"
+                           Style="{DynamicResource MetricValueTextStyle}" />
+                <TextBlock Text="{Binding SecondaryMetric, ElementName=Root}"
+                           Style="{DynamicResource CaptionTextStyle}"
+                           Margin="0,4,0,0"
+                           Visibility="{Binding SecondaryMetric, ElementName=Root, Converter={StaticResource StringNotEmptyToVisibilityConverter}}" />
+            </StackPanel>
+
+            <DockPanel Grid.Row="2" Margin="0,12,0,0">
+                <Border DockPanel.Dock="Left"
+                        Padding="8,3"
+                        CornerRadius="10"
+                        Background="{DynamicResource SurfaceInsetBrush}"
+                        Visibility="{Binding StatusText, ElementName=Root, Converter={StaticResource StringNotEmptyToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="8"
+                                 Height="8"
+                                 Margin="0,0,6,0"
+                                 VerticalAlignment="Center"
+                                 Fill="{Binding StatusKind, ElementName=Root, Converter={StaticResource StatusKindToBrushConverter}}" />
+                        <TextBlock Text="{Binding StatusText, ElementName=Root}"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+                </Border>
+
+                <Button DockPanel.Dock="Right"
+                        Style="{DynamicResource GhostButtonStyle}"
+                        Content="{Binding ActionText, ElementName=Root}"
+                        Command="{Binding ActionCommand, ElementName=Root}"
+                        HorizontalAlignment="Right"
+                        Padding="8,2"
+                        MinHeight="28"
+                        Visibility="{Binding ActionText, ElementName=Root, Converter={StaticResource StringNotEmptyToVisibilityConverter}}" />
+            </DockPanel>
+        </Grid>
+    </Border>
+</UserControl>

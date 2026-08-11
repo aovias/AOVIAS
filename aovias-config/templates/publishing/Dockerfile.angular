@@ -1,0 +1,13 @@
+# syntax=docker/dockerfile:1
+
+ARG SOURCE_REVISION=unknown
+ARG BUILD_UTC=unknown
+
+FROM nginx:1.27-alpine AS final
+ARG SOURCE_REVISION
+ARG BUILD_UTC
+LABEL org.opencontainers.image.revision="${SOURCE_REVISION}"
+ENV AOVIAS_SOURCE_REVISION=${SOURCE_REVISION}
+COPY dist/ /usr/share/nginx/html
+EXPOSE 80
+USER nginx

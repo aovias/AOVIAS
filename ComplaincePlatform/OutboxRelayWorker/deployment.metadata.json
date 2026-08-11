@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "outbox-worker",
+  "displayName": "Outbox Relay Worker",
+  "releaseLibraryCategory": "Services",
+  "includeInDemoBundle": false,
+  "includeInSolutionDeployment": true,
+  "ports": {
+    "containerPort": 8080
+  },
+  "health": {
+    "endpoint": "",
+    "expectedStatus": 200,
+    "timeoutSeconds": 15,
+    "retries": 3,
+    "requiresHttpProbe": false
+  },
+  "dependencies": [
+    { "service": "compliance-service", "required": true, "type": "service" }
+  ]
+}

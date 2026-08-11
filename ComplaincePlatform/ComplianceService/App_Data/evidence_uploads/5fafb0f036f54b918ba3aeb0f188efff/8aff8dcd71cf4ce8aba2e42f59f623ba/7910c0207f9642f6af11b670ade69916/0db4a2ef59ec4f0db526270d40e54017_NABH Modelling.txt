@@ -1,0 +1,182 @@
+We already have Framework > Chapters > Clauses > Tasks  hierarchy implemented in current developed codebase. So now we need to refactor it to align with NABH official architecture of Framework and it's component. 
+Break down into Phases in order of inter-dependencies in impacting modules - 
+1. Re-structure Framework 
+   	  - Framework (NABH)
+          ↓
+      - Chapter (AAC, COP, etc.)
+          ↓
+      - Standard (AAC.1, AAC.2…)
+          ↓
+      - Objective Element (a, b, c…)
+	  
+	  with 
+	      Classification (Core, Commitment, Achievement and Excellence) 
+	  and
+	      Implicit(evidence requirement, Audit expectation and scoring eligibility)
+		  
+	*Note - We need to add new fields to existing schemas and still keep existing fields those add value and are necessary.*
+
+2. Evidence Schema changes
+    Insight from images:
+    -  Many OEs require documented proof
+    -  Some are process-based
+    -  Some are outcome-based
+    
+	EvidenceMapping
+    - Evidence → Multiple OEs possible
+
+3. Scoring Module impact based on 
+      
+	  - Framework  Classification (Core, Commitment, Achievement and Excellence),  
+	  - Implicit (evidence requirement, Audit expectation and scoring eligibility) 
+	  - Documentation   
+	  
+	  OE Level Scoring
+      - ObjectiveElementScore
+	  
+	  Special Logic
+	  1. Core elements are critical
+        - Must be ≥ 4
+
+      2. Documentation impacts score
+         If documentation missing:
+         → Score downgrade
+		 
+      3. Classification-based filtering
+         Final → Core + Commitment
+ 
+
+	  
+4. Journey Module Impact 
+      Map: Journey = Framework Implementation Lifecycle
+      
+	  Journey Structure
+	  
+	  Journey Steps 
+	     OE → Task → Evidence → Score → Compliance
+	  
+	  Task Generation 
+	   Each OE becomes: Task
+         - Linked to OE
+         - Assigned to department
+         - Due date
+         - Status
+		 
+5. Reporting Module
+    
+	    1. Compliance Report
+            Overall %
+            Chapter-wise %
+            Core compliance %
+        
+		2. Risk Report
+            Core OEs < 4
+            Missing evidence
+            Pending actions
+        
+		3. Readiness Report
+            Are we audit ready?
+
+        4. Maturity Report
+            Commitment vs Achievement vs Excellence
+			
+6. Simulation Engine 
+    What it does:
+
+       👉 Simulates audit outcome BEFORE actual audit
+
+     Logic:
+         Use current scores
+         Apply NABH rules
+         Predict:
+         → Pass / Fail
+         → Gaps
+         Output:
+         Expected score
+         Risk areas
+         Required actions
+		 
+		 
+		 
+7.  Audit Module
+      Audit Entity:
+        Audit
+        - HospitalId
+        - FrameworkId
+        - Auditor
+        - Date
+        - Type (Internal / External)
+        Audit Findings:
+        AuditFinding
+        - OEId
+        - Score
+        - Remarks
+        - NonConformityLevel
+		
+9.  Action Plan Module
+
+     Triggered from:
+
+        Score ≤ 3
+        ActionPlan
+        - OEId
+        - RootCause
+        - Action
+        - Owner
+        - Deadline
+        - Status
+		
+		
+		
+		
+Considerations - 
+Data Flow (END-TO-END)
+🔥 Real Flow:
+Framework Setup
+   ↓
+Chapter → Standard → OE Loaded
+   ↓
+Journey Created
+   ↓
+Tasks Generated per OE
+   ↓
+Evidence Uploaded
+   ↓
+OE Scored (1–5)
+   ↓
+NA Applied
+   ↓
+Aggregation
+   ↓
+Compliance %
+   ↓
+Decision Engine
+   ↓
+Pass / Fail
+
+
+
+🧩 1. Tagging & Filtering
+Department (Lab, ICU, HR)
+Role-based ownership
+🧩 2. Versioning
+
+NABH updates standards
+
+👉 You must support:
+
+Framework Versioning
+🧩 3. Multi-Hospital Benchmarking
+
+Later:
+
+Compare hospitals
+Industry benchmarks
+🧩 4. Evidence Reusability
+Same evidence across:
+Multiple OEs
+Multiple audits
+🧩 5. AI Layer (Future 🚀)
+Auto-suggest score
+Detect missing evidence
+Recommend actions

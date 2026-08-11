@@ -1,0 +1,13 @@
+apiVersion: v2
+name: aovias
+description: Future-ready Helm chart skeleton for AOVIAS / PRAMAN commercial deployments.
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - aovias
+  - praman
+  - compliance
+maintainers:
+  - name: AOVIAS Platform
+home: https://github.com/

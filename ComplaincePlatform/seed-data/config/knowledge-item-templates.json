@@ -1,0 +1,25 @@
+{
+  "sourceNotes": [
+    "Templates use per-row placeholders so KnowledgeItems are not identical across OEs.",
+    "Chapter/standard titles come from Masterchapters.csv and Standards.csv joins on CSV Ids."
+  ],
+  "whyItMattersTemplate": "Within chapter {ChapterTitle}, objective element {Code} (title: {Title}) is a measurable checkpoint under parent requirement {StandardCode}. It implements: {StandardTitle}. Meeting this OE demonstrates structured practice for NABH 6th Edition in this domain, reduces patient-safety and operational risk in {ApplicableDepartments}, and provides assessable evidence for survey.",
+  "howToComplyTemplate": "1) Assign accountability: {OwnerRole} with {ApplicableDepartments} participation. 2) Align SOPs/work instructions to {Code} and the intent of {StandardCode}. 3) Train and competency-check staff; retain records. 4) Run monitoring (audits, KPIs, committee review) for scope {ApplicableScope}. 5) Collect evidence per {EvidenceType} expectations. 6) Track NC/CAPA to closure with evidence.",
+  "evidenceRequiredIntroTemplate": "For {Code} under {StandardCode}, maintain retrievable evidence suitable for {EvidenceType} review: ",
+  "evidenceRequiredByEvidenceType": {
+    "Document": "controlled policies/procedures; approvals; registers; completed forms; patient/staff records; meeting minutes; improvement plans.",
+    "Interview": "staff awareness (sampling); structured interviews; competency verification; escalation paths documented.",
+    "Observation": "direct observation checklists; environment/safety walkthrough records; time-stamped survey notes where methodology allows.",
+    "As Applicable": "policies, records, and artefacts proportionate to scope and departmental practice.",
+    "default": "policies, registers, logs, and records proportionate to the OE; traceable approvals; and improvement evidence."
+  },
+  "evidenceRequiredClosing": " Also retain metadata for traceability (version, author, date). NABH 6th Edition surveys may use structured evidence including app-based or photographic artefacts where the methodology permits.",
+  "auditChecklistTemplate": "OE {Code} ({Title}) - parent {StandardCode}\r\n- Mapped to chapter {ChapterCode}: {ChapterTitle}.\r\n- Owner: {OwnerRole}; departments: {ApplicableDepartments}.\r\n- Current policy/SOP and training records available.\r\n- Operational records / sampling for {ApplicableScope}.\r\n- Evidence pack for {EvidenceType} ready.\r\n- KPIs/committees reviewed; NC/CAPA closed with evidence.",
+  "defaultRiskLevel": "Medium",
+  "tagsTemplate": "NABH;6E;{ChapterCode};OE;{Code};{EvidenceType};{StandardCode}",
+  "impactLevelByWeight": {
+    "zero": "Medium",
+    "low": "High",
+    "high": "Critical"
+  }
+}

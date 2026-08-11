@@ -1,0 +1,21 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DropShadowEffect x:Key="ElevationLow"
+                      BlurRadius="12"
+                      Direction="270"
+                      Opacity="0.14"
+                      ShadowDepth="4"
+                      Color="#020617" />
+    <DropShadowEffect x:Key="ElevationMedium"
+                      BlurRadius="18"
+                      Direction="270"
+                      Opacity="0.18"
+                      ShadowDepth="7"
+                      Color="#020617" />
+    <DropShadowEffect x:Key="ElevationHigh"
+                      BlurRadius="28"
+                      Direction="270"
+                      Opacity="0.22"
+                      ShadowDepth="10"
+                      Color="#020617" />
+</ResourceDictionary>

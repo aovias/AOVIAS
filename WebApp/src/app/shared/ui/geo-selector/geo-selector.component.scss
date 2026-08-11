@@ -1,0 +1,20 @@
+.geo-selector {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.geo-field {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .geo-selector {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .geo-field:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+}
+

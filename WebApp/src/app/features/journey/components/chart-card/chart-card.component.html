@@ -1,0 +1,21 @@
+<article class="chart-card" aria-label="Chart card container">
+  <header class="chart-card__head">
+    <div>
+      <h3>{{ title }}</h3>
+      @if (subtitle) {
+        <p>{{ subtitle }}</p>
+      }
+    </div>
+    <div class="chart-card__filter">
+      <ng-content select="[chart-filter]"></ng-content>
+    </div>
+  </header>
+
+  <div class="chart-card__content">
+    <ng-content select="[chart-content]"></ng-content>
+  </div>
+
+  <button type="button" class="chart-card__drilldown" (click)="drilldown.emit()">
+    {{ drilldownLabel }}
+  </button>
+</article>

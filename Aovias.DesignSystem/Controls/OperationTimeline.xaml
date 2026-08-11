@@ -1,0 +1,84 @@
+<UserControl x:Class="Aovias.DesignSystem.Controls.OperationTimeline"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Aovias.DesignSystem.Converters"
+             x:Name="Root">
+    <UserControl.Resources>
+        <converters:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibilityConverter" />
+
+        <Style x:Key="OperationStageDotStyle" TargetType="Ellipse">
+            <Setter Property="Width" Value="10" />
+            <Setter Property="Height" Value="10" />
+            <Setter Property="Fill" Value="{DynamicResource TextMutedBrush}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding StatusText}" Value="Running">
+                    <Setter Property="Fill" Value="{DynamicResource InfoBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusText}" Value="Completed">
+                    <Setter Property="Fill" Value="{DynamicResource SuccessBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusText}" Value="Warning">
+                    <Setter Property="Fill" Value="{DynamicResource WarningBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusText}" Value="Failed">
+                    <Setter Property="Fill" Value="{DynamicResource DangerBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusText}" Value="Cancelled">
+                    <Setter Property="Fill" Value="{DynamicResource WarningBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusText}" Value="Skipped">
+                    <Setter Property="Fill" Value="{DynamicResource TextSecondaryBrush}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <ItemsControl ItemsSource="{Binding Stages, ElementName=Root}">
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <Expander Margin="0,0,0,4" IsExpanded="False">
+                    <Expander.Header>
+                        <Grid MinWidth="500">
+                            <StackPanel Orientation="Horizontal" Margin="0,6">
+                                <Ellipse Style="{StaticResource OperationStageDotStyle}" Margin="0,0,12,0" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Name}"
+                                           FontSize="13"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                           VerticalAlignment="Center"
+                                           Width="220" />
+                                <TextBlock Text="{Binding DisplayDetail}"
+                                           Style="{DynamicResource CaptionTextStyle}"
+                                           VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DurationDisplay}" Style="{DynamicResource CaptionTextStyle}" Margin="0,0,10,0" />
+                                <TextBlock Text="{Binding StatusText}" Style="{DynamicResource CaptionTextStyle}" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Grid>
+                    </Expander.Header>
+
+                    <StackPanel Margin="30,4,0,10">
+                        <TextBlock Text="{Binding FailureMessage}"
+                                   Foreground="{DynamicResource DangerBrush}"
+                                   FontSize="12"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,6"
+                                   Visibility="{Binding FailureMessage, Converter={StaticResource StringNotEmptyToVisibilityConverter}}" />
+                        <ItemsControl ItemsSource="{Binding Logs}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}"
+                                               FontFamily="Consolas"
+                                               FontSize="10.5"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               TextWrapping="Wrap" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Expander>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

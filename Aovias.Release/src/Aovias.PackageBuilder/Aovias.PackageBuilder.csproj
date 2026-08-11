@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.PackageBuilder</RootNamespace>
+    <AssemblyName>Aovias.PackageBuilder</AssemblyName>
+    <Description>Package builder for AOVIAS .aovpkg release artifacts.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aovias.Release.Contracts\Aovias.Release.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Configuration\Aovias.Configuration.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Publishing\src\Aovias.Publishing.Contracts\Aovias.Publishing.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Publishing\src\Aovias.Publishing.Core\Aovias.Publishing.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.9" />
+  </ItemGroup>
+</Project>

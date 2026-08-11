@@ -1,0 +1,24 @@
+{
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "Phases": [
+    {
+      "Phase": 1,
+      "Outcome": 2,
+      "Message": "Could not establish a connection to the target host.",
+      "RootCause": "Unknown stage id \u0027\u0027 for operation \u0027Bootstrap\u0027. (Parameter \u0027stageId\u0027)",
+      "CompletedUtc": "2026-07-10T02:52:14.9478073+00:00",
+      "Succeeded": false
+    }
+  ],
+  "OverallSuccess": false,
+  "FirstFailure": {
+    "Phase": 1,
+    "Outcome": 2,
+    "Message": "Could not establish a connection to the target host.",
+    "RootCause": "Unknown stage id \u0027\u0027 for operation \u0027Bootstrap\u0027. (Parameter \u0027stageId\u0027)",
+    "CompletedUtc": "2026-07-10T02:52:14.9478073+00:00",
+    "Succeeded": false
+  },
+  "GeneratedUtc": "2026-07-10T02:52:14.9478412+00:00",
+  "ReportPath": null
+}

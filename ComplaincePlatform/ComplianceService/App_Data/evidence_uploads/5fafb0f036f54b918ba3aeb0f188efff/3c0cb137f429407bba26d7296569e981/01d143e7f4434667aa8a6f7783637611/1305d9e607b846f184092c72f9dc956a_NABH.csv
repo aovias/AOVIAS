@@ -1,0 +1,72 @@
+FrameworkCode|FrameworkName|Version|ChapterCode|ChapterName|StandardCode|StandardDescription|ObjectiveElementCode|ObjectiveElementDescription|Classification|IsEvidenceRequired|IsAuditable|IsScorable|SourcePageNumber
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.1|Organisation defines and displays healthcare services|AAC.1.a|Healthcare services are defined as per community needs|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.1|Organisation defines and displays healthcare services|AAC.1.b|Each clinical service has qualified personnel and coverage|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.1|Organisation defines and displays healthcare services|AAC.1.c|Scope of clinical services is defined|Commitment|true|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.1|Organisation defines and displays healthcare services|AAC.1.d|Services are prominently displayed|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.2|Registration and admission process defined|AAC.2.a|Written guidance for registration/admission|Commitment|true|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.2|Registration and admission process defined|AAC.2.b|Unique identification number generated|Core|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.2|Registration and admission process defined|AAC.2.c|Patients accepted only if services available|Commitment|false|true|true|69
+FrameworkCode|FrameworkName|Version|ChapterCode|ChapterName|StandardCode|StandardDescription|ObjectiveElementCode|ObjectiveElementDescription|Classification|IsEvidenceRequired|IsAuditable|IsScorable|SourcePageNumber
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.3|Mechanism for patient transfer and referral|AAC.3.a|Patient transfer is done with proper communication and documentation|Commitment|true|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.3|Mechanism for patient transfer and referral|AAC.3.b|Transfer is done with patient/family consent and involvement|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.3|Mechanism for patient transfer and referral|AAC.3.c|Receiving organisation is informed appropriately|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.3|Mechanism for patient transfer and referral|AAC.3.d|Safe and timely transfer process is ensured|Commitment|false|true|true|69
+
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.4|Initial patient assessment process defined|AAC.4.a|Initial assessment is standardized across organisation|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.4|Initial patient assessment process defined|AAC.4.b|Assessment includes clinical, psychological, social aspects|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.4|Initial patient assessment process defined|AAC.4.c|Assessment findings are documented|Commitment|true|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.4|Initial patient assessment process defined|AAC.4.d|Daycare assessment documentation is appropriate|Commitment|true|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.4|Initial patient assessment process defined|AAC.4.e|Assessment process is timely and complete|Core|false|true|true|69
+
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.5|Patient reassessment process defined|AAC.5.a|All patients undergo reassessment as applicable|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.5|Patient reassessment process defined|AAC.5.b|Reassessment documented even if no follow-up needed|Commitment|true|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.5|Patient reassessment process defined|AAC.5.c|Reassessment frequency defined|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.5|Patient reassessment process defined|AAC.5.d|Clinical condition triggers reassessment|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.5|Patient reassessment process defined|AAC.5.e|Effectiveness of monitoring systems documented|Commitment|true|true|true|69
+
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.6|Laboratory services defined as per scope|AAC.6.a|Lab services match organisation scope|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.6|Laboratory services defined as per scope|AAC.6.b|Qualified personnel provide lab services|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.6|Laboratory services defined as per scope|AAC.6.c|Lab services available as required|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.6|Laboratory services defined as per scope|AAC.6.d|Quality control procedures implemented|Commitment|true|true|true|69
+
+FrameworkCode|FrameworkName|Version|ChapterCode|ChapterName|StandardCode|StandardDescription|ObjectiveElementCode|ObjectiveElementDescription|Classification|IsEvidenceRequired|IsAuditable|IsScorable|SourcePageNumber
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.7|Laboratory quality assurance and safety programme|AAC.7.a|Internal quality control procedures are implemented in laboratory|Commitment|true|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.7|Laboratory quality assurance and safety programme|AAC.7.b|External quality assurance programme is implemented|Commitment|true|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.7|Laboratory quality assurance and safety programme|AAC.7.c|Lab safety programme is defined and followed|Commitment|true|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.7|Laboratory quality assurance and safety programme|AAC.7.d|Quality assurance activities are periodically reviewed|Commitment|false|true|true|69
+
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.8|Imaging services provided as per scope|AAC.8.a|Imaging services match scope of organisation|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.8|Imaging services provided as per scope|AAC.8.b|Qualified personnel perform imaging services|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.8|Imaging services provided as per scope|AAC.8.c|Imaging services are available when required|Commitment|false|true|true|69
+
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.9|Imaging quality assurance and safety programme|AAC.9.a|Imaging QA programme is established and implemented|Commitment|true|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.9|Imaging quality assurance and safety programme|AAC.9.b|Radiation safety measures are implemented|Core|true|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.9|Imaging quality assurance and safety programme|AAC.9.c|Equipment maintenance and calibration ensured|Commitment|true|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.9|Imaging quality assurance and safety programme|AAC.9.d|QA activities are reviewed periodically|Commitment|false|true|true|69
+
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.10|Continuity of patient care ensured|AAC.10.a|Care is coordinated among healthcare providers|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.10|Continuity of patient care ensured|AAC.10.b|Multidisciplinary approach followed|Commitment|false|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.10|Continuity of patient care ensured|AAC.10.c|Care plan is documented and updated|Commitment|true|true|true|69
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.10|Continuity of patient care ensured|AAC.10.d|Communication among caregivers ensured|Commitment|false|true|true|69
+
+FrameworkCode|FrameworkName|Version|ChapterCode|ChapterName|StandardCode|StandardDescription|ObjectiveElementCode|ObjectiveElementDescription|Classification|IsEvidenceRequired|IsAuditable|IsScorable|SourcePageNumber
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.11|Preventive and promotive healthcare services provided|AAC.11.a|Preventive health services are defined and implemented|Commitment|true|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.11|Preventive and promotive healthcare services provided|AAC.11.b|Health promotion activities are conducted regularly|Commitment|false|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.11|Preventive and promotive healthcare services provided|AAC.11.c|Community health needs are identified and addressed|Commitment|false|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.11|Preventive and promotive healthcare services provided|AAC.11.d|Preventive programmes are monitored for effectiveness|Commitment|true|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.11|Preventive and promotive healthcare services provided|AAC.11.e|Health education is provided to patients and community|Commitment|false|true|true|68
+
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.12|Discharge process is defined and implemented|AAC.12.a|Discharge planning is initiated early in care|Commitment|false|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.12|Discharge process is defined and implemented|AAC.12.b|Discharge is coordinated among care providers|Commitment|false|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.12|Discharge process is defined and implemented|AAC.12.c|Patients receive discharge instructions|Commitment|true|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.12|Discharge process is defined and implemented|AAC.12.d|Follow-up care instructions are provided|Commitment|true|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.12|Discharge process is defined and implemented|AAC.12.e|Special needs are identified during discharge planning|Commitment|false|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.12|Discharge process is defined and implemented|AAC.12.f|Domiciliary care needs are addressed|Achievement|false|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.12|Discharge process is defined and implemented|AAC.12.g|Safe transfer at discharge is ensured|Commitment|false|true|true|68
+
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.13|Content of discharge summary is defined|AAC.13.a|Discharge summary includes patient condition and treatment|Commitment|true|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.13|Content of discharge summary is defined|AAC.13.b|Diagnosis and procedures are documented|Commitment|true|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.13|Content of discharge summary is defined|AAC.13.c|Medications and follow-up instructions are included|Commitment|true|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.13|Content of discharge summary is defined|AAC.13.d|Death summary includes required details (if applicable)|Commitment|true|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.13|Content of discharge summary is defined|AAC.13.e|Special needs are documented in discharge summary|Commitment|true|true|true|68
+NABH|Hospital Accreditation|6th Ed|AAC|Access, Assessment and Continuity of Care|AAC.13|Content of discharge summary is defined|AAC.13.f|Summary is complete, accurate, and timely|Commitment|true|true|true|68

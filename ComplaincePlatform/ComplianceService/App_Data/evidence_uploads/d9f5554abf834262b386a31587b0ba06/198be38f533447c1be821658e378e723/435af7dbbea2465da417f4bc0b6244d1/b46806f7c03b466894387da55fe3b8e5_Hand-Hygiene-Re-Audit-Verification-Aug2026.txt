@@ -1,0 +1,18 @@
+HAND HYGIENE COMPLIANCE RE-AUDIT — VERIFICATION REPORT
+
+Finding: FND-2026-00004
+Deficiency: DEF-FND-2026-B8BD8B26
+CAPA: CAPA-2026-00002
+Objective Element: PSQ.1.c — Staff are trained and competent
+
+Scope: 3 wards previously audited at 71% compliance against an 85% NABH target.
+
+Corrective action verified:
+  - WHO 5 Moments refresher training delivered to all ward staff (attendance 100%).
+  - Weekly hand hygiene compliance audit reinstated from 07 Aug 2026.
+
+Re-audit result: 89% compliance across the 3 wards, against an 85% target.
+
+Conclusion: corrective action effective. Compliance restored above threshold.
+
+Verified by: Ekta Gupta (Quality Manager), 07 Aug 2026

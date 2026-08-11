@@ -1,0 +1,30 @@
+{
+  "//": "Integration tests run against a RUNNING platform. Nothing here is mocked — tenant isolation cannot be proven against a fake.",
+  "gatewayBaseUrl": "http://localhost:5212",
+
+  "tenantA": {
+    "email": "ekta.gupta@gmail.com",
+    "password": "StrongPassword@123"
+  },
+
+  "//tenantB": [
+    "Credentials for a user in a DIFFERENT organization.",
+    "Without these, cross-tenant DATA VISIBILITY tests are skipped and reported as skipped —",
+    "never silently passed. Spoofing-rejection tests still run in full using a synthetic",
+    "foreign organization id, because rejection does not require the other tenant to exist.",
+    "Populate to unlock the complete matrix."
+  ],
+  "tenantB": {
+    "email": "",
+    "password": ""
+  },
+
+  "//foreignOrganizationId": [
+    "An organization the tenantA user must never be able to reach.",
+    "This is a REAL organization ('QA Test Organization QA 398503'), not a synthetic GUID.",
+    "That distinction matters: rejecting an id that does not exist can happen by accident —",
+    "a lookup miss surfacing as 403. Rejecting an organization that genuinely exists, and whose",
+    "data the caller could otherwise read, is what actually proves isolation."
+  ],
+  "foreignOrganizationId": "b7632d36-4a68-4fa2-865f-21c4025ea3d3"
+}

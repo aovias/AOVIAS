@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "knowledge-base",
+  "displayName": "Knowledge Base",
+  "releaseLibraryCategory": "KnowledgeBase",
+  "includeInDemoBundle": false,
+  "includeInSolutionDeployment": true,
+  "ports": {
+    "containerPort": 5120
+  },
+  "health": {
+    "endpoint": "/health",
+    "expectedStatus": 200,
+    "timeoutSeconds": 15,
+    "retries": 3,
+    "requiresHttpProbe": true
+  },
+  "dependencies": [
+    { "service": "gateway", "required": true, "type": "service" }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "Phases": [
+    {
+      "Phase": 1,
+      "Outcome": 0,
+      "Message": "Target host is reachable over SSH.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T02:48:43.3111567+00:00",
+      "StartedUtc": "2026-07-11T02:48:42.5205737+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Connectivity probe is its own verification.",
+      "Succeeded": true
+    },
+    {
+      "Phase": 2,
+      "Outcome": 0,
+      "Message": "\u0027aovias\u0027 can elevate via sudo, but a password is required.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T02:48:43.872469+00:00",
+      "StartedUtc": "2026-07-11T02:48:43.3120878+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Privilege-mode detection is its own verification.",
+      "Succeeded": true
+    },
+    {
+      "Phase": 3,
+      "Outcome": 1,
+      "Message": "Preflight previously passed for this target; host identity/resources do not drift session-to-session.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T02:48:43.8727778+00:00",
+      "StartedUtc": "2026-07-11T02:48:43.8726422+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Preflight previously passed for this target; host identity/resources do not drift session-to-session.",
+      "Succeeded": true
+    },
+    {
+      "Phase": 4,
+      "Outcome": 1,
+      "Message": "Docker is already installed (Docker version 29.6.0, build fb59821).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T02:48:43.9600166+00:00",
+      "StartedUtc": "2026-07-11T02:48:43.8729074+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Docker is already installed (Docker version 29.6.0, build fb59821).",
+      "Succeeded": true
+    },
+    {
+      "Phase": 5,
+      "Outcome": 1,
+      "Message": "Docker network \u0027aovias-net\u0027 already exists.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T02:48:44.1257736+00:00",
+      "StartedUtc": "2026-07-11T02:48:43.9603506+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Docker network \u0027aovias-net\u0027 already exists.",
+      "Succeeded": true
+    },
+    {
+      "Phase": 6,
+      "Outcome": 1,
+      "Message": "Profile directory exists and \u0027/opt/aovias\u0027 carries mode 777.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T02:48:44.2811785+00:00",
+      "StartedUtc": "2026-07-11T02:48:44.1260247+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Profile directory exists and \u0027/opt/aovias\u0027 carries mode 777.",
+      "Succeeded": true
+    },
+    {
+      "Phase": 7,
+      "Outcome": 0,
+      "Message": "Synchronized configuration \u2014 uploaded: settings.environment-registration.json, settings.runtime.json; unchanged: 15.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T02:48:53.6245236+00:00",
+      "StartedUtc": "2026-07-11T02:48:44.2814065+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "17 file(s) checksum-verified, 0 present but unverifiable (no usable sha256sum on the host).",
+      "Succeeded": true
+    },
+    {
+      "Phase": 8,
+      "Outcome": 0,
+      "Message": "Validated 17 required configuration files \u2014 all required properties present.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T02:48:53.6327938+00:00",
+      "StartedUtc": "2026-07-11T02:48:53.6248843+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Configuration contract validation is its own verification.",
+      "Succeeded": true
+    },
+    {
+      "Phase": 9,
+      "Outcome": 0,
+      "Message": "Runtime Agent artifact was installed and the container was started.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-11T02:49:10.4897742+00:00",
+      "StartedUtc": "2026-07-11T02:48:53.6330697+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": "Runtime Agent container is running and healthy (status=running, health=healthy).",
+      "Succeeded": true
+    },
+    {
+      "Phase": 10,
+      "Outcome": 2,
+      "Message": "Registration Failed \u2014 Fleet Registry registration failed.",
+      "RootCause": "A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (command.aovias.com:443)",
+      "CompletedUtc": "2026-07-11T02:49:31.7925512+00:00",
+      "StartedUtc": "2026-07-11T02:49:10.4900525+00:00",
+      "RetryCount": 0,
+      "RepairAttempts": [],
+      "VerificationResult": null,
+      "Succeeded": false
+    }
+  ],
+  "OverallSuccess": false,
+  "FirstFailure": {
+    "Phase": 10,
+    "Outcome": 2,
+    "Message": "Registration Failed \u2014 Fleet Registry registration failed.",
+    "RootCause": "A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (command.aovias.com:443)",
+    "CompletedUtc": "2026-07-11T02:49:31.7925512+00:00",
+    "StartedUtc": "2026-07-11T02:49:10.4900525+00:00",
+    "RetryCount": 0,
+    "RepairAttempts": [],
+    "VerificationResult": null,
+    "Succeeded": false
+  },
+  "GeneratedUtc": "2026-07-11T02:49:31.7927596+00:00",
+  "ReportPath": null
+}

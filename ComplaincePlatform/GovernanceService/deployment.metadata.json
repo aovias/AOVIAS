@@ -1,0 +1,6 @@
+{
+  "serviceId": "praman-governance",
+  "displayName": "PRAMAN Governance",
+  "port": 7210,
+  "httpPort": 5210
+}

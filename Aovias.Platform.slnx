@@ -1,0 +1,95 @@
+<Solution>
+  <!--
+    Sprint M3.2: the single, authoritative "build everything" solution for CI and local full-
+    platform verification (`dotnet build Aovias.Platform.slnx`, `dotnet test Aovias.Platform.slnx`).
+    Lists every cross-platform Aovias.* project in the repository — the full, exact output of a
+    repo-wide `find *.csproj` scan, not a hand-curated subset — so this file cannot silently drift
+    out of sync with what actually exists the way the per-area *.slnx files and the previously
+    incomplete root Aovias.PublishingEngine.slnx had (see the M3.2 report for what was found and
+    fixed in those). The five per-area *.slnx files (Aovias.Runtime.Agent.slnx, Aovias.Release.slnx,
+    Aovias.CommandCenter.slnx, Aovias.Orchestration.slnx, Aovias.Publishing.slnx) and the root
+    Aovias.PublishingEngine.slnx remain for focused area-scoped development; this file is additive,
+    not a replacement.
+
+    Sprint M4.1: Aovias.Bootstrap (Contracts/Core/Host + Core.Tests) is now in scope — Zero-Touch
+    Environment Bootstrap — and is added to the Folder list below alongside every other area.
+
+    Sprint M3.0 (Toolchain Restoration & Canonical Build Baseline): this file and
+    `ComplianceServiceManager/ComplianceServiceManager.slnx` are the two canonical build entry
+    points for the whole platform:
+    - `Aovias.Platform.slnx` (this file) — every cross-platform (net10.0) production project:
+      builds on any CI runner (Linux/Windows/macOS), no Desktop workload required.
+    - `ComplianceServiceManager/ComplianceServiceManager.slnx` — the Windows/WPF leg
+      (net10.0-windows, UseWPF): `ComplianceServiceManager` + `Aovias.DesignSystem`. Requires a
+      Windows build agent with the .NET Desktop workload. Kept as a second, separate entry point
+      rather than folded into this file for exactly the reason `Aovias.DesignSystem` was already
+      excluded below.
+    A repo-wide `find *.csproj` scan (M3.0) also found `tools/PublishAllServices` and
+    `tools/PublishRuntimeAgent` — both net10.0, both previously in no solution at all — added to
+    the new `/tools/` folder below.
+
+    Deliberately excluded, with reason:
+    - Aovias.DesignSystem - targets net10.0-windows with UseWPF=true; requires the Windows Desktop
+      SDK workload, which most CI runners (and this sandbox) do not carry. Building it alongside
+      the cross-platform server projects would make this file fail on any non-Windows build agent
+      for a reason unrelated to the platform's own correctness. Covered instead by
+      `ComplianceServiceManager.slnx` (see above).
+  -->
+  <Folder Name="/Aovias.Bootstrap/">
+    <Project Path="Aovias.Bootstrap/src/Aovias.Bootstrap.Contracts/Aovias.Bootstrap.Contracts.csproj" />
+    <Project Path="Aovias.Bootstrap/src/Aovias.Bootstrap.Core/Aovias.Bootstrap.Core.csproj" />
+    <Project Path="Aovias.Bootstrap/src/Aovias.Bootstrap.Execution/Aovias.Bootstrap.Execution.csproj" />
+    <Project Path="Aovias.Bootstrap/src/Aovias.Bootstrap.Host/Aovias.Bootstrap.Host.csproj" />
+    <Project Path="Aovias.Bootstrap/tests/Aovias.Bootstrap.Core.Tests/Aovias.Bootstrap.Core.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Aovias.CommandCenter/">
+    <Project Path="Aovias.CommandCenter/src/Aovias.CommandCenter.Api/Aovias.CommandCenter.Api.csproj" />
+    <Project Path="Aovias.CommandCenter/src/Aovias.CommandCenter.Infrastructure/Aovias.CommandCenter.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Aovias.Configuration/">
+    <Project Path="Aovias.Configuration/Aovias.Configuration.csproj" />
+    <Project Path="Aovias.Configuration/tests/Aovias.Configuration.Tests/Aovias.Configuration.Tests.csproj" />
+  </Folder>
+  <Project Path="Aovias.Deployment.Contracts/Aovias.Deployment.Contracts.csproj" />
+  <Folder Name="/Aovias.DeploymentValidation/">
+    <Project Path="Aovias.DeploymentValidation/Aovias.DeploymentValidation.csproj" />
+    <Project Path="Aovias.DeploymentValidation/tests/Aovias.DeploymentValidation.Tests/Aovias.DeploymentValidation.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Aovias.Orchestration/">
+    <Project Path="Aovias.Orchestration/src/Aovias.Orchestration.Contracts/Aovias.Orchestration.Contracts.csproj" />
+    <Project Path="Aovias.Orchestration/src/Aovias.Orchestration/Aovias.Orchestration.csproj" />
+    <Project Path="Aovias.Orchestration/src/Aovias.Platform.Core/Aovias.Platform.Core.csproj" />
+  </Folder>
+  <Folder Name="/Aovias.Publishing/">
+    <Project Path="Aovias.Publishing/src/Aovias.Publishing.Contracts/Aovias.Publishing.Contracts.csproj" />
+    <Project Path="Aovias.Publishing/src/Aovias.Publishing.Core/Aovias.Publishing.Core.csproj" />
+    <Project Path="Aovias.Publishing/src/Aovias.Publishing.Providers.Angular/Aovias.Publishing.Providers.Angular.csproj" />
+    <Project Path="Aovias.Publishing/src/Aovias.Publishing.Providers.DotNet/Aovias.Publishing.Providers.DotNet.csproj" />
+    <Project Path="Aovias.Publishing/src/Aovias.Publishing.Providers.Static/Aovias.Publishing.Providers.Static.csproj" />
+    <Project Path="Aovias.Publishing/src/Aovias.Publishing.SDK/Aovias.Publishing.SDK.csproj" />
+    <Project Path="Aovias.Publishing/tests/Aovias.Publishing.Core.Tests/Aovias.Publishing.Core.Tests.csproj" />
+    <Project Path="Aovias.Publishing/tests/Aovias.Publishing.Providers.DotNet.Tests/Aovias.Publishing.Providers.DotNet.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Aovias.Release/">
+    <Project Path="Aovias.Release/src/Aovias.PackageBuilder/Aovias.PackageBuilder.csproj" />
+    <Project Path="Aovias.Release/src/Aovias.Release.Contracts/Aovias.Release.Contracts.csproj" />
+    <Project Path="Aovias.Release/src/Aovias.Release.SDK/Aovias.Release.SDK.csproj" />
+    <Project Path="Aovias.Release/src/Aovias.ReleaseManager/Aovias.ReleaseManager.csproj" />
+  </Folder>
+  <Folder Name="/Aovias.Runtime.Agent/">
+    <Project Path="Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Api/Aovias.Runtime.Agent.Api.csproj" />
+    <Project Path="Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Application/Aovias.Runtime.Agent.Application.csproj" />
+    <Project Path="Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Domain/Aovias.Runtime.Agent.Domain.csproj" />
+    <Project Path="Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Infrastructure/Aovias.Runtime.Agent.Infrastructure.csproj" />
+    <Project Path="Aovias.Runtime.Agent/src/Aovias.Runtime.Contracts/Aovias.Runtime.Contracts.csproj" />
+    <Project Path="Aovias.Runtime.Agent/src/Aovias.Runtime.SDK/Aovias.Runtime.SDK.csproj" />
+  </Folder>
+  <Folder Name="/ComplianceServiceManager.Operations/">
+    <Project Path="ComplianceServiceManager.Operations/ComplianceServiceManager.Operations.csproj" />
+    <Project Path="ComplianceServiceManager.Operations.Tests/ComplianceServiceManager.Operations.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/PublishAllServices/PublishAllServices.csproj" />
+    <Project Path="tools/PublishRuntimeAgent/PublishRuntimeAgent.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,104 @@
+<div class="proposal-list">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <div class="proposal-list__header">
+    <h2 class="proposal-list__title">
+      <span class="material-icons-outlined">auto_fix_high</span>
+      AI Action Proposals
+    </h2>
+
+    <!-- Counts bar -->
+    <div class="proposal-list__counts">
+      <button class="count-chip"
+              [class.count-chip--active]="statusFilter() === 'all'"
+              (click)="setStatusFilter('all')">
+        All <strong>{{ counts().total }}</strong>
+      </button>
+      <button class="count-chip count-chip--warning"
+              [class.count-chip--active]="statusFilter() === ProposalStatus.Proposed"
+              (click)="setStatusFilter(ProposalStatus.Proposed)">
+        Pending <strong>{{ counts().pending }}</strong>
+      </button>
+      <button class="count-chip count-chip--success"
+              [class.count-chip--active]="statusFilter() === ProposalStatus.Approved"
+              (click)="setStatusFilter(ProposalStatus.Approved)">
+        Approved <strong>{{ counts().approved }}</strong>
+      </button>
+      <button class="count-chip count-chip--primary"
+              [class.count-chip--active]="statusFilter() === ProposalStatus.Executed"
+              (click)="setStatusFilter(ProposalStatus.Executed)">
+        Executed <strong>{{ counts().executed }}</strong>
+      </button>
+      <button class="count-chip count-chip--danger"
+              [class.count-chip--active]="statusFilter() === ProposalStatus.Rejected"
+              (click)="setStatusFilter(ProposalStatus.Rejected)">
+        Rejected <strong>{{ counts().rejected }}</strong>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Search bar ────────────────────────────────────────────────────── -->
+  <div class="proposal-list__search">
+    <span class="material-icons-outlined">search</span>
+    <input type="text"
+           placeholder="Search proposals..."
+           [ngModel]="searchQuery()"
+           (ngModelChange)="searchQuery.set($event)"
+           class="search-input" />
+  </div>
+
+  <!-- ── Loading ───────────────────────────────────────────────────────── -->
+  <div class="proposal-list__loading" *ngIf="loading()">
+    <div class="spinner spinner--sm"></div>
+    Loading proposals…
+  </div>
+
+  <!-- ── Empty state ───────────────────────────────────────────────────── -->
+  <div class="proposal-list__empty" *ngIf="!loading() && filteredProposals().length === 0">
+    <span class="material-icons-outlined">auto_fix_normal</span>
+    <p>No proposals match the current filter.</p>
+    <small>Proposals are generated from recommendations and drafts.</small>
+  </div>
+
+  <!-- ── Proposal cards ─────────────────────────────────────────────────── -->
+  <div class="proposal-list__cards" *ngIf="!loading()">
+    <div class="proposal-list__card-wrapper"
+         *ngFor="let proposal of filteredProposals()">
+      <app-approval-card
+        [proposal]="proposal"
+        (approveClicked)="onApprove($event)"
+        (rejectClicked)="onRejectPrompt($event)"
+        (executeClicked)="onExecute($event)"
+        (viewSource)="openDetail(proposal)"
+        (openDraft)="openDetail(proposal)">
+      </app-approval-card>
+    </div>
+  </div>
+
+  <!-- ── Proposal detail panel ──────────────────────────────────────────── -->
+  <app-proposal-detail
+    *ngIf="selectedProposal()"
+    [proposal]="selectedProposal()!"
+    (closed)="closeDetail()"
+    (approveClicked)="onApprove($event)"
+    (rejectClicked)="onRejectPrompt($event)"
+    (executeClicked)="onExecute($event)">
+  </app-proposal-detail>
+
+  <!-- ── Reject dialog ──────────────────────────────────────────────────── -->
+  <div class="modal-overlay" *ngIf="showRejectDialog()" (click)="cancelReject()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3 class="modal__title">Reject Proposal</h3>
+      <label class="form-label">Reason for rejection</label>
+      <textarea class="form-control"
+                rows="3"
+                placeholder="Provide a reason for rejecting this proposal…"
+                [ngModel]="rejectReason()"
+                (ngModelChange)="rejectReason.set($event)"></textarea>
+      <div class="modal__actions">
+        <button class="btn btn--danger" (click)="confirmReject()">Confirm Reject</button>
+        <button class="btn btn--outline" (click)="cancelReject()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

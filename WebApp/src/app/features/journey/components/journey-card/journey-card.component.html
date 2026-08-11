@@ -1,0 +1,90 @@
+<ng-template #cardInner>
+  <div class="journey-card__step" aria-hidden="true">
+    <span class="journey-card__step-label">Phase</span>
+    <span class="journey-card__step-value">{{ stepIndex }} / {{ totalSteps }}</span>
+  </div>
+
+  <div class="journey-card__head">
+    <span class="journey-card__icon-wrap" aria-hidden="true">
+      <ng-icon [name]="lucideName" class="journey-card__icon" aria-hidden="true" />
+    </span>
+    <span
+      class="journey-card__status"
+      [class.journey-card__status--active]="variant === 'active'"
+      [class.journey-card__status--available]="variant === 'available'"
+      [class.journey-card__status--locked]="variant === 'locked'"
+    >
+      {{ statusLabel }}
+    </span>
+  </div>
+
+  @if (isNextPhase && variant === 'available') {
+    <p class="journey-card__sequence-hint">Next in lifecycle sequence</p>
+  }
+
+  <h3 class="journey-card__title">{{ title }}</h3>
+  <p class="journey-card__description">{{ description }}</p>
+
+  @if (variant === 'active') {
+    <p class="journey-card__mode-kicker">Current operating mode — controls and data entry follow this phase</p>
+  }
+
+  @if (variant === 'active' && progress !== null) {
+    <div class="journey-card__progress-block" [attr.aria-label]="'Core compliance progress for ' + title">
+      <div class="journey-card__progress-label">Progress</div>
+      <div class="journey-card__progress-row">
+        <div class="journey-card__progress">
+          <div class="journey-card__progress-fill" [ngClass]="progressClass"></div>
+        </div>
+        <span class="journey-card__progress-pct">{{ progress }}%</span>
+      </div>
+    </div>
+  }
+
+  @if (variant === 'locked') {
+    <div class="journey-card__lock-block" role="status">
+      <ng-icon name="lucideLock" class="journey-card__lock-icon" aria-hidden="true" />
+      <p class="journey-card__lock-reason">{{ lockReason }}</p>
+    </div>
+  }
+
+  @if (variant === 'available') {
+    <div class="journey-card__action-foot">
+      <span class="journey-card__action-text">Switch to this mode</span>
+      <ng-icon name="lucideArrowRight" class="journey-card__action-arrow" aria-hidden="true" />
+    </div>
+  }
+</ng-template>
+
+@switch (variant) {
+  @case ('active') {
+    <article
+      class="journey-card journey-card--active"
+      [attr.aria-label]="ariaLabel"
+      tabindex="-1"
+    >
+      <ng-container *ngTemplateOutlet="cardInner" />
+    </article>
+  }
+  @case ('locked') {
+    <article
+      class="journey-card journey-card--locked"
+      [attr.aria-label]="ariaLabel"
+      [attr.title]="lockReason ?? 'Locked'"
+    >
+      <ng-container *ngTemplateOutlet="cardInner" />
+    </article>
+  }
+  @default {
+    <button
+      type="button"
+      class="journey-card journey-card--available"
+      [class.journey-card--next]="isNextPhase"
+      [attr.aria-label]="ariaLabel"
+      (click)="onActivate()"
+      (keydown)="onKeydown($event)"
+    >
+      <ng-container *ngTemplateOutlet="cardInner" />
+    </button>
+  }
+}

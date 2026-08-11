@@ -1,0 +1,24 @@
+/**
+ * Shared page shell for External Auditor workspace routes.
+ * Uses the standard page layout tokens (UI-2) so this workspace aligns with
+ * every other routed page.
+ */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.auditor-workspace {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--page-padding-block-start) var(--page-padding-inline) var(--page-padding-block-end);
+  min-block-size: calc(100vh - var(--header-height, 4rem));
+  background: var(--color-bg-page, var(--bg-primary, #f9fafb));
+}
+
+@media (max-width: 47.99rem) {
+  .auditor-workspace {
+    padding: var(--page-padding-block-start) var(--page-padding-inline) var(--page-padding-block-end);
+  }
+}

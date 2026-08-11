@@ -1,0 +1,167 @@
+/*
+ * Material 3 buttons (Angular Material 21+): disabled stroked/outlined + filled/flat.
+ * Mat injects button styles from JS with encapsulation none — this file must load LAST in angular.json.
+ * M3 uses --mat-button-* tokens. Selectors avoid requiring .mdc-button so we match the real DOM.
+ */
+
+.mat-mdc-outlined-button.mat-mdc-button-disabled,
+.mat-mdc-outlined-button:disabled,
+.mat-mdc-outlined-button[aria-disabled='true'] {
+  --mat-button-outlined-disabled-label-text-color: var(--color-text-inverse) !important;
+  --mat-button-outlined-disabled-outline-color: transparent !important;
+  --mat-button-outlined-disabled-state-layer-color: transparent !important;
+  color: var(--color-text-inverse) !important;
+  background-color: var(--color-text-muted) !important;
+  border-color: transparent !important;
+  opacity: 1 !important;
+}
+
+.mat-mdc-outlined-button.mat-mdc-button-disabled .mdc-button__label,
+.mat-mdc-outlined-button:disabled .mdc-button__label,
+.mat-mdc-outlined-button[aria-disabled='true'] .mdc-button__label {
+  color: var(--color-text-inverse) !important;
+}
+
+.mat-mdc-outlined-button.mat-mdc-button-disabled .mat-mdc-button-persistent-ripple::before,
+.mat-mdc-outlined-button:disabled .mat-mdc-button-persistent-ripple::before,
+.mat-mdc-outlined-button[aria-disabled='true'] .mat-mdc-button-persistent-ripple::before {
+  opacity: 0 !important;
+}
+
+.mat-mdc-unelevated-button.mat-mdc-button-disabled,
+.mat-mdc-unelevated-button:disabled,
+.mat-mdc-unelevated-button[aria-disabled='true'] {
+  --mat-button-filled-disabled-label-text-color: var(--color-text-inverse) !important;
+  --mat-button-filled-disabled-container-color: var(--color-text-muted) !important;
+  --mat-button-filled-disabled-state-layer-color: transparent !important;
+  color: var(--color-text-inverse) !important;
+  background-color: var(--color-text-muted) !important;
+  opacity: 1 !important;
+}
+
+.mat-mdc-unelevated-button.mat-mdc-button-disabled .mdc-button__label,
+.mat-mdc-unelevated-button:disabled .mdc-button__label,
+.mat-mdc-unelevated-button[aria-disabled='true'] .mdc-button__label {
+  color: var(--color-text-inverse) !important;
+}
+
+.mat-mdc-raised-button.mat-mdc-button-disabled,
+.mat-mdc-raised-button:disabled,
+.mat-mdc-raised-button[aria-disabled='true'] {
+  --mat-button-protected-disabled-label-text-color: var(--color-text-inverse) !important;
+  --mat-button-protected-disabled-container-color: var(--color-text-muted) !important;
+  color: var(--color-text-inverse) !important;
+  background-color: var(--color-text-muted) !important;
+  opacity: 1 !important;
+}
+
+/* Dark-theme disabled fills need no override: --color-text-muted is theme-scoped. */
+
+/*
+ * Dark theme — OE wizard footer: stroked (outlined) buttons are mat-unthemed and otherwise pick up
+ * M3 on-surface tones that read as dark-on-dark. Force label + outline from app tokens (enabled only).
+ */
+:root[data-theme='dark'] .oe-wizard__foot .mat-mdc-outlined-button:not(:disabled):not(.mat-mdc-button-disabled) {
+  --mat-button-outlined-label-text-color: var(--color-text-primary);
+  --mat-button-outlined-outline-color: color-mix(in srgb, var(--color-text-secondary) 55%, transparent);
+  --mat-button-outlined-state-layer-color: var(--color-brand-primary);
+  color: var(--color-text-primary) !important;
+  border-color: color-mix(in srgb, var(--color-text-secondary) 45%, transparent) !important;
+}
+
+:root[data-theme='dark'] .oe-wizard__foot .mat-mdc-outlined-button:not(:disabled):not(.mat-mdc-button-disabled) .mdc-button__label {
+  color: var(--color-text-primary) !important;
+}
+
+/* AOVIAS Primary — Material interactive surfaces consume semantic tokens */
+.mat-mdc-button.mat-primary,
+.mat-mdc-unelevated-button.mat-primary,
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-outlined-button.mat-primary,
+.mat-mdc-icon-button.mat-primary,
+.mat-mdc-fab.mat-primary,
+.mat-mdc-mini-fab.mat-primary,
+.mat-mdc-button.mat-accent,
+.mat-mdc-unelevated-button.mat-accent,
+.mat-mdc-raised-button.mat-accent,
+.mat-mdc-outlined-button.mat-accent,
+.mat-mdc-icon-button.mat-accent,
+.mat-mdc-fab.mat-accent,
+.mat-mdc-mini-fab.mat-accent {
+  --mat-button-filled-container-color: var(--color-primary);
+  --mat-button-filled-label-text-color: var(--color-text-inverse);
+  --mat-button-filled-state-layer-color: var(--color-primary-hover);
+  --mat-button-protected-container-color: var(--color-primary);
+  --mat-button-protected-label-text-color: var(--color-text-inverse);
+  --mat-button-outlined-label-text-color: var(--color-primary);
+  --mat-button-outlined-outline-color: var(--color-primary);
+  --mat-button-text-label-text-color: var(--color-primary);
+  --mat-icon-button-icon-color: var(--color-primary);
+  --mat-fab-container-color: var(--color-primary);
+  --mat-fab-foreground-color: var(--color-text-inverse);
+}
+
+.mat-mdc-checkbox.mat-primary,
+.mat-mdc-slide-toggle.mat-primary,
+.mat-mdc-radio-button.mat-accent,
+.mat-mdc-radio-button.mat-primary,
+.mat-mdc-checkbox.mat-accent,
+.mat-mdc-slide-toggle.mat-accent {
+  --mdc-checkbox-selected-icon-color: var(--color-primary);
+  --mdc-checkbox-selected-focus-icon-color: var(--color-primary-hover);
+  --mdc-checkbox-selected-hover-icon-color: var(--color-primary-hover);
+  --mdc-checkbox-selected-pressed-icon-color: var(--color-primary-active);
+  --mdc-checkbox-selected-focus-state-layer-color: var(--color-primary);
+  --mdc-checkbox-selected-hover-state-layer-color: var(--color-primary);
+  --mdc-switch-selected-handle-color: var(--color-primary);
+  --mdc-switch-selected-track-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+  --mdc-switch-selected-focus-handle-color: var(--color-primary-hover);
+  --mdc-switch-selected-hover-handle-color: var(--color-primary-hover);
+  --mdc-switch-selected-pressed-handle-color: var(--color-primary-active);
+  --mdc-radio-selected-icon-color: var(--color-primary);
+  --mdc-radio-selected-focus-icon-color: var(--color-primary-hover);
+  --mdc-radio-selected-hover-icon-color: var(--color-primary-hover);
+}
+
+.mat-mdc-tab .mdc-tab__text-label,
+.mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  --mat-tab-header-active-label-text-color: var(--color-primary);
+  --mat-tab-header-active-focus-label-text-color: var(--color-primary-hover);
+  --mat-tab-header-active-hover-label-text-color: var(--color-primary-hover);
+  --mat-tab-header-active-ripple-color: var(--color-primary);
+  --mat-tab-header-active-focus-indicator-color: var(--color-primary);
+  --mat-tab-header-active-hover-indicator-color: var(--color-primary);
+  --mat-tab-header-inactive-ripple-color: var(--color-primary);
+}
+
+.mat-mdc-paginator {
+  --mat-paginator-enabled-icon-color: var(--color-primary);
+}
+
+.mat-mdc-progress-bar {
+  --mdc-linear-progress-active-indicator-color: var(--color-primary);
+}
+
+.mat-mdc-progress-spinner,
+.mat-mdc-spinner {
+  --mdc-circular-progress-active-indicator-color: var(--color-primary);
+}
+
+/*
+ * Focus ring enforcement layer. The canonical definition lives in
+ * enterprise-ui.css as a zero-specificity `:where()` rule; this file loads last
+ * (see angular.json) so the same tokens are re-applied where Material or a
+ * component style would otherwise suppress the indicator.
+ */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[role='button']:focus-visible,
+[role='tab']:focus-visible,
+[tabindex]:not([tabindex='-1']):focus-visible {
+  outline: var(--focus-ring-width) solid var(--state-focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}

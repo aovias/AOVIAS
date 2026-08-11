@@ -1,0 +1,173 @@
+<div
+  class="execution-screen"
+  [class.execution-screen--context-drawer-open]="contextDrawerOpen()"
+>
+  <div class="execution-screen__main">
+    <header class="execution-screen__header">
+      <div class="execution-screen__header-main">
+        <button
+          type="button"
+          class="execution-screen__back-button"
+          [routerLink]="['/app/journey']"
+          aria-label="Back to Journey"
+        >
+          <ng-icon name="lucideArrowLeft" aria-hidden="true" />
+        </button>
+        <div class="execution-screen__heading">
+          <p class="execution-screen__kicker">Compliance Execution Workspace</p>
+          <h1 class="execution-screen__title">Journey Execution</h1>
+        </div>
+      </div>
+      <div class="execution-screen__header-framework">
+        <app-journey-framework-context />
+      </div>
+      <button
+        type="button"
+        class="execution-screen__context-toggle"
+        [attr.aria-expanded]="contextDrawerOpen()"
+        aria-controls="execution-journey-context"
+        (click)="toggleContextDrawer()"
+      >
+        OE context
+      </button>
+    </header>
+
+    <!-- Stage context + execution summary -->
+    @if (maturityStages().length) {
+      <section class="execution-screen__stage-context" aria-label="Current stage context">
+        <app-stage-progress-strip [stages]="maturityStages()" />
+      </section>
+    }
+    <section class="execution-screen__exec-summary" aria-label="Execution summary">
+      <dl class="execution-screen__summary-grid">
+        <div>
+          <dt>Current Stage</dt>
+          <dd>{{ activeStageLabel() }}</dd>
+        </div>
+        <div>
+          <dt>Stage Readiness</dt>
+          <dd>{{ stageReadinessPercent() | number:'1.0-0' }}%</dd>
+        </div>
+        <div>
+          <dt>Stage Status</dt>
+          <dd>{{ stageStatusLabel() }}</dd>
+        </div>
+        <div>
+          <dt>Compliance Readiness</dt>
+          <dd>{{ complianceReadinessPercent() }}%</dd>
+        </div>
+        <div>
+          <dt>Open Deficiencies</dt>
+          <dd>{{ openDeficiencyTotal() }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- Maturity Stage Filter Strip -->
+    <nav class="execution-screen__stage-strip" aria-label="Filter by maturity stage">
+      <p class="execution-screen__stage-strip-label">Stage</p>
+      @for (opt of stageOptions; track opt.label) {
+        <button
+          type="button"
+          class="execution-screen__stage-btn"
+          [class.execution-screen__stage-btn--active]="store.maturityStageFilter() === opt.value"
+          [attr.data-stage]="opt.value ?? 'all'"
+          [attr.aria-pressed]="store.maturityStageFilter() === opt.value"
+          (click)="onStageFilterChange(opt.value)"
+        >
+          {{ opt.label }}
+        </button>
+      }
+    </nav>
+
+  @if (contextDrawerOpen()) {
+    <button
+      type="button"
+      class="execution-screen__sheet-backdrop"
+      (click)="closeContextDrawer()"
+      aria-label="Close context panel"
+    ></button>
+  }
+
+  @if (store.loadError()) {
+    <section class="execution-screen__state execution-screen__state--error">
+      <p>{{ store.loadError() }}</p>
+      <button type="button" class="execution-screen__retry" (click)="store.retryLoad()">Retry</button>
+    </section>
+  } @else if (store.loading() && !store.snapshot()) {
+    <section class="execution-screen__state" aria-busy="true">Loading execution workspace...</section>
+  } @else {
+    <section class="execution-screen__workspace" aria-label="Execution workspace">
+      <div
+        class="execution-screen__stack execution-screen__panel execution-screen__panel--left"
+        id="execution-anchor-chapters"
+      >
+        <app-execution-chapter-panel
+          class="execution-screen__stack-fill"
+          [vm]="chapterPanelVm()"
+          [modeUi]="executionModeUi()"
+          [searchQuery]="store.chapterSearch()"
+          [sortByRiskDesc]="store.sortChaptersByRiskDesc()"
+          (chapterSelect)="onChapterSelected($event)"
+          (searchQueryChange)="onChapterSearchChange($event)"
+          (sortMode)="onChapterSortMode($event)"
+        />
+      </div>
+
+      <div
+        class="execution-screen__stack execution-screen__panel execution-screen__panel--center"
+        id="execution-anchor-standards"
+      >
+        <div class="execution-screen__narrow-nav">
+          <button
+            type="button"
+            class="execution-screen__narrow-back"
+            (click)="scrollToChapters()"
+            aria-label="Back to chapter navigation"
+          >
+            <ng-icon name="lucideArrowLeft" aria-hidden="true" />
+            <span>Chapters</span>
+          </button>
+        </div>
+        <app-execution-standards-panel
+          class="execution-screen__stack-fill"
+          [vm]="standardsPanelVm()"
+          [modeUi]="executionModeUi()"
+          (standardSelect)="onStandardSelected($event)"
+          (oeContextSelect)="onOeContextSelect($event.standardId, $event.oeId)"
+        />
+      </div>
+
+      <div
+        class="execution-screen__stack execution-screen__panel execution-screen__panel--right execution-screen__context-column"
+        id="execution-anchor-context"
+      >
+        <div class="execution-screen__narrow-nav">
+          <button
+            type="button"
+            class="execution-screen__narrow-back"
+            (click)="scrollToStandards()"
+            aria-label="Back to standards and objective elements"
+          >
+            <ng-icon name="lucideArrowLeft" aria-hidden="true" />
+            <span>Standards</span>
+          </button>
+        </div>
+        <div class="execution-screen__context-host" id="execution-journey-context">
+          <app-journey-context-panel
+            class="execution-screen__stack-fill"
+            [vm]="store.journeyContextPanelVm()"
+            [modeUi]="executionModeUi()"
+            (startJourney)="onContextStartJourney()"
+            (viewHistory)="onContextViewHistory()"
+            (uploadEvidence)="onContextUploadEvidence()"
+            (addTask)="onContextAddTask()"
+            (viewDeficiencies)="onContextViewDeficiencies()"
+            (viewTimeline)="onContextViewTimeline()"
+          />
+        </div>
+      </div>
+    </section>
+  }
+  </div>
+</div>

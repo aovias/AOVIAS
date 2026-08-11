@@ -1,0 +1,48 @@
+<UserControl x:Class="Aovias.DesignSystem.Controls.SectionHeader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Aovias.DesignSystem.Converters"
+             x:Name="Root">
+    <UserControl.Resources>
+        <converters:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0"
+                Width="42"
+                Height="42"
+                CornerRadius="11"
+                Background="{DynamicResource SurfaceInsetBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1"
+                Margin="0,0,14,0"
+                Visibility="{Binding IconGlyph, ElementName=Root, Converter={StaticResource StringNotEmptyToVisibilityConverter}}">
+            <TextBlock Text="{Binding IconGlyph, ElementName=Root}"
+                       FontFamily="{DynamicResource IconFont}"
+                       FontSize="18"
+                       Foreground="{DynamicResource PrimaryBrush}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+        </Border>
+
+        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+            <TextBlock Text="{Binding Title, ElementName=Root}"
+                       Style="{DynamicResource DisplayTextStyle}"
+                       FontSize="22" />
+            <TextBlock Text="{Binding Subtitle, ElementName=Root}"
+                       Style="{DynamicResource CaptionTextStyle}"
+                       Margin="0,4,0,0"
+                       Visibility="{Binding Subtitle, ElementName=Root, Converter={StaticResource StringNotEmptyToVisibilityConverter}}" />
+        </StackPanel>
+
+        <ContentPresenter Grid.Column="2"
+                          VerticalAlignment="Center"
+                          Content="{Binding ActionContent, ElementName=Root}" />
+    </Grid>
+</UserControl>

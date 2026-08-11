@@ -1,0 +1,65 @@
+# AOVIAS .gitattributes
+
+* text=auto eol=lf
+
+# Source — normalize as text
+*.cs text diff=csharp
+*.csproj text
+*.props text
+*.targets text
+*.sln text
+*.slnx text
+*.ts text
+*.tsx text
+*.js text
+*.jsx text
+*.mjs text
+*.cjs text
+*.json text
+*.md text
+*.yml text
+*.yaml text
+*.xml text
+*.html text
+*.css text
+*.scss text
+*.sass text
+*.svg text
+*.graphql text
+*.sql text
+*.Dockerfile text
+Dockerfile text
+*.dockerignore text
+.editorconfig text
+.gitignore text
+.gitattributes text
+
+# Shell / PowerShell — LF for cross-platform scripts; CRLF for Windows cmd
+*.sh text eol=lf
+*.bash text eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.pdf binary
+*.wasm binary
+*.dll binary
+*.exe binary
+*.pdb binary
+*.nupkg binary
+*.zip binary
+*.7z binary
+*.rar binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.mp4 binary
+*.webm binary

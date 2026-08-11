@@ -1,0 +1,48 @@
+{
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "Phases": [
+    {
+      "Phase": 1,
+      "Outcome": 1,
+      "Message": "Phase \u0027Preflight\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-10T02:05:31.9730692+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 2,
+      "Outcome": 1,
+      "Message": "Phase \u0027DockerInstallation\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-10T02:05:31.9730772+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 3,
+      "Outcome": 1,
+      "Message": "Phase \u0027DockerNetworkCreation\u0027 was already recorded complete for \u0027187.127.154.201:22:demo\u0027 (resumed run).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-10T02:05:31.9730804+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 4,
+      "Outcome": 2,
+      "Message": "Could not open permissions on \u0027/opt/aovias\u0027 for the Runtime Agent container\u0027s own UID.",
+      "RootCause": "chmod: changing permissions of \u0027/opt/aovias/logs/runtime-agent-20260710.log\u0027: Operation not permitted\nchmod: changing permissions of \u0027/opt/aovias/logs/runtime-agent-20260709.log\u0027: Operation not permitted\nchmod: changing permissions of \u0027/opt/aovias/deployments/state\u0027: Operation not permitted\nchmod: changing permissions of \u0027/opt/aovias/deployments/state/deployment-sessions\u0027: Operation not permitted\n",
+      "CompletedUtc": "2026-07-10T02:05:32.4208741+00:00",
+      "Succeeded": false
+    }
+  ],
+  "OverallSuccess": false,
+  "FirstFailure": {
+    "Phase": 4,
+    "Outcome": 2,
+    "Message": "Could not open permissions on \u0027/opt/aovias\u0027 for the Runtime Agent container\u0027s own UID.",
+    "RootCause": "chmod: changing permissions of \u0027/opt/aovias/logs/runtime-agent-20260710.log\u0027: Operation not permitted\nchmod: changing permissions of \u0027/opt/aovias/logs/runtime-agent-20260709.log\u0027: Operation not permitted\nchmod: changing permissions of \u0027/opt/aovias/deployments/state\u0027: Operation not permitted\nchmod: changing permissions of \u0027/opt/aovias/deployments/state/deployment-sessions\u0027: Operation not permitted\n",
+    "CompletedUtc": "2026-07-10T02:05:32.4208741+00:00",
+    "Succeeded": false
+  },
+  "GeneratedUtc": "2026-07-10T02:05:32.4233405+00:00",
+  "ReportPath": null
+}

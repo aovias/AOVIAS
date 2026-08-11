@@ -1,0 +1,16 @@
+{
+  "SchemaVersion": 2,
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "CompletedPhases": [
+    "Connect",
+    "ValidatePrivileges",
+    "Preflight",
+    "DockerInstallation",
+    "DockerNetworkCreation",
+    "RuntimeDirectoryCreation",
+    "RuntimeConfigurationGeneration",
+    "ValidateRuntimeConfiguration",
+    "RuntimeAgentInstallation",
+    "RuntimeAgentRegistration"
+  ]
+}

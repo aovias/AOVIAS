@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.ReleaseManager</RootNamespace>
+    <AssemblyName>Aovias.ReleaseManager</AssemblyName>
+    <Description>Release management orchestration for the AOVIAS platform.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aovias.Release.Contracts\Aovias.Release.Contracts.csproj" />
+    <ProjectReference Include="..\Aovias.PackageBuilder\Aovias.PackageBuilder.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Configuration\Aovias.Configuration.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Orchestration\src\Aovias.Orchestration.Contracts\Aovias.Orchestration.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Orchestration\src\Aovias.Platform.Core\Aovias.Platform.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.5.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.9" />
+  </ItemGroup>
+</Project>

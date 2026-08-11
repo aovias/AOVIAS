@@ -1,0 +1,26 @@
+<section class="recommendation-panel" aria-label="Smart recommendation panel">
+  <div class="recommendation-panel__copy">
+    <div class="recommendation-panel__title-row">
+      <ng-icon name="lucideLightbulb" class="recommendation-panel__title-icon" aria-hidden="true" />
+      <h2>{{ title }}</h2>
+    </div>
+    <p>{{ message }}</p>
+  </div>
+
+  <div class="recommendation-panel__actions">
+    <button type="button" class="btn btn--primary" (click)="actionClick.emit('primary')">
+      {{ primaryLabel }}
+    </button>
+    <button type="button" class="btn btn--secondary" (click)="actionClick.emit('secondary')">
+      {{ secondaryLabel }}
+    </button>
+  </div>
+
+  <div class="recommendation-panel__footer" role="status">
+    <ng-icon name="lucideAlertTriangle" class="recommendation-panel__warn-icon" aria-hidden="true" />
+    <span class="recommendation-panel__footer-text" [class.recommendation-panel__footer-text--warn]="highRiskCount > 0">
+      {{ highRiskCount }} High Risk OE{{ highRiskCount === 1 ? '' : 's' }} need attention · Last activity:
+      {{ lastActivity }}
+    </span>
+  </div>
+</section>

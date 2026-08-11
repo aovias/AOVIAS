@@ -1,0 +1,13 @@
+<tr>
+  <td>{{ row().code }}</td>
+  <td>{{ row().title }}</td>
+  <td>{{ row().classification }}</td>
+  <td>{{ row().scoreLabel }}</td>
+  <td>
+    <span class="status-chip" [attr.data-status]="row().status">{{ row().status }}</span>
+  </td>
+  <td>{{ row().evidenceCount }}</td>
+  <td>
+    <button type="button" class="action-link" (click)="onView()">View</button>
+  </td>
+</tr>

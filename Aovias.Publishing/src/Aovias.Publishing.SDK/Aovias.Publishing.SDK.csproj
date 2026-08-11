@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.Publishing.SDK</RootNamespace>
+    <AssemblyName>Aovias.Publishing.SDK</AssemblyName>
+    <Description>SDK for the AOVIAS Publishing Engine.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aovias.Publishing.Contracts\Aovias.Publishing.Contracts.csproj" />
+    <ProjectReference Include="..\Aovias.Publishing.Core\Aovias.Publishing.Core.csproj" />
+    <ProjectReference Include="..\Aovias.Publishing.Providers.Angular\Aovias.Publishing.Providers.Angular.csproj" />
+    <ProjectReference Include="..\Aovias.Publishing.Providers.DotNet\Aovias.Publishing.Providers.DotNet.csproj" />
+    <ProjectReference Include="..\Aovias.Publishing.Providers.Static\Aovias.Publishing.Providers.Static.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
+  </ItemGroup>
+</Project>

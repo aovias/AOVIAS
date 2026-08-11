@@ -1,0 +1,103 @@
+# AOVIAS root .gitignore (PROPOSED â€” Phase 2)
+# Do not apply to V1.0. For future AOVIAS repository only.
+# Merged from ComplaincePlatform/.gitignore, WebApp/.gitignore, and Phase 1 draft.
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE / editors
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Agent local metadata (allowlist product rules later if needed)
+.cursor/
+.claude/
+.appdata/
+.dotnet-cli-home/
+
+# .NET / Visual Studio
+**/[Bb]in/
+**/[Oo]bj/
+**/[Oo]ut/
+**/[Dd]ebug/
+**/[Rr]elease/
+_build_out/
+_build_verify_*/
+artifacts/
+*.dll
+*.pdb
+*.cache
+project.lock.json
+TestResult.xml
+[Tt]est[Rr]esult*/
+
+# Node / Angular
+**/node_modules/
+**/dist/
+.angular/cache
+npm-debug.log*
+yarn-error.log*
+/tmp
+/out-tsc
+
+# Test / Playwright / coverage
+**/TestResults/
+playwright-report/
+test-results/
+coverage/
+__screenshots__/
+*.lcov
+
+# Logs
+**/logs/
+**/*.log
+**/*.clef
+
+# Secrets / local configuration
+.env
+.env.*
+!.env.example
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+**/secrets/
+aovias-config/secrets/
+aovias-config/storage/
+aovias-config/logs/
+aovias-config/certificates/
+*.pem
+*.key
+*.pfx
+*.p12
+*.cer
+*.crt
+*.der
+*.jks
+*.keystore
+**/IdentityService/keys/
+**/deployment-assets/signing/*.pfx
+**/deployment-assets/signing/*.p12
+**/deployment-assets/signing/*.pem
+**/deployment-assets/signing/*.key
+
+# Docker local overrides
+docker-compose.override.yml
+
+# Local / media dumps
+demo-video/
+**/*.rar
+
+# Misc
+$null
+*.tmp
+*.temp

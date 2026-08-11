@@ -1,0 +1,12 @@
+<article class="metric-card" aria-label="Journey metric card">
+  <div class="metric-card__head">
+    <ng-icon [name]="iconName" class="metric-card__icon" aria-hidden="true" />
+    <span class="metric-card__label">{{ label }}</span>
+  </div>
+  <p class="metric-card__value">{{ value }}</p>
+  @if (trendLabel) {
+    <p class="metric-card__trend" [class.trend-up]="trendDirection === 'up'" [class.trend-down]="trendDirection === 'down'">
+      {{ trendLabel }}
+    </p>
+  }
+</article>

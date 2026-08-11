@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Aovias.DeploymentValidation.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Publishing\src\Aovias.Publishing.Contracts\Aovias.Publishing.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Release\src\Aovias.Release.Contracts\Aovias.Release.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Runtime.Agent\src\Aovias.Runtime.Agent.Infrastructure\Aovias.Runtime.Agent.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.CommandCenter\src\Aovias.CommandCenter.Infrastructure\Aovias.CommandCenter.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Release\src\Aovias.Release.SDK\Aovias.Release.SDK.csproj" />
+  </ItemGroup>
+</Project>

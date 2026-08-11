@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <RootNamespace>Aovias.Deployment.Contracts</RootNamespace>
+    <AssemblyName>Aovias.Deployment.Contracts</AssemblyName>
+    <Description>Canonical deployment contracts and service manifests for the AOVIAS platform.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Specifications\infrastructure-specifications.json" />
+    <EmbeddedResource Include="Capabilities\capability-registry.json" />
+    <EmbeddedResource Include="Capabilities\environment-capability-profiles.json" />
+  </ItemGroup>
+</Project>

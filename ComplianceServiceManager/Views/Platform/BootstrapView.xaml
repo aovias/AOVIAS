@@ -1,0 +1,570 @@
+<UserControl x:Class="ComplianceServiceManager.Views.Platform.BootstrapView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Aovias.DesignSystem.Controls;assembly=Aovias.DesignSystem"
+             xmlns:helpers="clr-namespace:ComplianceServiceManager.Helpers"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <helpers:StepVisibilityConverter x:Key="StepVisibilityConverter" />
+        <helpers:NotNullToVisibilityConverter x:Key="NotNullToVis" />
+        <helpers:InverseBooleanConverter x:Key="InverseBoolean" />
+        <helpers:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
+
+        <Style x:Key="StepSectionStyle" TargetType="Border" BasedOn="{StaticResource CardBorderStyle}">
+            <Setter Property="Padding" Value="18" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+        </Style>
+
+        <Style x:Key="FieldLabelStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextStyle}">
+            <Setter Property="Margin" Value="0,0,0,4" />
+        </Style>
+
+        <Style x:Key="StatChipStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource SurfaceInsetBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{StaticResource RadiusSm}" />
+            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="Margin" Value="0,0,10,0" />
+        </Style>
+
+        <!-- Visible only while the wizard is active (collapsed once IsComplete). -->
+        <Style x:Key="WizardVisibleStyle" TargetType="FrameworkElement">
+            <Setter Property="Visibility" Value="Visible" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsComplete}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid>
+        <!-- ================= WIZARD ================= -->
+        <Grid Style="{StaticResource WizardVisibleStyle}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Stepper -->
+            <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}" Padding="18,14" Margin="0,0,0,14">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                        <TextBlock Text="{StaticResource IconBootstrap}" FontFamily="{StaticResource IconFont}" FontSize="16" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0" VerticalAlignment="Center" />
+                        <TextBlock Text="Bootstrap Environment" Style="{StaticResource HeadingTextStyle}" VerticalAlignment="Center" />
+                        <TextBlock Text="Provision a clean Ubuntu VPS into a fully configured AOVIAS Runtime with one click."
+                                   Style="{StaticResource CaptionTextStyle}" VerticalAlignment="Center" Margin="16,0,0,0" />
+                    </StackPanel>
+                    <controls:DeploymentStepIndicator CurrentStepIndex="{Binding WizardStep}">
+                        <controls:DeploymentStepIndicator.Steps>
+                            <x:Array Type="sys:String">
+                                <sys:String>Target Host</sys:String>
+                                <sys:String>Environment</sys:String>
+                                <sys:String>Review</sys:String>
+                                <sys:String>Execute</sys:String>
+                            </x:Array>
+                        </controls:DeploymentStepIndicator.Steps>
+                    </controls:DeploymentStepIndicator>
+                </StackPanel>
+            </Border>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel MaxWidth="760" HorizontalAlignment="Left">
+
+                    <!-- ===== Step 0: Target Host ===== -->
+                    <StackPanel>
+                        <StackPanel.Visibility>
+                            <Binding Path="WizardStep" Converter="{StaticResource StepVisibilityConverter}" ConverterParameter="0" />
+                        </StackPanel.Visibility>
+
+                        <Border Style="{StaticResource StepSectionStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Target Host" Style="{StaticResource HeadingTextStyle}" Margin="0,0,0,4" />
+                                <TextBlock Text="Where should AOVIAS Studio provision the runtime?" Style="{StaticResource CaptionTextStyle}" Margin="0,0,0,16" />
+
+                                <UniformGrid Columns="2" Margin="0,0,0,10">
+                                    <StackPanel Margin="0,0,12,0">
+                                        <TextBlock Text="Host / IP" Style="{StaticResource FieldLabelStyle}" />
+                                        <TextBox Text="{Binding Host, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="SSH Port" Style="{StaticResource FieldLabelStyle}" />
+                                        <TextBox Text="{Binding SshPort, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </UniformGrid>
+
+                                <StackPanel Margin="0,0,0,10">
+                                    <TextBlock Text="Username" Style="{StaticResource FieldLabelStyle}" />
+                                    <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+
+                                <TextBlock Text="Authentication" Style="{StaticResource FieldLabelStyle}" Margin="0,0,0,6" />
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <RadioButton Content="SSH Key" GroupName="Auth" IsChecked="{Binding UseKeyAuth}" Margin="0,0,20,0" VerticalAlignment="Center" />
+                                    <RadioButton Content="Password" GroupName="Auth" IsChecked="{Binding UseKeyAuth, Converter={StaticResource InverseBoolean}}" VerticalAlignment="Center" />
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,4" Visibility="{Binding UseKeyAuth, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="Private Key Path" Style="{StaticResource FieldLabelStyle}" />
+                                    <TextBox Text="{Binding PrivateKeyPath, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,4" Visibility="{Binding UseKeyAuth, Converter={StaticResource InverseBoolToVis}}">
+                                    <TextBlock Text="Password" Style="{StaticResource FieldLabelStyle}" />
+                                    <PasswordBox x:Name="PasswordInput" PasswordChanged="PasswordBox_OnPasswordChanged" />
+                                    <TextBlock Text="Password authentication passes the password as a process argument to the bootstrap CLI. SSH key authentication is recommended."
+                                               Style="{StaticResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                </StackPanel>
+
+                                <Grid Margin="0,10,0,0">
+                                    <Button Content="Test Connection"
+                                            Style="{StaticResource PrimaryButtonStyle}"
+                                            Command="{Binding TestConnectionCommand}"
+                                            HorizontalAlignment="Left" />
+                                    <TextBlock Text="{Binding ConnectionStatus}" Style="{StaticResource CaptionTextStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" TextWrapping="Wrap" MaxWidth="420" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Discovered facts -->
+                        <Border Style="{StaticResource StepSectionStyle}" Visibility="{Binding Facts, Converter={StaticResource NotNullToVis}}">
+                            <StackPanel>
+                                <TextBlock Text="Discovered" Style="{StaticResource HeadingTextStyle}" FontSize="13.5" Margin="0,0,0,12" />
+                                <UniformGrid Columns="3" Rows="3">
+                                    <StackPanel Margin="0,0,12,10">
+                                        <TextBlock Text="Ubuntu Version" Style="{StaticResource FieldLabelStyle}" />
+                                        <TextBlock Text="{Binding Facts.UbuntuVersion}" Style="{StaticResource BodyTextStyle}" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,12,10">
+                                        <TextBlock Text="Hostname" Style="{StaticResource FieldLabelStyle}" />
+                                        <TextBlock Text="{Binding Facts.Hostname}" Style="{StaticResource BodyTextStyle}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,0,10">
+                                        <TextBlock Text="Public IP" Style="{StaticResource FieldLabelStyle}" />
+                                        <TextBlock Text="{Binding Facts.PublicIp}" Style="{StaticResource BodyTextStyle}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,12,10">
+                                        <TextBlock Text="CPU" Style="{StaticResource FieldLabelStyle}" />
+                                        <TextBlock Text="{Binding Facts.CpuSummary}" Style="{StaticResource BodyTextStyle}" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,12,10">
+                                        <TextBlock Text="Memory" Style="{StaticResource FieldLabelStyle}" />
+                                        <TextBlock Text="{Binding Facts.MemorySummary}" Style="{StaticResource BodyTextStyle}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,0,10">
+                                        <TextBlock Text="Disk" Style="{StaticResource FieldLabelStyle}" />
+                                        <TextBlock Text="{Binding Facts.DiskSummary}" Style="{StaticResource BodyTextStyle}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,12,0">
+                                        <TextBlock Text="Docker" Style="{StaticResource FieldLabelStyle}" />
+                                        <TextBlock Text="{Binding Facts.DockerVersion}" Style="{StaticResource BodyTextStyle}" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Docker Compose" Style="{StaticResource FieldLabelStyle}" />
+                                        <TextBlock Text="{Binding Facts.DockerComposeVersion}" Style="{StaticResource BodyTextStyle}" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Privilege Elevation status -->
+                        <Border Style="{StaticResource StepSectionStyle}" Visibility="{Binding Facts, Converter={StaticResource NotNullToVis}}">
+                            <StackPanel>
+                                <TextBlock Text="Privilege Elevation" Style="{StaticResource HeadingTextStyle}" FontSize="13.5" Margin="0,0,0,4" />
+                                <TextBlock Text="Detect Automatically — Bootstrap works out whether it needs a sudo password on this host; you never edit sudoers yourself."
+                                           Style="{StaticResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="{StaticResource IconFont}" FontSize="14" Margin="0,0,8,0" VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="{StaticResource IconHealth}" />
+                                                <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding PrivilegeRequiresAttention}" Value="True">
+                                                        <Setter Property="Text" Value="{StaticResource IconWarning}" />
+                                                        <Setter Property="Foreground" Value="{StaticResource WarningBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBlock Text="{Binding PrivilegeStatusText}" Style="{StaticResource BodyTextStyle}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Existing runtime banner -->
+                        <Border Style="{StaticResource StepSectionStyle}" BorderBrush="{StaticResource WarningBrush}" Visibility="{Binding HasExistingRuntime, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <TextBlock Text="{StaticResource IconWarning}" FontFamily="{StaticResource IconFont}" FontSize="15" Foreground="{StaticResource WarningBrush}" Margin="0,0,10,0" VerticalAlignment="Center" />
+                                    <TextBlock Text="Existing AOVIAS Runtime Detected" Style="{StaticResource HeadingTextStyle}" FontSize="13.5" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding Facts.ExistingRuntimeConfigRoot, StringFormat=A runtime configuration already exists at {0} on this host.}"
+                                           Style="{StaticResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,0,0,4" />
+                                <TextBlock Text="{Binding Facts.ExistingRuntimePlatformVersion, StringFormat=Detected Platform Version: {0}}"
+                                           Style="{StaticResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,0,0,12"
+                                           Visibility="{Binding Facts.ExistingRuntimePlatformVersion, Converter={StaticResource NotNullToVis}}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Repair" Command="{Binding SelectExistingRuntimeActionCommand}" CommandParameter="Repair" Margin="0,0,8,0" />
+                                    <Button Content="Upgrade" Command="{Binding SelectExistingRuntimeActionCommand}" CommandParameter="Upgrade" Margin="0,0,8,0" />
+                                    <Button Content="Reconcile" Command="{Binding SelectExistingRuntimeActionCommand}" CommandParameter="Reconcile" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Grid>
+                            <Button Content="Continue to Environment →"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Command="{Binding ContinueToEnvironmentCommand}"
+                                    HorizontalAlignment="Right" />
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- ===== Step 1: Environment ===== -->
+                    <StackPanel>
+                        <StackPanel.Visibility>
+                            <Binding Path="WizardStep" Converter="{StaticResource StepVisibilityConverter}" ConverterParameter="1" />
+                        </StackPanel.Visibility>
+
+                        <Border Style="{StaticResource StepSectionStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Environment" Style="{StaticResource HeadingTextStyle}" Margin="0,0,0,4" />
+                                <TextBlock Text="What should this environment be called, and what kind is it?" Style="{StaticResource CaptionTextStyle}" Margin="0,0,0,16" />
+
+                                <UniformGrid Columns="2" Margin="0,0,0,10">
+                                    <StackPanel Margin="0,0,12,0">
+                                        <TextBlock Text="Environment Name" Style="{StaticResource FieldLabelStyle}" />
+                                        <TextBox Text="{Binding EnvironmentName, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Environment Type" Style="{StaticResource FieldLabelStyle}" />
+                                        <ComboBox ItemsSource="{Binding EnvironmentTypes}" SelectedItem="{Binding EnvironmentType}" />
+                                    </StackPanel>
+                                </UniformGrid>
+
+                                <StackPanel Margin="0,0,0,16">
+                                    <TextBlock Text="Runtime Profile" Style="{StaticResource FieldLabelStyle}" />
+                                    <TextBox Text="{Binding RuntimeProfile, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+
+                                <TextBlock Text="Required for Registration" Style="{StaticResource FieldLabelStyle}" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                <UniformGrid Columns="2">
+                                    <StackPanel Margin="0,0,12,0">
+                                        <TextBlock Text="Registration Token" Style="{StaticResource FieldLabelStyle}" />
+                                        <TextBox Text="{Binding RegistrationToken, UpdateSourceTrigger=PropertyChanged}" />
+                                        <TextBlock Text="e.g. demo-vps-registration-token — a pre-shared token the platform already recognizes for this environment type."
+                                                   Style="{StaticResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Command Center URL" Style="{StaticResource FieldLabelStyle}" />
+                                        <TextBox Text="{Binding CommandCenterUrl, UpdateSourceTrigger=PropertyChanged}" />
+                                        <TextBlock Text="Where the Fleet Registry lives — required so the new environment can be monitored once bootstrapped."
+                                                   Style="{StaticResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <Grid>
+                            <Button Content="← Previous" Command="{Binding BackToTargetHostCommand}" />
+                            <Button Content="Continue to Review →"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Command="{Binding ContinueToReviewCommand}"
+                                    HorizontalAlignment="Right" />
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- ===== Step 2: Review ===== -->
+                    <StackPanel>
+                        <StackPanel.Visibility>
+                            <Binding Path="WizardStep" Converter="{StaticResource StepVisibilityConverter}" ConverterParameter="2" />
+                        </StackPanel.Visibility>
+
+                        <Border Style="{StaticResource StepSectionStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Provisioning Summary" Style="{StaticResource HeadingTextStyle}" Margin="0,0,0,16" />
+
+                                <Grid Margin="0,0,0,10">
+                                    <TextBlock Text="Ubuntu" Style="{StaticResource BodyTextStyle}" />
+                                    <TextBlock Text="{Binding Facts.UbuntuVersion}" Style="{StaticResource CaptionTextStyle}" HorizontalAlignment="Right" />
+                                </Grid>
+                                <Grid Margin="0,0,0,10">
+                                    <TextBlock Text="Docker" Style="{StaticResource BodyTextStyle}" />
+                                    <TextBlock HorizontalAlignment="Right">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource CaptionTextStyle}">
+                                                <Setter Property="Text" Value="Will Install" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Facts.DockerInstalled}" Value="True">
+                                                        <Setter Property="Text" Value="Already Installed — will reuse" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+                                <Grid Margin="0,0,0,10">
+                                    <TextBlock Text="Runtime Agent" Style="{StaticResource BodyTextStyle}" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <TextBlock Text="{Binding DetectedAgentVersion}" Style="{StaticResource CaptionTextStyle}" Margin="0,0,8,0" />
+                                        <controls:ProgressRing Width="14" Height="14" Visibility="{Binding IsDetectingAgent, Converter={StaticResource BoolToVis}}" />
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Margin="0,0,0,10">
+                                    <TextBlock Text="Platform Directories" Style="{StaticResource BodyTextStyle}" />
+                                    <TextBlock Text="Will Create" Style="{StaticResource CaptionTextStyle}" HorizontalAlignment="Right" />
+                                </Grid>
+                                <Grid Margin="0,0,0,10">
+                                    <TextBlock Text="Docker Network" Style="{StaticResource BodyTextStyle}" />
+                                    <TextBlock Text="Will Create" Style="{StaticResource CaptionTextStyle}" HorizontalAlignment="Right" />
+                                </Grid>
+                                <Grid Margin="0,0,0,10">
+                                    <TextBlock Text="Environment" Style="{StaticResource BodyTextStyle}" />
+                                    <TextBlock HorizontalAlignment="Right" Style="{StaticResource CaptionTextStyle}">
+                                        <Run Text="{Binding EnvironmentName, Mode=OneWay}" />
+                                        <Run Text=" (" /><Run Text="{Binding EnvironmentType, Mode=OneWay}" /><Run Text=")" />
+                                    </TextBlock>
+                                </Grid>
+                                <Grid Margin="0,0,0,4">
+                                    <TextBlock Text="Estimated Time" Style="{StaticResource BodyTextStyle}" />
+                                    <TextBlock Text="{Binding EstimatedTime}" Style="{StaticResource CaptionTextStyle}" HorizontalAlignment="Right" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Grid>
+                            <Button Content="← Previous" Command="{Binding BackToEnvironmentCommand}" />
+                            <Button Content="Bootstrap Environment"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Command="{Binding StartExecutionCommand}"
+                                    HorizontalAlignment="Right" />
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- ===== Step 3: Execute ===== -->
+                    <StackPanel>
+                        <StackPanel.Visibility>
+                            <Binding Path="WizardStep" Converter="{StaticResource StepVisibilityConverter}" ConverterParameter="3" />
+                        </StackPanel.Visibility>
+
+                        <Border Style="{StaticResource StepSectionStyle}" BorderBrush="{StaticResource DangerBrush}" Visibility="{Binding HasExecutionStartError, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="{Binding ExecutionStartError}" Style="{StaticResource BodyTextStyle}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" />
+                        </Border>
+
+                        <Border Style="{StaticResource StepSectionStyle}">
+                            <controls:OperationProgressHeader
+                                OverallProgressPercent="{Binding Operation.OverallProgressPercent}"
+                                StatusText="{Binding Operation.StatusText}"
+                                CurrentStageName="{Binding Operation.CurrentStageName}"
+                                CurrentTask="{Binding Operation.CurrentTask}"
+                                ElapsedDisplay="{Binding Operation.ElapsedDisplay}"
+                                EstimatedRemainingDisplay="{Binding Operation.EstimatedRemainingDisplay}" />
+                        </Border>
+
+                        <!-- Administrator Privileges Required — shown inline, beneath the already-
+                             completed stages the timeline below still displays, so the operator sees
+                             exactly how far provisioning got before pausing for elevation. -->
+                        <Border Style="{StaticResource StepSectionStyle}" BorderBrush="{StaticResource WarningBrush}"
+                                Visibility="{Binding SudoElevationPrompt.IsVisible, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <TextBlock Text="{StaticResource IconWarning}" FontFamily="{StaticResource IconFont}" FontSize="16" Foreground="{StaticResource WarningBrush}" Margin="0,0,10,0" VerticalAlignment="Center" />
+                                    <TextBlock Text="Administrator Privileges Required" Style="{StaticResource HeadingTextStyle}" FontSize="14" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,0,0,10">
+                                    <Run Text="Bootstrap requires elevated permissions to install packages, configure Docker, create runtime directories, and configure system services. Enter the sudo password for this host to continue." />
+                                </TextBlock>
+
+                                <Border Background="{StaticResource DangerBrush}" CornerRadius="{StaticResource RadiusSm}" Padding="10,8" Margin="0,0,0,10"
+                                        Visibility="{Binding SudoElevationPrompt.HasAuthenticationFailed, Converter={StaticResource BoolToVis}}">
+                                    <StackPanel>
+                                        <TextBlock Text="Authentication Failed" FontWeight="SemiBold" Foreground="White" />
+                                        <TextBlock Text="The supplied sudo password was rejected. Enter it again, or Cancel Bootstrap." Foreground="White" TextWrapping="Wrap" Style="{StaticResource CaptionTextStyle}" />
+                                    </StackPanel>
+                                </Border>
+
+                                <TextBlock Text="Sudo Password" Style="{StaticResource FieldLabelStyle}" />
+                                <PasswordBox x:Name="SudoPasswordInput" PasswordChanged="SudoPasswordBox_OnPasswordChanged" Margin="0,0,0,8" />
+
+                                <CheckBox Content="Remember during this bootstrap session" IsChecked="{Binding SudoElevationPrompt.Remember}" Margin="0,0,0,12" />
+
+                                <Grid>
+                                    <Button Content="Cancel" Command="{Binding SudoElevationPrompt.CancelCommand}" HorizontalAlignment="Left" />
+                                    <Button Content="Continue" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding SudoElevationPrompt.ContinueCommand}" HorizontalAlignment="Right" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource StepSectionStyle}">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <TextBlock Text="Progress" Style="{StaticResource HeadingTextStyle}" FontSize="13.5" VerticalAlignment="Center" />
+                                    <Button Content="Cancel"
+                                            Command="{Binding Operation.CancelCommand}"
+                                            Visibility="{Binding Operation.CanCancel, Converter={StaticResource BoolToVis}}"
+                                            HorizontalAlignment="Right" />
+                                </Grid>
+                                <controls:OperationTimeline Stages="{Binding Operation.Stages}" />
+                            </StackPanel>
+                        </Border>
+
+                        <controls:OperationFailureCard
+                            Visibility="{Binding Operation.HasFailure, Converter={StaticResource BoolToVis}}"
+                            Problem="{Binding Operation.FailureProblem}"
+                            Cause="{Binding Operation.FailureCause}"
+                            RecommendedAction="{Binding Operation.FailureRecommendedAction}"
+                            Details="{Binding Operation.FailureDetails}"
+                            CanRetry="{Binding Operation.CanRetry}"
+                            RetryCommand="{Binding Operation.RetryCommand}"
+                            Margin="0,0,0,12" />
+
+                        <Grid Visibility="{Binding Operation.IsTerminal, Converter={StaticResource BoolToVis}}">
+                            <Button Content="← Back to Review" Command="{Binding BackToReviewCommand}" />
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- ===== Advanced (collapsed by default, all steps) ===== -->
+                    <Border Style="{StaticResource StepSectionStyle}">
+                        <StackPanel>
+                            <ToggleButton IsChecked="{Binding IsAdvancedExpanded}" Background="Transparent" BorderThickness="0" Padding="0" MinHeight="24" HorizontalContentAlignment="Left">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{StaticResource IconChevronRight}" FontFamily="{StaticResource IconFont}" FontSize="10" Margin="0,0,8,0" VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsAdvancedExpanded}" Value="True">
+                                                        <Setter Property="LayoutTransform">
+                                                            <Setter.Value><RotateTransform Angle="90" /></Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBlock Text="Advanced" Style="{StaticResource HeadingTextStyle}" FontSize="13" />
+                                </StackPanel>
+                            </ToggleButton>
+
+                            <StackPanel Margin="0,14,0,0" Visibility="{Binding IsAdvancedExpanded, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Text="Generated Bootstrap Command" Style="{StaticResource FieldLabelStyle}" />
+                                <TextBox Text="{Binding ComposedCommand, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" FontFamily="Consolas" FontSize="11" Margin="0,0,0,8" />
+                                <Button Content="Copy Command" Command="{Binding CopyCommandCommand}" HorizontalAlignment="Left" Margin="0,0,0,16" />
+
+                                <TextBlock Text="Generated Configuration" Style="{StaticResource FieldLabelStyle}" />
+                                <StackPanel Margin="0,0,0,16">
+                                    <TextBlock Style="{StaticResource CaptionTextStyle}"><Run Text="Config Root: " /><Run Text="{Binding AutoConfigRoot, Mode=OneWay}" /></TextBlock>
+                                    <TextBlock Style="{StaticResource CaptionTextStyle}"><Run Text="Docker Network: " /><Run Text="{Binding AutoDockerNetworkName, Mode=OneWay}" /></TextBlock>
+                                    <TextBlock Style="{StaticResource CaptionTextStyle}"><Run Text="Public URL: " /><Run Text="{Binding AutoPublicUrl, Mode=OneWay}" /></TextBlock>
+                                    <TextBlock Style="{StaticResource CaptionTextStyle}"><Run Text="Agent Package: " /><Run Text="{Binding DetectedAgentPackagePath, Mode=OneWay}" /></TextBlock>
+                                </StackPanel>
+
+                                <TextBlock Text="Privilege Elevation" Style="{StaticResource FieldLabelStyle}" />
+                                <StackPanel Margin="0,0,0,16">
+                                    <TextBlock Style="{StaticResource CaptionTextStyle}"><Run Text="Detected mode: " /><Run Text="{Binding PrivilegeStatusText, Mode=OneWay}" /></TextBlock>
+                                    <TextBlock Text="The sudo password itself is never shown here, logged, or persisted — held in memory only for the current run."
+                                               Style="{StaticResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" />
+                                </StackPanel>
+
+                                <TextBlock Text="Docker Compose" Style="{StaticResource FieldLabelStyle}" />
+                                <TextBlock Text="Generated on the target host during provisioning — not available for local preview." Style="{StaticResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,0,0,16" />
+
+                                <Grid Margin="0,0,0,8">
+                                    <TextBlock Text="Provisioning Log" Style="{StaticResource FieldLabelStyle}" VerticalAlignment="Center" />
+                                    <Button Content="Export Logs" Command="{Binding ExportLogsCommand}" HorizontalAlignment="Right" />
+                                </Grid>
+                                <controls:OperationLogPane
+                                    LogLines="{Binding Operation.CombinedLogView}"
+                                    SearchText="{Binding Operation.ConsoleSearchText, Mode=TwoWay}"
+                                    AutoScroll="{Binding Operation.AutoScrollConsole, Mode=TwoWay}"
+                                    ClearCommand="{Binding Operation.ClearConsoleCommand}"
+                                    Height="220" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- ================= SUCCESS: ENVIRONMENT SUMMARY ================= -->
+        <ScrollViewer Visibility="{Binding IsComplete, Converter={StaticResource BoolToVis}}" VerticalScrollBarVisibility="Auto">
+            <StackPanel MaxWidth="760" HorizontalAlignment="Left">
+                <Border Style="{StaticResource StepSectionStyle}" BorderBrush="{StaticResource SuccessBrush}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                            <TextBlock Text="{StaticResource IconHealth}" FontFamily="{StaticResource IconFont}" FontSize="20" Foreground="{StaticResource SuccessBrush}" Margin="0,0,12,0" VerticalAlignment="Center" />
+                            <TextBlock Text="Environment Ready" Style="{StaticResource HeadingTextStyle}" FontSize="17" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding RegistrationNote}" Style="{StaticResource CaptionTextStyle}" Foreground="{StaticResource WarningBrush}"
+                                   TextWrapping="Wrap" Margin="0,6,0,0"
+                                   Visibility="{Binding RegistrationNote, Converter={StaticResource NotNullToVis}}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StepSectionStyle}">
+                    <StackPanel>
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,12,14">
+                                <TextBlock Text="Environment" Style="{StaticResource FieldLabelStyle}" />
+                                <TextBlock Text="{Binding RegisteredEnvironment.Name}" Style="{StaticResource BodyTextStyle}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,0,14">
+                                <TextBlock Text="Runtime Version" Style="{StaticResource FieldLabelStyle}" />
+                                <TextBlock Text="{Binding RegisteredEnvironment.RuntimeVersion}" Style="{StaticResource BodyTextStyle}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,12,14">
+                                <TextBlock Text="Runtime Agent" Style="{StaticResource FieldLabelStyle}" />
+                                <TextBlock Text="{Binding DetectedAgentVersion}" Style="{StaticResource BodyTextStyle}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,0,14">
+                                <TextBlock Text="Docker Status" Style="{StaticResource FieldLabelStyle}" />
+                                <TextBlock Text="{Binding EnvironmentHealth.DockerStatus}" Style="{StaticResource BodyTextStyle}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,12,14">
+                                <TextBlock Text="Platform Health" Style="{StaticResource FieldLabelStyle}" />
+                                <TextBlock Text="{Binding RegisteredEnvironment.HealthStatus}" Style="{StaticResource BodyTextStyle}" Foreground="{StaticResource SuccessBrush}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,0,14">
+                                <TextBlock Text="Heartbeat" Style="{StaticResource FieldLabelStyle}" />
+                                <TextBlock Text="{Binding RegisteredEnvironment.LastHeartbeatUtc, StringFormat='{}{0:g}', TargetNullValue='Pending first heartbeat'}" Style="{StaticResource BodyTextStyle}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,12,0">
+                                <TextBlock Text="Public URL" Style="{StaticResource FieldLabelStyle}" />
+                                <TextBlock Text="{Binding RegisteredEnvironment.BaseUrl}" Style="{StaticResource BodyTextStyle}" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Applications" Style="{StaticResource FieldLabelStyle}" />
+                                <TextBlock Text="{Binding EnvironmentHealth.RunningContainerCount, StringFormat='{}{0} container(s) running'}" Style="{StaticResource BodyTextStyle}" />
+                            </StackPanel>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StepSectionStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Quick Actions" Style="{StaticResource HeadingTextStyle}" FontSize="13.5" Margin="0,0,0,12" />
+                        <UniformGrid Columns="3" Rows="3">
+                            <Button Content="Deploy Applications" Command="{Binding DeployApplicationsCommand}" Margin="0,0,8,8" />
+                            <Button Content="Open Runtime" Command="{Binding OpenRuntimeCommand}" Margin="0,0,8,8" />
+                            <Button Content="Open Monitoring" Command="{Binding OpenMonitoringCommand}" Margin="0,0,0,8" />
+                            <Button Content="Repair Environment" Command="{Binding RepairEnvironmentCommand}" Margin="0,0,8,8" />
+                            <Button Content="Upgrade Environment" Command="{Binding UpgradeEnvironmentCommand}" Margin="0,0,8,8" />
+                            <Button Content="Reconcile" Command="{Binding ReconcileEnvironmentCommand}" Margin="0,0,0,8" />
+                            <Button Content="View Logs" Command="{Binding ViewLogsCommand}" />
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+
+                <Grid>
+                    <Button Content="Bootstrap Another Environment" Command="{Binding StartOverCommand}" HorizontalAlignment="Left" />
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "gateway",
+  "displayName": "Gateway",
+  "releaseLibraryCategory": "Gateway",
+  "includeInDemoBundle": true,
+  "includeInSolutionDeployment": true,
+  "ports": {
+    "containerPort": 5212
+  },
+  "health": {
+    "endpoint": "/health",
+    "expectedStatus": 200,
+    "timeoutSeconds": 15,
+    "retries": 3,
+    "requiresHttpProbe": true
+  },
+  "dependencies": [
+    { "service": "runtime-agent", "required": true, "type": "service" }
+  ]
+}

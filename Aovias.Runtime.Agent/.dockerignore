@@ -1,0 +1,14 @@
+# Used when building Runtime Agent with platform root (V1.0) as Docker context.
+# Copy or merge these patterns into the platform root .dockerignore if needed.
+
+**/.git/
+**/.vs/
+**/bin/
+**/obj/
+**/node_modules/
+ComplianceServiceManager/
+ComplaincePlatform/
+WebApp/
+aovias-config/storage/
+**/*.user
+**/*.suo

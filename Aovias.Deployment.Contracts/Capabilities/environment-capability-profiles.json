@@ -1,0 +1,34 @@
+{
+  "profiles": [
+    {
+      "id": "docker-host",
+      "displayName": "Local Docker Host",
+      "description": "A single Docker Engine host running docker-compose (local development).",
+      "capabilityIds": ["sqlserver", "rabbitmq", "local-filesystem", "docker-network", "tls-file-certificates", "reverse-proxy-nginx", "file-secrets", "http-health-probe", "exec-health-probe"]
+    },
+    {
+      "id": "demo-vps",
+      "displayName": "Demo VPS",
+      "description": "Shared demo VPS profile: the platform's own demo bundle services only, no AI provider egress required.",
+      "capabilityIds": ["sqlserver", "rabbitmq", "local-filesystem", "docker-network", "tls-file-certificates", "reverse-proxy-nginx", "file-secrets", "http-health-probe"]
+    },
+    {
+      "id": "production-vps",
+      "displayName": "Production VPS",
+      "description": "Full platform profile including external AI providers and Service Bus.",
+      "capabilityIds": ["sqlserver", "rabbitmq", "azure-service-bus", "local-filesystem", "docker-network", "tls-file-certificates", "reverse-proxy-nginx", "azure-key-vault", "azure-openai", "sarvam-ai", "prometheus", "opentelemetry", "http-health-probe", "exec-health-probe"]
+    },
+    {
+      "id": "kubernetes-cluster",
+      "displayName": "Kubernetes Cluster (fixture)",
+      "description": "Declared for future-compatibility evaluation only (M2.3 report §8) — no Kubernetes projection exists yet; this profile lets the matcher be exercised against a cluster-shaped capability set without implementing one.",
+      "capabilityIds": ["postgresql", "kubernetes-service", "nfs", "docker-network", "tls-termination", "reverse-proxy-nginx", "azure-key-vault", "prometheus", "opentelemetry", "http-health-probe"]
+    },
+    {
+      "id": "air-gapped",
+      "displayName": "Air-gapped Environment",
+      "description": "No outbound network reachability: no external AI providers, no cloud secret stores, no cloud message bus.",
+      "capabilityIds": ["sqlserver", "rabbitmq", "local-filesystem", "docker-network", "tls-file-certificates", "reverse-proxy-nginx", "file-secrets", "http-health-probe", "exec-health-probe"]
+    }
+  ]
+}

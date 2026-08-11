@@ -1,0 +1,172 @@
+<section class="execution-panel" aria-label="Chapter navigation panel" role="region">
+  <header class="execution-panel__header">
+    <h2 class="execution-panel__title">{{ vm.title }}</h2>
+    <div class="chapter-toolbar" role="search">
+      <label class="chapter-toolbar__label" for="chapter-search-input">{{ vm.searchPlaceholder }}</label>
+      <div class="chapter-toolbar__search-wrap">
+        <ng-icon name="lucideSearch" class="chapter-toolbar__search-icon" aria-hidden="true" />
+        <input
+          id="chapter-search-input"
+          class="chapter-toolbar__search"
+          type="search"
+          [attr.placeholder]="vm.searchPlaceholder"
+          [value]="searchQuery"
+          (input)="onSearchInput($event)"
+          autocomplete="off"
+        />
+      </div>
+      <div class="chapter-toolbar__sort-group">
+        <span class="chapter-toolbar__sort-label">Sort by:</span>
+        <button
+          type="button"
+          class="chapter-toolbar__sort-btn"
+          [class.chapter-toolbar__sort-btn--active]="sortByRiskDesc"
+          [attr.aria-pressed]="sortByRiskDesc"
+          (click)="onSortRisk()"
+        >
+          Risk
+        </button>
+        <span class="chapter-toolbar__sort-separator">|</span>
+        <button
+          type="button"
+          class="chapter-toolbar__sort-btn"
+          [class.chapter-toolbar__sort-btn--active]="!sortByRiskDesc"
+          [attr.aria-pressed]="!sortByRiskDesc"
+          (click)="onSortCode()"
+        >
+          Code
+        </button>
+      </div>
+    </div>
+  </header>
+
+  @if (useVirtualScroll) {
+    <cdk-virtual-scroll-viewport
+      class="execution-panel__body execution-panel__body--virtual"
+      [itemSize]="virtualRowSize"
+      role="list"
+      aria-label="Chapter list"
+    >
+      <button
+        *cdkVirtualFor="let chapter of vm.items; trackBy: vmTrackByChapterId"
+        type="button"
+        class="chapter-item"
+        [class.chapter-item--active]="chapter.isActive"
+        [class.chapter-item--risk-low]="chapter.risk === 'low'"
+        [class.chapter-item--risk-medium]="chapter.risk === 'medium'"
+        [class.chapter-item--risk-high]="chapter.risk === 'high'"
+        [class.chapter-item--hl]="chapter.highlightHighRisk"
+        role="listitem"
+        [attr.aria-pressed]="chapter.isActive"
+        [attr.aria-label]="
+          'Open chapter ' + chapter.code + ' ' + chapter.name + ', ' + chapter.risk + ' risk'
+        "
+        (click)="onChapterSelect(chapter.id)"
+      >
+        <span class="chapter-item__inner">
+          <span class="chapter-item__row">
+            <span class="chapter-item__titles">
+              <span class="chapter-item__code">{{ chapter.code }}</span>
+              <span class="chapter-item__name">{{ chapter.name }}</span>
+            </span>
+            @if (modeUi?.execution?.chapterShowIssueBadge !== false) {
+              <span
+                class="chapter-item__issues"
+                [class.chapter-item__issues--clear]="chapter.openIssuesCount === 0"
+                [class.chapter-item__issues--risk-high]="chapter.openIssuesCount > 0 && chapter.risk === 'high'"
+                [class.chapter-item__issues--risk-medium]="chapter.openIssuesCount > 0 && chapter.risk === 'medium'"
+                [class.chapter-item__issues--risk-low]="chapter.openIssuesCount > 0 && chapter.risk === 'low'"
+                >{{ chapter.issueBadgeLabel }}</span
+              >
+            }
+            @if (chapter.passFailLabel) {
+              <span class="chapter-item__meta" [attr.aria-label]="'Chapter ' + chapter.passFailLabel">{{
+                chapter.passFailLabel
+              }}</span>
+            }
+            @if (chapter.changedSinceLastAudit) {
+              <span class="chapter-item__meta chapter-item__meta--delta" aria-label="Changed since last audit"
+                >Changed</span
+              >
+            }
+            @if (chapter.maturityLabel) {
+              <span class="chapter-item__meta">{{ chapter.maturityLabel }}</span>
+            }
+          </span>
+          <span class="chapter-item__progress-wrap" aria-hidden="true">
+            <progress
+              class="chapter-item__progress-bar"
+              [value]="chapter.compliancePercent"
+              max="100"
+            >
+              {{ chapter.progressLabel }}
+            </progress>
+            <span class="chapter-item__pct">{{ chapter.compliancePercent }}%</span>
+          </span>
+        </span>
+      </button>
+    </cdk-virtual-scroll-viewport>
+  } @else {
+    <div class="execution-panel__body" role="list" aria-label="Chapter list">
+      @for (chapter of vm.items; track chapter.id) {
+        <button
+          type="button"
+          class="chapter-item"
+          [class.chapter-item--active]="chapter.isActive"
+          [class.chapter-item--risk-low]="chapter.risk === 'low'"
+          [class.chapter-item--risk-medium]="chapter.risk === 'medium'"
+          [class.chapter-item--risk-high]="chapter.risk === 'high'"
+          [class.chapter-item--hl]="chapter.highlightHighRisk"
+          role="listitem"
+          [attr.aria-pressed]="chapter.isActive"
+          [attr.aria-label]="
+            'Open chapter ' + chapter.code + ' ' + chapter.name + ', ' + chapter.risk + ' risk'
+          "
+          (click)="onChapterSelect(chapter.id)"
+        >
+          <span class="chapter-item__inner">
+            <span class="chapter-item__row">
+              <span class="chapter-item__titles">
+                <span class="chapter-item__code">{{ chapter.code }}</span>
+                <span class="chapter-item__name">{{ chapter.name }}</span>
+              </span>
+              @if (modeUi?.execution?.chapterShowIssueBadge !== false) {
+                <span
+                  class="chapter-item__issues"
+                  [class.chapter-item__issues--clear]="chapter.openIssuesCount === 0"
+                  [class.chapter-item__issues--risk-high]="chapter.openIssuesCount > 0 && chapter.risk === 'high'"
+                  [class.chapter-item__issues--risk-medium]="chapter.openIssuesCount > 0 && chapter.risk === 'medium'"
+                  [class.chapter-item__issues--risk-low]="chapter.openIssuesCount > 0 && chapter.risk === 'low'"
+                  >{{ chapter.issueBadgeLabel }}</span
+                >
+              }
+              @if (chapter.passFailLabel) {
+                <span class="chapter-item__meta" [attr.aria-label]="'Chapter ' + chapter.passFailLabel">{{
+                  chapter.passFailLabel
+                }}</span>
+              }
+              @if (chapter.changedSinceLastAudit) {
+                <span class="chapter-item__meta chapter-item__meta--delta" aria-label="Changed since last audit"
+                  >Changed</span
+                >
+              }
+              @if (chapter.maturityLabel) {
+                <span class="chapter-item__meta">{{ chapter.maturityLabel }}</span>
+              }
+            </span>
+            <span class="chapter-item__progress-wrap" aria-hidden="true">
+              <progress
+                class="chapter-item__progress-bar"
+                [value]="chapter.compliancePercent"
+                max="100"
+              >
+                {{ chapter.progressLabel }}
+              </progress>
+              <span class="chapter-item__pct">{{ chapter.compliancePercent }}%</span>
+            </span>
+          </span>
+        </button>
+      }
+    </div>
+  }
+</section>

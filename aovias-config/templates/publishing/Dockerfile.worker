@@ -1,0 +1,18 @@
+# syntax=docker/dockerfile:1
+
+ARG SOURCE_REVISION=unknown
+ARG BUILD_UTC=unknown
+
+FROM mcr.microsoft.com/dotnet/runtime:10.0 AS base
+WORKDIR /app
+EXPOSE {{PORT}}
+USER $APP_UID
+
+FROM base AS final
+ARG SOURCE_REVISION
+ARG BUILD_UTC
+LABEL org.opencontainers.image.revision="${SOURCE_REVISION}"
+ENV AOVIAS_SOURCE_REVISION=${SOURCE_REVISION}
+WORKDIR /app
+COPY publish/ .
+ENTRYPOINT ["dotnet", "{{ENTRYPOINT}}"]

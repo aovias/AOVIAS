@@ -1,0 +1,488 @@
+<UserControl x:Class="ComplianceServiceManager.Views.Runtime.RuntimeDashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:helpers="clr-namespace:ComplianceServiceManager.Helpers"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:runtimeModels="clr-namespace:ComplianceServiceManager.Models.Runtime"
+             mc:Ignorable="d"
+             d:DesignHeight="860"
+             d:DesignWidth="1120">
+    <UserControl.Resources>
+        <helpers:RuntimeHealthBrushConverter x:Key="RuntimeHealthBrushConverter" />
+        <helpers:PercentageToGridLengthConverter x:Key="PercentageToGridLengthConverter" />
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+        <Style x:Key="RuntimeHeaderLabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+            <Setter Property="FontSize" Value="11" />
+        </Style>
+
+        <Style x:Key="RuntimeHeaderValueStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,4,0,0" />
+        </Style>
+
+        <Style x:Key="RuntimeMetricCardStyle" TargetType="Border" BasedOn="{StaticResource CardBorderStyle}">
+            <Setter Property="Padding" Value="14" />
+            <Setter Property="MinHeight" Value="92" />
+        </Style>
+
+        <Style x:Key="RuntimeSectionTitleStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" MinHeight="220" />
+            <RowDefinition Height="220" MinHeight="160" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="520" />
+            <ColumnDefinition Width="300" MinWidth="260" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Style="{StaticResource CardBorderStyle}"
+                Padding="18"
+                Margin="0,0,0,14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <UniformGrid Columns="4" Margin="0,0,16,0">
+                    <StackPanel Margin="0,0,12,0">
+                        <TextBlock Text="Runtime Name" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                        <TextBlock Text="{Binding Runtime.Name}" Style="{StaticResource RuntimeHeaderValueStyle}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,12,0">
+                        <TextBlock Text="Environment" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                        <TextBlock Text="{Binding Runtime.Environment}" Style="{StaticResource RuntimeHeaderValueStyle}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,12,0">
+                        <TextBlock Text="Server" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                        <TextBlock Text="{Binding Runtime.Server}" Style="{StaticResource RuntimeHeaderValueStyle}" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Runtime Version" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                        <TextBlock Text="{Binding Runtime.Version}" Style="{StaticResource RuntimeHeaderValueStyle}" />
+                    </StackPanel>
+                </UniformGrid>
+
+                <UniformGrid Grid.Column="1" Columns="3" Width="420">
+                    <StackPanel Margin="0,0,12,0">
+                        <TextBlock Text="Status" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                            <Ellipse Width="9"
+                                     Height="9"
+                                     Fill="{Binding Runtime.Health, Converter={StaticResource RuntimeHealthBrushConverter}}"
+                                     Margin="0,0,8,0"
+                                     VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Runtime.Status}"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       FontWeight="SemiBold" />
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,12,0">
+                        <TextBlock Text="Last Updated" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                        <TextBlock Text="{Binding LastUpdatedDisplay}" Style="{StaticResource RuntimeHeaderValueStyle}" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Dashboard" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                        <TextBlock Text="{Binding StatusMessage}"
+                                   Style="{StaticResource RuntimeHeaderValueStyle}"
+                                   TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </UniformGrid>
+            </Grid>
+        </Border>
+
+        <!-- Metric Cards -->
+        <UniformGrid Grid.Row="1"
+                     Grid.Column="0"
+                     Grid.ColumnSpan="2"
+                     Columns="4"
+                     Margin="0,0,0,14">
+            <Border Style="{StaticResource RuntimeMetricCardStyle}" Margin="0,0,10,10">
+                <StackPanel>
+                    <TextBlock Text="Docker Engine" Foreground="{StaticResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding Statistics.DockerEngineStatus}"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Foreground="{Binding Statistics.DockerEngineHealth, Converter={StaticResource RuntimeHealthBrushConverter}}"
+                               Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource RuntimeMetricCardStyle}" Margin="5,0,5,10">
+                <StackPanel>
+                    <TextBlock Text="Nginx" Foreground="{StaticResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding Statistics.NginxStatus}"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Foreground="{Binding Statistics.NginxHealth, Converter={StaticResource RuntimeHealthBrushConverter}}"
+                               Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource RuntimeMetricCardStyle}" Margin="5,0,5,10">
+                <StackPanel>
+                    <TextBlock Text="SQL Server" Foreground="{StaticResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding Statistics.SqlServerStatus}"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Foreground="{Binding Statistics.SqlServerHealth, Converter={StaticResource RuntimeHealthBrushConverter}}"
+                               Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource RuntimeMetricCardStyle}" Margin="5,0,0,10">
+                <StackPanel>
+                    <TextBlock Text="Certificates" Foreground="{StaticResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding Statistics.CertificatesStatus}"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Foreground="{Binding Statistics.CertificatesHealth, Converter={StaticResource RuntimeHealthBrushConverter}}"
+                               Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource RuntimeMetricCardStyle}" Margin="0,0,10,0">
+                <StackPanel>
+                    <TextBlock Text="Deployment Agent" Foreground="{StaticResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding Statistics.DeploymentAgentStatus}"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Foreground="{Binding Statistics.DeploymentAgentHealth, Converter={StaticResource RuntimeHealthBrushConverter}}"
+                               Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource RuntimeMetricCardStyle}" Margin="5,0,5,0">
+                <StackPanel>
+                    <TextBlock Text="Disk Usage" Foreground="{StaticResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding Statistics.DiskUsagePercent, StringFormat={}{0:F1}%}"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Margin="0,6,0,8" />
+                    <Border Background="#08111F"
+                            CornerRadius="6"
+                            Height="8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="{Binding Statistics.DiskUsagePercent, Converter={StaticResource PercentageToGridLengthConverter}}" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0"
+                                    Background="{StaticResource AccentBrush}"
+                                    CornerRadius="6" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource RuntimeMetricCardStyle}" Margin="5,0,5,0">
+                <StackPanel>
+                    <TextBlock Text="CPU" Foreground="{StaticResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding Statistics.CpuUsagePercent, StringFormat={}{0:F1}%}"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Margin="0,6,0,8" />
+                    <Border Background="#08111F"
+                            CornerRadius="6"
+                            Height="8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="{Binding Statistics.CpuUsagePercent, Converter={StaticResource PercentageToGridLengthConverter}}" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0"
+                                    Background="#22C55E"
+                                    CornerRadius="6" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource RuntimeMetricCardStyle}" Margin="5,0,0,0">
+                <StackPanel>
+                    <TextBlock Text="Memory" Foreground="{StaticResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding Statistics.MemoryUsagePercent, StringFormat={}{0:F1}%}"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Margin="0,6,0,8" />
+                    <Border Background="#08111F"
+                            CornerRadius="6"
+                            Height="8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="{Binding Statistics.MemoryUsagePercent, Converter={StaticResource PercentageToGridLengthConverter}}" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0"
+                                    Background="#38BDF8"
+                                    CornerRadius="6" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <!-- Runtime Services -->
+        <Border Grid.Row="2"
+                Grid.Column="0"
+                Style="{StaticResource CardBorderStyle}"
+                Padding="1"
+                Margin="0,0,10,10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <DockPanel Grid.Row="0" Margin="14,12,14,10" LastChildFill="False">
+                    <TextBlock DockPanel.Dock="Left"
+                               Text="Runtime Services"
+                               Style="{StaticResource RuntimeSectionTitleStyle}" />
+                    <Button DockPanel.Dock="Right"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Command="{Binding RefreshCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE72C;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       Margin="0,0,8,0" />
+                            <TextBlock Text="Refresh" />
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding Services}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Service" Binding="{Binding Name}" Width="1.1*" MinWidth="120" />
+                        <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="1.2*" MinWidth="140" />
+                        <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="110" MinWidth="95" />
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100" MinWidth="90" />
+                        <DataGridTemplateColumn Header="Health" Width="120" MinWidth="105">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate DataType="{x:Type runtimeModels:RuntimeService}">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Ellipse Width="8"
+                                                 Height="8"
+                                                 Fill="{Binding Health, Converter={StaticResource RuntimeHealthBrushConverter}}"
+                                                 Margin="0,0,8,0" />
+                                        <TextBlock Text="{Binding Health}" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Started"
+                                            Binding="{Binding Started, StringFormat={}{0:yyyy-MM-dd HH:mm}}"
+                                            Width="140"
+                                            MinWidth="130" />
+                        <DataGridTextColumn Header="Uptime" Binding="{Binding Uptime}" Width="110" MinWidth="95" />
+                        <DataGridTemplateColumn Header="Actions" Width="170" MinWidth="160">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate DataType="{x:Type runtimeModels:RuntimeService}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Style="{StaticResource IconButtonStyle}"
+                                                Content="View"
+                                                Margin="0,0,7,0"
+                                                Command="{Binding DataContext.ViewServiceDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" />
+                                        <Button Style="{StaticResource IconButtonStyle}"
+                                                Content="Restart"
+                                                Command="{Binding DataContext.RestartServiceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+        <!-- Right Panel -->
+        <Border Grid.Row="2"
+                Grid.RowSpan="2"
+                Grid.Column="1"
+                Style="{StaticResource CardBorderStyle}"
+                Padding="16"
+                Margin="10,0,0,0"
+                Background="#0D1424">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Runtime Information"
+                           Style="{StaticResource RuntimeSectionTitleStyle}"
+                           Margin="0,0,0,14" />
+
+                <StackPanel Grid.Row="1">
+                    <TextBlock Text="Hostname" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                    <TextBlock Text="{Binding Runtime.Hostname}" Style="{StaticResource RuntimeHeaderValueStyle}" Margin="0,4,0,12" />
+
+                    <TextBlock Text="Environment" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                    <TextBlock Text="{Binding Runtime.Environment}" Style="{StaticResource RuntimeHeaderValueStyle}" Margin="0,4,0,12" />
+
+                    <TextBlock Text="Docker Network" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                    <TextBlock Text="{Binding Runtime.DockerNetwork}" Style="{StaticResource RuntimeHeaderValueStyle}" Margin="0,4,0,12" />
+
+                    <TextBlock Text="Runtime Version" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                    <TextBlock Text="{Binding Runtime.Version}" Style="{StaticResource RuntimeHeaderValueStyle}" Margin="0,4,0,12" />
+
+                    <TextBlock Text="Operating System" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                    <TextBlock Text="{Binding Runtime.OperatingSystem}" Style="{StaticResource RuntimeHeaderValueStyle}" Margin="0,4,0,12" />
+
+                    <TextBlock Text="Kernel" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                    <TextBlock Text="{Binding Runtime.Kernel}" Style="{StaticResource RuntimeHeaderValueStyle}" Margin="0,4,0,12" />
+
+                    <TextBlock Text="Public IP" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                    <TextBlock Text="{Binding Runtime.PublicIp}" Style="{StaticResource RuntimeHeaderValueStyle}" Margin="0,4,0,12" />
+
+                    <TextBlock Text="SSL Enabled" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                    <TextBlock Text="{Binding Runtime.SslEnabled}"
+                               Style="{StaticResource RuntimeHeaderValueStyle}"
+                               Margin="0,4,0,12" />
+
+                    <TextBlock Text="HTTPS Endpoint" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                    <TextBlock Text="{Binding Runtime.HttpsEndpoint}"
+                               Style="{StaticResource RuntimeHeaderValueStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,4,0,12" />
+
+                    <TextBlock Text="Public URL" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                    <TextBlock Text="{Binding Statistics.PublicUrl, TargetNullValue=—}"
+                               Style="{StaticResource RuntimeHeaderValueStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,4,0,12" />
+
+                    <TextBlock Text="Docker Version" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                    <TextBlock Text="{Binding Statistics.DockerVersion, TargetNullValue=—}" Style="{StaticResource RuntimeHeaderValueStyle}" Margin="0,4,0,12" />
+
+                    <TextBlock Text="Containers" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                    <TextBlock Style="{StaticResource RuntimeHeaderValueStyle}" Margin="0,4,0,12">
+                        <Run Text="{Binding Statistics.RunningContainerCount, Mode=OneWay}" />
+                        <Run Text=" running / " />
+                        <Run Text="{Binding Statistics.ContainerCount, Mode=OneWay}" />
+                        <Run Text=" total" />
+                    </TextBlock>
+
+                    <TextBlock Text="Networks / Volumes" Style="{StaticResource RuntimeHeaderLabelStyle}" />
+                    <TextBlock Style="{StaticResource RuntimeHeaderValueStyle}" Margin="0,4,0,0">
+                        <Run Text="{Binding Statistics.NetworkCount, Mode=OneWay}" />
+                        <Run Text=" networks / " />
+                        <Run Text="{Binding Statistics.VolumeCount, Mode=OneWay}" />
+                        <Run Text=" volumes" />
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Runtime Events -->
+        <Border Grid.Row="3"
+                Grid.Column="0"
+                Style="{StaticResource CardBorderStyle}"
+                Padding="0"
+                Background="#0D1424"
+                Margin="0,0,10,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <DockPanel Grid.Row="0" Margin="14,12,14,10" LastChildFill="False">
+                    <TextBlock DockPanel.Dock="Left"
+                               Text="Runtime Events"
+                               Style="{StaticResource RuntimeSectionTitleStyle}" />
+                    <TextBlock DockPanel.Dock="Right"
+                               Text="{Binding Events.Count, StringFormat={}{0} events}"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <Border Grid.Row="1"
+                        Margin="1"
+                        Background="#08111F"
+                        CornerRadius="0,0,12,12">
+                    <ListBox ItemsSource="{Binding Events}"
+                             BorderThickness="0"
+                             Background="Transparent"
+                             FontFamily="Cascadia Mono, Consolas"
+                             FontSize="12"
+                             Padding="12,10"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="0,2" />
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type runtimeModels:RuntimeEvent}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="70" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0"
+                                               Text="{Binding DisplayTimestamp}"
+                                               Foreground="#64748B" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding Level}"
+                                               Foreground="{StaticResource AccentBrush}"
+                                               FontWeight="SemiBold" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding Message}"
+                                               Foreground="{StaticResource TextPrimaryBrush}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="0"
+              Grid.RowSpan="4"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              Panel.ZIndex="50"
+              Background="#90060B16"
+              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Border Background="#0D1424"
+                    CornerRadius="12"
+                    Padding="24,18"
+                    BorderBrush="#256D85"
+                    BorderThickness="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE895;"
+                               FontFamily="Segoe MDL2 Assets"
+                               FontSize="18"
+                               Foreground="{StaticResource AccentBrush}"
+                               Margin="0,0,12,0"
+                               VerticalAlignment="Center" />
+                    <TextBlock Text="Loading runtime dashboard..."
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

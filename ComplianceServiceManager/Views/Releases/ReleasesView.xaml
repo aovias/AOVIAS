@@ -1,0 +1,57 @@
+<UserControl x:Class="ComplianceServiceManager.Views.Releases.ReleasesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Aovias.DesignSystem.Controls;assembly=Aovias.DesignSystem"
+             Loaded="ReleasesView_OnLoaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Style="{StaticResource CardBorderStyle}" Padding="20" Margin="{StaticResource SectionSpacing}">
+            <controls:SectionHeader Title="Releases"
+                                      Subtitle="{Binding StatusMessage}"
+                                      IconGlyph="{StaticResource IconReleases}">
+                <controls:SectionHeader.ActionContent>
+                    <Button Content="Refresh"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Command="{Binding InitializeCommand}" />
+                </controls:SectionHeader.ActionContent>
+            </controls:SectionHeader>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Padding="16" Margin="0,0,12,0">
+                <StackPanel>
+                    <TextBlock Text="Active Releases" Style="{StaticResource HeadingTextStyle}" Margin="0,0,0,12" />
+                    <DataGrid ItemsSource="{Binding Releases}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Application" Binding="{Binding ApplicationName}" Width="*" />
+                            <DataGridTextColumn Header="Version" Binding="{Binding PackageVersion}" Width="100" />
+                            <DataGridTextColumn Header="State" Binding="{Binding State}" Width="120" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" Style="{StaticResource CardBorderStyle}" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="Release History" Style="{StaticResource HeadingTextStyle}" Margin="0,0,0,12" />
+                    <DataGrid ItemsSource="{Binding History}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Release" Binding="{Binding ReleaseId}" Width="*" />
+                            <DataGridTextColumn Header="State" Binding="{Binding State}" Width="120" />
+                            <DataGridTextColumn Header="When" Binding="{Binding Timestamp}" Width="160" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

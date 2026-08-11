@@ -1,0 +1,69 @@
+/*
+ * Audit Workspace shell.
+ *
+ * Height model — the reason this is not just `display: flex`:
+ * the app shell caps `.main-content` to one viewport and scrolls page content
+ * inside it. If the workspace simply grew with its content, a pinned drawer
+ * would stretch to the full height of a long page and its own header would
+ * scroll away. So the workspace fills the shell's scroll viewport instead, and
+ * the content column takes over the scrolling.
+ *
+ * Width model — Stage 1.2:
+ * there is no context column. `.workspace-content` takes the whole row, and an
+ * unpinned drawer is fixed to the viewport so it contributes no width at all.
+ * Pinning is the only thing that narrows the workspace, and only because the
+ * user asked for it.
+ *
+ * The scroll owner is `.workspace-content` rather than `.main-content`, but
+ * only within `/app/audit/**` — hosted pages keep their own headers, padding
+ * and internal layout untouched.
+ */
+:host {
+  display: flex;
+  flex-direction: column;
+  /*
+   * Resolves because `.main-content` is a flex item of a fixed-height column,
+   * which gives it a definite height for percentages to resolve against.
+   */
+  block-size: 100%;
+  min-inline-size: 0;
+}
+
+.workspace-body {
+  display: flex;
+  align-items: stretch;
+  /* Take the space left by the tab strip and the workflow/action bars. */
+  flex: 1;
+  /* Without this the body refuses to shrink below its content and nothing scrolls. */
+  min-block-size: 0;
+  min-inline-size: 0;
+}
+
+.workspace-content {
+  flex: 1;
+  /*
+   * Wide tables in hosted pages would otherwise set the column's intrinsic
+   * width and, with the drawer pinned, push it off screen.
+   */
+  min-inline-size: 0;
+  overflow-y: auto;
+}
+
+/*
+ * Below this width the shell's own scroll cap stops helping: the workspace
+ * reverts to growing with its content and scrolling in the page, and the
+ * drawer is a full-screen overlay regardless.
+ */
+@media (max-width: 900px) {
+  :host {
+    block-size: auto;
+  }
+
+  .workspace-body {
+    min-block-size: auto;
+  }
+
+  .workspace-content {
+    overflow-y: visible;
+  }
+}

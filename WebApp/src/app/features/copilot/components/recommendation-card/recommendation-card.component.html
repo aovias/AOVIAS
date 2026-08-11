@@ -1,0 +1,79 @@
+<article class="recommendation-card" [class]="severityClass">
+  <!-- Header row -->
+  <header class="rec-header">
+    <span class="severity-badge" [class]="severityClass">
+      {{ severityIcon }} {{ recommendation.severity }}
+    </span>
+    <span class="category-chip">{{ categoryLabel }}</span>
+    <span class="priority-badge" title="Priority rank">P{{ recommendation.priority }}</span>
+    <span class="confidence-badge" title="Rule confidence">{{ confidencePercent }}%</span>
+  </header>
+
+  <!-- Title -->
+  <h3 class="rec-title">{{ recommendation.title }}</h3>
+
+  <!-- Description (LLM-enriched explanation) -->
+  <p class="rec-description" *ngIf="recommendation.description">
+    {{ recommendation.description }}
+  </p>
+
+  <!-- Expected outcome -->
+  <p class="rec-outcome" *ngIf="recommendation.expectedOutcome">
+    <strong>Expected outcome:</strong> {{ recommendation.expectedOutcome }}
+  </p>
+
+  <!-- Risk if ignored -->
+  <p class="rec-risk" *ngIf="recommendation.riskIfIgnored">
+    <strong>Risk if ignored:</strong> {{ recommendation.riskIfIgnored }}
+  </p>
+
+  <!-- Footer actions -->
+  <footer class="rec-footer">
+    <!-- Deep link navigation -->
+    <button
+      *ngIf="recommendation.deepLink"
+      class="btn-deeplink"
+      (click)="onDeepLinkClick()"
+      type="button">
+      View in System →
+    </button>
+
+    <!-- Expand/collapse rationale -->
+    <button
+      class="btn-rationale-toggle"
+      (click)="toggleExpand()"
+      type="button">
+      {{ expanded ? 'Hide' : 'View' }} Evidence
+    </button>
+  </footer>
+
+  <!-- Expandable rationale panel (machine-readable evidence) -->
+  <section class="rec-rationale-panel" *ngIf="expanded && parsedRationale">
+    <h4 class="rationale-title">Evidence Trail</h4>
+    <p class="rationale-rule"><strong>Rule:</strong> {{ parsedRationale.ruleName }}</p>
+
+    <div class="rationale-metrics" *ngIf="parsedRationale.metrics | keyvalue as metrics">
+      <h5>Metrics</h5>
+      <dl>
+        <ng-container *ngFor="let m of metrics">
+          <dt>{{ m.key }}</dt>
+          <dd>{{ m.value }}</dd>
+        </ng-container>
+      </dl>
+    </div>
+
+    <div class="rationale-thresholds" *ngIf="parsedRationale.thresholds | keyvalue as thresholds">
+      <h5>Thresholds</h5>
+      <dl>
+        <ng-container *ngFor="let t of thresholds">
+          <dt>{{ t.key }}</dt>
+          <dd>{{ t.value }}</dd>
+        </ng-container>
+      </dl>
+    </div>
+
+    <p class="rationale-timestamp">
+      Data as of: {{ parsedRationale.dataAsOfUtc | date:'medium' }}
+    </p>
+  </section>
+</article>

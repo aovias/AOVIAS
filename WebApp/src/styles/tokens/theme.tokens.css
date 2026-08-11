@@ -1,0 +1,589 @@
+/*
+ * PRAMAN theme tokens.
+ * Semantic tokens are the source of truth.
+ * Legacy aliases are kept for backward compatibility with existing components.
+ */
+
+/*
+ * Light theme is the default (plain :root) so routes rendered outside the
+ * authenticated shell (login, signup, error pages) resolve tokens before
+ * ThemeService sets data-theme. Dark overrides win via higher specificity.
+ */
+:root,
+:root[data-theme='light'] {
+  /* surfaces */
+  --color-bg-page: #f7f9fc;
+  --color-bg-surface: #ffffff;
+  --color-bg-surface-alt: #f3f4f6;
+  --color-bg-header: rgba(255, 255, 255, 0.8);
+  --color-bg-sidebar: #ffffff;
+  --color-bg-hover: #f3f4f6;
+
+  /* text */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
+  --color-text-inverse: #ffffff;
+
+  /*
+   * AOVIAS Primary (Repository Blue) — single interaction accent.
+   * Scale: 50 soft · 100 selected · 500 base · 600 hover · 700 active
+   */
+  --color-primary-50: #eef3ff;
+  --color-primary-100: #d6e4ff;
+  --color-primary-500: #2f6bff;
+  --color-primary-600: #2557d6;
+  --color-primary-700: #1e4bc7;
+  --color-primary: var(--color-primary-500);
+  --color-primary-hover: var(--color-primary-600);
+  --color-primary-active: var(--color-primary-700);
+  --color-primary-background: rgba(47, 107, 255, 0.08);
+  --color-primary-bg: var(--color-primary-background);
+  --color-primary-border: color-mix(in srgb, var(--color-primary) 35%, transparent);
+  --color-primary-text: var(--color-primary-500);
+  --color-accent: var(--color-primary);
+  --color-accent-subtle: var(--color-primary-background);
+
+  /* brand aliases → Primary (backward compatible) */
+  --color-brand-primary: var(--color-primary);
+  --color-brand-primary-hover: var(--color-primary-hover);
+  --color-brand-primary-soft: var(--color-primary-background);
+
+  /*
+   * UI-5 — Customer identity, NOT the interaction accent.
+   *
+   * OrganizationBrandingThemeService overwrites only these at runtime. They are
+   * for customer-owned identity surfaces (org header mark, logo chrome). The
+   * interaction accent — buttons, focus rings, selection, tabs, chips — always
+   * stays AOVIAS Primary Blue, so a customer's brand colour can never repaint
+   * the application's controls. Defaults resolve to AOVIAS Blue when an
+   * organization has set no branding.
+   */
+  --color-identity-primary: var(--color-primary-500);
+  --color-identity-secondary: var(--color-primary-700);
+  --color-identity-accent: var(--color-primary-600);
+  --color-identity-primary-soft: color-mix(in srgb, var(--color-identity-primary) 12%, transparent);
+  --color-identity-primary-border: color-mix(
+    in srgb,
+    var(--color-identity-primary) 35%,
+    transparent
+  );
+
+  /* status — do not use for interaction accents */
+  --color-status-success: #22c55e;
+  --color-status-warning: #f59e0b;
+  --color-status-danger: #ef4444;
+  --color-status-info: #3b82f6;
+
+  /*
+   * UI-10 / UI-13 — Status foreground values are darkened for WCAG AA text
+   * contrast on light surfaces; the raw --color-status-* stay for fills, dots,
+   * and chart marks where contrast is carried by size, not by type.
+   */
+  --color-status-success-fg: #15803d;
+  --color-status-warning-fg: #b45309;
+  --color-status-danger-fg: #b91c1c;
+  --color-status-info-fg: #1d4ed8;
+  --color-status-neutral-fg: var(--color-text-secondary);
+  --color-status-success-soft: color-mix(in srgb, var(--color-status-success) 14%, transparent);
+  --color-status-warning-soft: color-mix(in srgb, var(--color-status-warning) 16%, transparent);
+  --color-status-danger-soft: color-mix(in srgb, var(--color-status-danger) 14%, transparent);
+  --color-status-info-soft: color-mix(in srgb, var(--color-status-info) 14%, transparent);
+  --color-status-neutral-soft: var(--color-bg-surface-alt);
+  --color-status-success-border: color-mix(in srgb, var(--color-status-success) 34%, transparent);
+  --color-status-warning-border: color-mix(in srgb, var(--color-status-warning) 36%, transparent);
+  --color-status-danger-border: color-mix(in srgb, var(--color-status-danger) 34%, transparent);
+  --color-status-info-border: color-mix(in srgb, var(--color-status-info) 34%, transparent);
+
+  /* UI-10 — Interaction states shared by every control */
+  --state-hover-bg: var(--color-bg-hover);
+  --state-pressed-bg: color-mix(in srgb, var(--color-text-primary) 9%, transparent);
+  --state-selected-bg: var(--color-primary-background);
+  --state-selected-fg: var(--color-primary-text);
+  --state-selected-border: var(--color-primary-border);
+  --state-focus-ring-color: var(--color-primary);
+  --state-disabled-fg: var(--color-text-muted);
+  --state-disabled-bg: var(--color-bg-surface-alt);
+  --state-disabled-border: var(--color-border-subtle);
+  --state-skeleton-bg: var(--color-bg-surface-alt);
+  --state-skeleton-shine: color-mix(in srgb, var(--color-text-muted) 12%, transparent);
+
+  --color-chart-oe-trend: var(--color-primary);
+  --color-chart-chapter-trend: #0d9488;
+  --color-chart-risk-trend: #f59e0b;
+  --color-chart-neutral: #64748b;
+
+  /* Angular Material M3 — bind to AOVIAS Primary (overrides azure-blue defaults) */
+  --mat-sys-primary: var(--color-primary);
+  --mat-sys-on-primary: var(--color-text-inverse);
+  --mat-sys-primary-container: var(--color-primary-100);
+  --mat-sys-on-primary-container: var(--color-primary-700);
+  --mat-sys-inverse-primary: #abc7ff;
+  --mat-sys-primary-fixed: var(--color-primary-100);
+  --mat-sys-primary-fixed-dim: #abc7ff;
+  --mat-sys-on-primary-fixed: #001b3f;
+  --mat-sys-on-primary-fixed-variant: var(--color-primary-700);
+  --mat-sys-surface-tint: var(--color-primary);
+  --mat-sys-tertiary: var(--color-primary);
+  --mat-sys-on-tertiary: var(--color-text-inverse);
+  --mat-sys-tertiary-container: var(--color-primary-100);
+  --mat-sys-on-tertiary-container: var(--color-primary-700);
+  --mat-sys-tertiary-fixed: var(--color-primary-100);
+  --mat-sys-tertiary-fixed-dim: #abc7ff;
+  --mat-sys-on-tertiary-fixed: #001b3f;
+  --mat-sys-on-tertiary-fixed-variant: var(--color-primary-700);
+
+  /* borders + effects */
+  --color-border-subtle: #e5e7eb;
+  --color-edge: rgba(100, 100, 100, 0.3);
+  --color-overlay-backdrop: rgba(15, 23, 42, 0.42);
+  /* Resting card elevation — softer than --shadow-sm for stacked Journey cards */
+  --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-elevated-panel: -8px 0 24px rgba(0, 0, 0, 0.12);
+  --shadow-focus-ring-primary: 0 0 0 2px color-mix(in srgb, var(--color-primary) 22%, transparent);
+
+  /* Phase 43 — scrollbar (primary / panel / dense / timeline); no raw literals in features */
+  --scrollbar-track: color-mix(in srgb, var(--color-border-subtle) 40%, transparent);
+  --scrollbar-thumb: color-mix(in srgb, var(--color-text-muted) 44%, var(--color-bg-page));
+  --scrollbar-thumb-hover: color-mix(
+    in srgb,
+    var(--color-text-secondary) 48%,
+    var(--color-bg-surface)
+  );
+  --scrollbar-thumb-active: color-mix(
+    in srgb,
+    var(--color-brand-primary) 58%,
+    var(--color-bg-surface-alt)
+  );
+  --scrollbar-thumb-focus: color-mix(
+    in srgb,
+    var(--color-brand-primary) 46%,
+    var(--color-bg-surface)
+  );
+  --scrollbar-thumb-panel: color-mix(in srgb, var(--color-text-muted) 30%, var(--color-bg-surface));
+  --scrollbar-thumb-panel-hover: color-mix(
+    in srgb,
+    var(--color-text-secondary) 40%,
+    var(--color-bg-surface)
+  );
+  --scrollbar-thumb-panel-active: color-mix(
+    in srgb,
+    var(--color-brand-primary) 48%,
+    var(--color-bg-surface-alt)
+  );
+  --scrollbar-thumb-panel-focus: color-mix(
+    in srgb,
+    var(--color-brand-primary) 40%,
+    var(--color-bg-surface)
+  );
+  --scrollbar-thumb-dense: color-mix(in srgb, var(--color-text-muted) 50%, var(--color-bg-surface));
+  --scrollbar-thumb-dense-hover: color-mix(
+    in srgb,
+    var(--color-text-secondary) 54%,
+    var(--color-bg-surface)
+  );
+  --scrollbar-thumb-dense-active: color-mix(
+    in srgb,
+    var(--color-brand-primary) 62%,
+    var(--color-bg-surface-alt)
+  );
+  --scrollbar-thumb-dense-focus: color-mix(
+    in srgb,
+    var(--color-brand-primary) 52%,
+    var(--color-bg-surface)
+  );
+  --scrollbar-thumb-timeline: var(--scrollbar-thumb);
+  --scrollbar-thumb-timeline-hover: var(--scrollbar-thumb-hover);
+  --scrollbar-thumb-timeline-active: var(--scrollbar-thumb-active);
+  --scrollbar-thumb-timeline-focus: var(--scrollbar-thumb-focus);
+
+  /* context-specific tokens */
+  --color-hospital-card-bg: transparent;
+  --color-hospital-card-border: transparent;
+  --color-hospital-card-hover-bg: rgba(0, 0, 0, 0.04);
+  --color-hospital-card-hover-border: transparent;
+  --color-hospital-card-icon-bg: var(--color-primary-background);
+  --color-hospital-card-icon: var(--color-primary);
+  --color-hospital-card-name: var(--color-text-primary);
+  --color-hospital-card-org: var(--color-text-secondary);
+  --color-hospital-card-change: var(--color-text-muted);
+  --color-context-framework-badge-bg: rgba(34, 197, 94, 0.12);
+  --color-context-framework-badge: #16a34a;
+  --color-context-framework-value-bg: rgba(0, 0, 0, 0.03);
+  --color-context-framework-value-border: rgba(0, 0, 0, 0.06);
+  --color-context-separator: rgba(0, 0, 0, 0.08);
+  --color-chart-series-primary: var(--color-brand-primary);
+  --color-chart-series-info: var(--color-status-info);
+  --color-chart-series-warning: var(--color-status-warning);
+  --color-chart-series-success: var(--color-status-success);
+  --color-chart-series-danger: var(--color-status-danger);
+  --color-chart-grid: var(--color-border-subtle);
+  --color-chart-axis: var(--color-text-muted);
+  --color-chart-fill-soft: var(--color-brand-primary-soft);
+  --color-chart-line-primary: var(--color-chart-oe-trend);
+  --color-chart-line-secondary: var(--color-chart-chapter-trend);
+  --color-chart-area-fill: var(--color-brand-primary-soft);
+  --color-chart-bar-positive: var(--color-status-success);
+  --color-chart-tooltip-bg: var(--color-bg-surface);
+  --color-execution-risk-high-fg: var(--color-status-danger);
+  --color-execution-risk-high-bg: color-mix(in srgb, var(--color-status-danger) 16%, transparent);
+  --color-execution-risk-medium-fg: var(--color-status-warning);
+  --color-execution-risk-medium-bg: color-mix(
+    in srgb,
+    var(--color-status-warning) 18%,
+    transparent
+  );
+  --color-execution-risk-low-fg: var(--color-status-success);
+  --color-execution-risk-low-bg: color-mix(in srgb, var(--color-status-success) 18%, transparent);
+  --color-execution-status-compliant-fg: var(--color-status-success);
+  --color-execution-status-compliant-bg: color-mix(
+    in srgb,
+    var(--color-status-success) 16%,
+    transparent
+  );
+  --color-execution-status-partial-fg: var(--color-status-warning);
+  --color-execution-status-partial-bg: color-mix(
+    in srgb,
+    var(--color-status-warning) 18%,
+    transparent
+  );
+  --color-execution-status-non-compliant-fg: var(--color-status-danger);
+  --color-execution-status-non-compliant-bg: color-mix(
+    in srgb,
+    var(--color-status-danger) 16%,
+    transparent
+  );
+  --color-execution-status-not-applicable-fg: var(--color-chart-neutral);
+  --color-execution-status-not-applicable-bg: color-mix(
+    in srgb,
+    var(--color-chart-neutral) 18%,
+    transparent
+  );
+
+  /* legacy aliases */
+  --bg-primary: var(--color-bg-page);
+  --bg-secondary: var(--color-bg-page);
+  --bg-tertiary: var(--color-bg-surface-alt);
+  --card-bg: var(--color-bg-surface);
+  --header-bg: var(--color-bg-header);
+  --sidebar-bg: var(--color-bg-sidebar);
+  --border-color: var(--color-border-subtle);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --primary-color: var(--color-primary);
+  --primary-bg-light: var(--color-primary-background);
+  --primary-hover: var(--color-primary-hover);
+  --success-color: var(--color-status-success);
+  --warning-color: var(--color-status-warning);
+  --danger-color: var(--color-status-danger);
+  --hover-bg: var(--color-bg-hover);
+  --edge-color: var(--color-edge);
+  --overlay-backdrop: var(--color-overlay-backdrop);
+  --color-background: var(--color-bg-page);
+  --color-surface: var(--color-bg-surface);
+  --color-border: var(--color-border-subtle);
+  --hospital-card-bg: var(--color-hospital-card-bg);
+  --hospital-card-border: var(--color-hospital-card-border);
+  --hospital-card-hover-bg: var(--color-hospital-card-hover-bg);
+  --hospital-card-hover-border: var(--color-hospital-card-hover-border);
+  --hospital-card-icon-bg: var(--color-hospital-card-icon-bg);
+  --hospital-card-icon-color: var(--color-hospital-card-icon);
+  --hospital-card-name-color: var(--color-hospital-card-name);
+  --hospital-card-org-color: var(--color-hospital-card-org);
+  --hospital-card-change-color: var(--color-hospital-card-change);
+  --context-framework-badge-bg: var(--color-context-framework-badge-bg);
+  --context-framework-badge-color: var(--color-context-framework-badge);
+  --context-framework-value-bg: var(--color-context-framework-value-bg);
+  --context-framework-value-border: var(--color-context-framework-value-border);
+  --context-separator-color: var(--color-context-separator);
+}
+
+:root[data-theme='dark'] {
+  /* surfaces */
+  --color-bg-page: #0f172a;
+  --color-bg-surface: #1e293b;
+  --color-bg-surface-alt: #1e293b;
+  --color-bg-header: rgba(30, 41, 59, 0.95);
+  --color-bg-sidebar: #1e293b;
+  --color-bg-hover: rgba(255, 255, 255, 0.05);
+
+  /* text */
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --color-text-inverse: #ffffff;
+
+  /*
+   * AOVIAS Primary (Repository Blue) — same brand hue in dark mode.
+   * Soft surfaces use alpha mixes for WCAG-friendly contrast on dark UI.
+   */
+  --color-primary-50: rgba(47, 107, 255, 0.12);
+  --color-primary-100: rgba(47, 107, 255, 0.2);
+  --color-primary-500: #2f6bff;
+  --color-primary-600: #4d82ff;
+  --color-primary-700: #2557d6;
+  --color-primary: var(--color-primary-500);
+  --color-primary-hover: var(--color-primary-600);
+  --color-primary-active: var(--color-primary-700);
+  --color-primary-background: rgba(47, 107, 255, 0.16);
+  --color-primary-bg: var(--color-primary-background);
+  --color-primary-border: color-mix(in srgb, var(--color-primary) 42%, transparent);
+  --color-primary-text: #7aa2ff;
+  --color-accent: var(--color-primary);
+  --color-accent-subtle: var(--color-primary-background);
+
+  /* brand aliases → Primary */
+  --color-brand-primary: var(--color-primary);
+  --color-brand-primary-hover: var(--color-primary-hover);
+  --color-brand-primary-soft: var(--color-primary-background);
+
+  /* UI-5 — Customer identity, NOT the interaction accent (see light theme). */
+  --color-identity-primary: var(--color-primary-500);
+  --color-identity-secondary: var(--color-primary-700);
+  --color-identity-accent: var(--color-primary-600);
+  --color-identity-primary-soft: color-mix(in srgb, var(--color-identity-primary) 20%, transparent);
+  --color-identity-primary-border: color-mix(
+    in srgb,
+    var(--color-identity-primary) 42%,
+    transparent
+  );
+
+  /* status — unchanged semantics */
+  --color-status-success: #34d399;
+  --color-status-warning: #fbbf24;
+  --color-status-danger: #f87171;
+  --color-status-info: #3b82f6;
+
+  /* UI-10 / UI-13 — status text lightened for AA contrast on dark surfaces */
+  --color-status-success-fg: #6ee7b7;
+  --color-status-warning-fg: #fcd34d;
+  --color-status-danger-fg: #fca5a5;
+  --color-status-info-fg: #93c5fd;
+  --color-status-neutral-fg: var(--color-text-secondary);
+  --color-status-success-soft: color-mix(in srgb, var(--color-status-success) 18%, transparent);
+  --color-status-warning-soft: color-mix(in srgb, var(--color-status-warning) 20%, transparent);
+  --color-status-danger-soft: color-mix(in srgb, var(--color-status-danger) 18%, transparent);
+  --color-status-info-soft: color-mix(in srgb, var(--color-status-info) 22%, transparent);
+  --color-status-neutral-soft: color-mix(in srgb, var(--color-text-muted) 18%, transparent);
+  --color-status-success-border: color-mix(in srgb, var(--color-status-success) 40%, transparent);
+  --color-status-warning-border: color-mix(in srgb, var(--color-status-warning) 42%, transparent);
+  --color-status-danger-border: color-mix(in srgb, var(--color-status-danger) 40%, transparent);
+  --color-status-info-border: color-mix(in srgb, var(--color-status-info) 42%, transparent);
+
+  /* UI-10 — Interaction states shared by every control */
+  --state-hover-bg: var(--color-bg-hover);
+  --state-pressed-bg: color-mix(in srgb, var(--color-text-primary) 14%, transparent);
+  --state-selected-bg: var(--color-primary-background);
+  --state-selected-fg: var(--color-primary-text);
+  --state-selected-border: var(--color-primary-border);
+  --state-focus-ring-color: var(--color-primary-600, var(--color-primary));
+  --state-disabled-fg: var(--color-text-muted);
+  --state-disabled-bg: color-mix(in srgb, var(--color-text-muted) 16%, transparent);
+  --state-disabled-border: var(--color-border-subtle);
+  --state-skeleton-bg: color-mix(in srgb, var(--color-text-muted) 16%, transparent);
+  --state-skeleton-shine: color-mix(in srgb, var(--color-text-secondary) 18%, transparent);
+
+  --color-chart-oe-trend: var(--color-primary-text);
+  --color-chart-chapter-trend: #2dd4bf;
+  --color-chart-risk-trend: #fbbf24;
+  --color-chart-neutral: #94a3b8;
+
+  /* Angular Material M3 → AOVIAS Primary */
+  --mat-sys-primary: var(--color-primary);
+  --mat-sys-on-primary: var(--color-text-inverse);
+  --mat-sys-primary-container: color-mix(
+    in srgb,
+    var(--color-primary) 28%,
+    var(--color-bg-surface)
+  );
+  --mat-sys-on-primary-container: #d6e4ff;
+  --mat-sys-inverse-primary: #abc7ff;
+  --mat-sys-primary-fixed: #d6e4ff;
+  --mat-sys-primary-fixed-dim: #abc7ff;
+  --mat-sys-on-primary-fixed: #001b3f;
+  --mat-sys-on-primary-fixed-variant: #1e4bc7;
+  --mat-sys-surface-tint: var(--color-primary);
+  --mat-sys-tertiary: var(--color-primary);
+  --mat-sys-on-tertiary: var(--color-text-inverse);
+  --mat-sys-tertiary-container: color-mix(
+    in srgb,
+    var(--color-primary) 28%,
+    var(--color-bg-surface)
+  );
+  --mat-sys-on-tertiary-container: #d6e4ff;
+  --mat-sys-tertiary-fixed: #d6e4ff;
+  --mat-sys-tertiary-fixed-dim: #abc7ff;
+  --mat-sys-on-tertiary-fixed: #001b3f;
+  --mat-sys-on-tertiary-fixed-variant: #1e4bc7;
+
+  /* borders + effects */
+  --color-border-subtle: rgba(255, 255, 255, 0.06);
+  --color-edge: rgba(148, 163, 184, 0.3);
+  --color-overlay-backdrop: rgba(0, 0, 0, 0.55);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.7);
+  --shadow-elevated-panel: -8px 0 24px rgba(0, 0, 0, 0.45);
+  --shadow-focus-ring-primary: 0 0 0 2px color-mix(in srgb, var(--color-primary) 28%, transparent);
+
+  /* Phase 43 — scrollbar (primary / panel / dense / timeline) */
+  --scrollbar-track: color-mix(in srgb, var(--color-border-subtle) 85%, transparent);
+  --scrollbar-thumb: color-mix(in srgb, var(--color-text-muted) 52%, var(--color-bg-page));
+  --scrollbar-thumb-hover: color-mix(
+    in srgb,
+    var(--color-text-secondary) 55%,
+    var(--color-bg-surface)
+  );
+  --scrollbar-thumb-active: color-mix(
+    in srgb,
+    var(--color-brand-primary) 62%,
+    var(--color-bg-surface-alt)
+  );
+  --scrollbar-thumb-focus: color-mix(
+    in srgb,
+    var(--color-brand-primary) 50%,
+    var(--color-bg-surface)
+  );
+  --scrollbar-thumb-panel: color-mix(in srgb, var(--color-text-muted) 38%, var(--color-bg-surface));
+  --scrollbar-thumb-panel-hover: color-mix(
+    in srgb,
+    var(--color-text-secondary) 48%,
+    var(--color-bg-surface)
+  );
+  --scrollbar-thumb-panel-active: color-mix(
+    in srgb,
+    var(--color-brand-primary) 52%,
+    var(--color-bg-surface-alt)
+  );
+  --scrollbar-thumb-panel-focus: color-mix(
+    in srgb,
+    var(--color-brand-primary) 44%,
+    var(--color-bg-surface)
+  );
+  --scrollbar-thumb-dense: color-mix(in srgb, var(--color-text-muted) 58%, var(--color-bg-surface));
+  --scrollbar-thumb-dense-hover: color-mix(
+    in srgb,
+    var(--color-text-secondary) 58%,
+    var(--color-bg-surface)
+  );
+  --scrollbar-thumb-dense-active: color-mix(
+    in srgb,
+    var(--color-brand-primary) 65%,
+    var(--color-bg-surface-alt)
+  );
+  --scrollbar-thumb-dense-focus: color-mix(
+    in srgb,
+    var(--color-brand-primary) 56%,
+    var(--color-bg-surface)
+  );
+  --scrollbar-thumb-timeline: var(--scrollbar-thumb);
+  --scrollbar-thumb-timeline-hover: var(--scrollbar-thumb-hover);
+  --scrollbar-thumb-timeline-active: var(--scrollbar-thumb-active);
+  --scrollbar-thumb-timeline-focus: var(--scrollbar-thumb-focus);
+
+  /* context-specific tokens */
+  --color-hospital-card-bg: transparent;
+  --color-hospital-card-border: transparent;
+  --color-hospital-card-hover-bg: rgba(255, 255, 255, 0.05);
+  --color-hospital-card-hover-border: transparent;
+  --color-hospital-card-icon-bg: var(--color-primary-background);
+  --color-hospital-card-icon: var(--color-primary-text);
+  --color-hospital-card-name: var(--color-text-primary);
+  --color-hospital-card-org: var(--color-text-secondary);
+  --color-hospital-card-change: var(--color-text-muted);
+  --color-context-framework-badge-bg: rgba(34, 197, 94, 0.15);
+  --color-context-framework-badge: #22c55e;
+  --color-context-framework-value-bg: rgba(255, 255, 255, 0.03);
+  --color-context-framework-value-border: rgba(255, 255, 255, 0.06);
+  --color-context-separator: rgba(255, 255, 255, 0.06);
+  --color-chart-series-primary: var(--color-brand-primary);
+  --color-chart-series-info: var(--color-status-info);
+  --color-chart-series-warning: var(--color-status-warning);
+  --color-chart-series-success: var(--color-status-success);
+  --color-chart-series-danger: var(--color-status-danger);
+  --color-chart-grid: var(--color-border-subtle);
+  --color-chart-axis: var(--color-text-muted);
+  --color-chart-fill-soft: var(--color-brand-primary-soft);
+  --color-chart-line-primary: var(--color-chart-oe-trend);
+  --color-chart-line-secondary: var(--color-chart-chapter-trend);
+  --color-chart-area-fill: var(--color-brand-primary-soft);
+  --color-chart-bar-positive: var(--color-status-success);
+  --color-chart-tooltip-bg: var(--color-bg-surface);
+  --color-execution-risk-high-fg: var(--color-status-danger);
+  --color-execution-risk-high-bg: color-mix(in srgb, var(--color-status-danger) 22%, transparent);
+  --color-execution-risk-medium-fg: var(--color-status-warning);
+  --color-execution-risk-medium-bg: color-mix(
+    in srgb,
+    var(--color-status-warning) 24%,
+    transparent
+  );
+  --color-execution-risk-low-fg: var(--color-status-success);
+  --color-execution-risk-low-bg: color-mix(in srgb, var(--color-status-success) 22%, transparent);
+  --color-execution-status-compliant-fg: var(--color-status-success);
+  --color-execution-status-compliant-bg: color-mix(
+    in srgb,
+    var(--color-status-success) 22%,
+    transparent
+  );
+  --color-execution-status-partial-fg: var(--color-status-warning);
+  --color-execution-status-partial-bg: color-mix(
+    in srgb,
+    var(--color-status-warning) 24%,
+    transparent
+  );
+  --color-execution-status-non-compliant-fg: var(--color-status-danger);
+  --color-execution-status-non-compliant-bg: color-mix(
+    in srgb,
+    var(--color-status-danger) 22%,
+    transparent
+  );
+  --color-execution-status-not-applicable-fg: var(--color-chart-neutral);
+  --color-execution-status-not-applicable-bg: color-mix(
+    in srgb,
+    var(--color-chart-neutral) 24%,
+    transparent
+  );
+
+  /* legacy aliases */
+  --bg-primary: var(--color-bg-page);
+  --bg-secondary: var(--color-bg-page);
+  --bg-tertiary: var(--color-bg-surface-alt);
+  --card-bg: var(--color-bg-surface);
+  --header-bg: var(--color-bg-header);
+  --sidebar-bg: var(--color-bg-sidebar);
+  --border-color: var(--color-border-subtle);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --primary-color: var(--color-primary);
+  --primary-bg-light: var(--color-primary-background);
+  --primary-hover: var(--color-primary-hover);
+  --success-color: var(--color-status-success);
+  --warning-color: var(--color-status-warning);
+  --danger-color: var(--color-status-danger);
+  --hover-bg: var(--color-bg-hover);
+  --edge-color: var(--color-edge);
+  --overlay-backdrop: var(--color-overlay-backdrop);
+  --color-background: #111827;
+  --color-surface: #1f2937;
+  --color-border: #374151;
+  --hospital-card-bg: var(--color-hospital-card-bg);
+  --hospital-card-border: var(--color-hospital-card-border);
+  --hospital-card-hover-bg: var(--color-hospital-card-hover-bg);
+  --hospital-card-hover-border: var(--color-hospital-card-hover-border);
+  --hospital-card-icon-bg: var(--color-hospital-card-icon-bg);
+  --hospital-card-icon-color: var(--color-hospital-card-icon);
+  --hospital-card-name-color: var(--color-hospital-card-name);
+  --hospital-card-org-color: var(--color-hospital-card-org);
+  --hospital-card-change-color: var(--color-hospital-card-change);
+  --context-framework-badge-bg: var(--color-context-framework-badge-bg);
+  --context-framework-badge-color: var(--color-context-framework-badge);
+  --context-framework-value-bg: var(--color-context-framework-value-bg);
+  --context-framework-value-border: var(--color-context-framework-value-border);
+  --context-separator-color: var(--color-context-separator);
+}

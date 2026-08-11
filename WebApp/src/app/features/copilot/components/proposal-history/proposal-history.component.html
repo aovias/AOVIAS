@@ -1,0 +1,43 @@
+<div class="proposal-history">
+
+  <div class="proposal-history__empty" *ngIf="!events.length">
+    <span class="material-icons-outlined">history</span>
+    <p>No audit events recorded yet.</p>
+  </div>
+
+  <div class="proposal-history__timeline" *ngIf="events.length">
+    <div class="timeline-event"
+         *ngFor="let event of events; let last = last"
+         [class.timeline-event--last]="last"
+         (click)="select(event)">
+
+      <!-- ── Dot ──────────────────────────────────────────────────────── -->
+      <div class="timeline-event__dot"
+           [class]="'timeline-event__dot--' + getEventColor(event.eventType)">
+        <span class="material-icons-outlined">{{ getEventIcon(event.eventType) }}</span>
+      </div>
+
+      <!-- ── Line (not last) ───────────────────────────────────────────── -->
+      <div class="timeline-event__line" *ngIf="!last"></div>
+
+      <!-- ── Content ──────────────────────────────────────────────────── -->
+      <div class="timeline-event__content">
+        <div class="timeline-event__header">
+          <strong class="timeline-event__type">{{ event.eventType }}</strong>
+          <span class="timeline-event__time text-muted">
+            {{ event.occurredAtUtc | date:'medium' }}
+          </span>
+        </div>
+        <div class="timeline-event__actor text-muted small"
+             *ngIf="event.actorEmail || event.actorId">
+          by {{ event.actorEmail ?? event.actorId }}
+        </div>
+        <p class="timeline-event__notes" *ngIf="event.notes">
+          {{ event.notes }}
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+</div>

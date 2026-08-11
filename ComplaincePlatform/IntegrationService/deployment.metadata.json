@@ -1,0 +1,6 @@
+{
+  "serviceId": "praman-integration",
+  "displayName": "PRAMAN Integration",
+  "port": 7218,
+  "httpPort": 5218
+}

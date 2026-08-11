@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "runtime-agent",
+  "displayName": "AOVIAS Runtime Agent",
+  "releaseLibraryCategory": "Runtime",
+  "includeInDemoBundle": true,
+  "includeInSolutionDeployment": true,
+  "ports": {
+    "containerPort": 7080
+  },
+  "health": {
+    "endpoint": "/health",
+    "expectedStatus": 200,
+    "timeoutSeconds": 15,
+    "retries": 3,
+    "requiresHttpProbe": true
+  },
+  "dependencies": []
+}

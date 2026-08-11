@@ -1,0 +1,29 @@
+<section class="standards-panel" aria-label="Standards execution panel">
+  <header class="standards-panel__header">
+    <div>
+      <h2>{{ title() }}</h2>
+      <p>{{ subtitle() }}</p>
+    </div>
+    <div class="standards-panel__badges">
+      <span class="status-badge">{{ statusBadge() }}</span>
+      <span class="issues-badge">{{ openIssues() }} open issues</span>
+    </div>
+  </header>
+
+  <p class="standards-panel__summary">{{ complianceSummary() }}</p>
+
+  <div class="standards-panel__cards">
+    @for (standard of standards(); track standard.id) {
+      <app-standard-card
+        [standard]="standard"
+        [isExpanded]="expandedIds().has(standard.id)"
+        [showDepartmentColumn]="showDepartmentColumn()"
+        [chapterRisk]="chapterRisk()"
+        (toggle)="standardToggle.emit($event)"
+        (rowActivate)="rowActivate.emit($event)"
+      />
+    } @empty {
+      <p class="standards-panel__empty">No standards found for this chapter.</p>
+    }
+  </div>
+</section>

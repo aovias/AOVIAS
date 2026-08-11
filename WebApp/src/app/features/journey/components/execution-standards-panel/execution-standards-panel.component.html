@@ -1,0 +1,72 @@
+<section class="execution-panel" aria-label="Standards and objective elements panel" role="region">
+  <header class="execution-panel__header execution-panel__header--hero">
+    <h2 class="standards-hero__title">{{ vm.title }}</h2>
+    <p class="standards-hero__subtitle">{{ vm.subtitle }}</p>
+    @if (vm.hero) {
+      <div class="standards-hero__metrics" aria-label="Chapter compliance summary">
+        <span class="standards-hero__compliance-value">{{ vm.hero.compliancePercent }}%</span>
+        <span
+          class="standards-hero__risk-chip"
+          [class.standards-hero__risk-chip--low]="vm.hero.risk === 'low'"
+          [class.standards-hero__risk-chip--medium]="vm.hero.risk === 'medium'"
+          [class.standards-hero__risk-chip--high]="vm.hero.risk === 'high'"
+        >{{ vm.hero.risk | uppercase }}</span>
+        <span class="standards-hero__spacer"></span>
+        @if (modeUi?.execution?.standardHideOpenIssuesLine !== true) {
+          @if (vm.hero.openIssuesCount > 0) {
+            <span class="standards-hero__issues standards-hero__issues--open">
+              <span class="standards-hero__issues-icon" aria-hidden="true">⚠</span>
+              {{ vm.hero.openIssuesCount }} open issues
+            </span>
+          } @else {
+            <span class="standards-hero__issues standards-hero__issues--clear">No open issues</span>
+          }
+        }
+      </div>
+    }
+    <div class="department-filters" role="tablist" aria-label="Filter objective elements by department">
+      @for (d of departmentFilters; track d.id) {
+        <button
+          type="button"
+          class="dept-chip"
+          role="tab"
+          [attr.aria-selected]="store.departmentFilter() === d.id"
+          [class.dept-chip--active]="store.departmentFilter() === d.id"
+          (click)="onDepartmentFilter(d.id)"
+        >
+          {{ d.label }}
+        </button>
+      }
+    </div>
+    <div class="oe-quick-filters" role="group" aria-label="Quick filter objective elements">
+      @for (f of oeQuickFilters; track f.id) {
+        <button
+          type="button"
+          class="oe-quick-filters__chip"
+          [attr.aria-pressed]="store.oeQuickFilter() === f.id"
+          [class.oe-quick-filters__chip--active]="store.oeQuickFilter() === f.id"
+          (click)="onOeQuickFilter(f.id)"
+        >
+          {{ f.label }}
+        </button>
+      }
+    </div>
+  </header>
+
+  <div class="execution-panel__body" role="list" aria-label="Standards cards">
+    @for (standard of vm.items; track standard.id) {
+      <div role="listitem">
+        <app-standard-card
+        [standard]="asStandardModel(standard)"
+        [modeUi]="modeUi"
+        [isExpanded]="isExpanded(standard.id)"
+        [isActive]="standard.isActive"
+        [chapterRisk]="vm.hero?.risk ?? 'low'"
+        [showDepartmentColumn]="true"
+        (toggle)="onStandardHeaderClick($event)"
+        (rowActivate)="onRowActivate($event)"
+      />
+      </div>
+    }
+  </div>
+</section>

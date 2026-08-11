@@ -1,0 +1,6 @@
+@KnowledgeBase_HostAddress = http://localhost:5120
+
+GET {{KnowledgeBase_HostAddress}}/api/v1.0/frameworks
+Accept: application/json
+
+###

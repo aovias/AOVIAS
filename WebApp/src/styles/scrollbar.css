@@ -1,0 +1,166 @@
+/*
+ * PRAMAN themed scrollbars — Phase 43
+ * Firefox: scrollbar-width + scrollbar-color (standard)
+ * Chrome / Edge / Safari: ::-webkit-scrollbar*
+ * Mobile (max-width: --bp-mobile-max) + coarse pointer: native scrollbars (no custom chrome)
+ * Tokens: foundation.tokens.css + theme.tokens.css only
+ */
+
+/* ------------------------------------------------------------------------- */
+/* Scoped utility: overflow + variant tokens (inner scroll regions)          */
+/* ------------------------------------------------------------------------- */
+
+.praman-scrollbar {
+  overflow: auto;
+  min-height: 0;
+  min-width: 0;
+  --sb-thumb: var(--scrollbar-thumb);
+  --sb-thumb-hover: var(--scrollbar-thumb-hover);
+  --sb-thumb-active: var(--scrollbar-thumb-active);
+  --sb-thumb-focus: var(--scrollbar-thumb-focus);
+}
+
+.praman-scrollbar--panel {
+  --sb-thumb: var(--scrollbar-thumb-panel);
+  --sb-thumb-hover: var(--scrollbar-thumb-panel-hover);
+  --sb-thumb-active: var(--scrollbar-thumb-panel-active);
+  --sb-thumb-focus: var(--scrollbar-thumb-panel-focus);
+}
+
+.praman-scrollbar--dense {
+  --sb-thumb: var(--scrollbar-thumb-dense);
+  --sb-thumb-hover: var(--scrollbar-thumb-dense-hover);
+  --sb-thumb-active: var(--scrollbar-thumb-dense-active);
+  --sb-thumb-focus: var(--scrollbar-thumb-dense-focus);
+}
+
+.praman-scrollbar--timeline {
+  --sb-thumb: var(--scrollbar-thumb-timeline);
+  --sb-thumb-hover: var(--scrollbar-thumb-timeline-hover);
+  --sb-thumb-active: var(--scrollbar-thumb-timeline-active);
+  --sb-thumb-focus: var(--scrollbar-thumb-timeline-focus);
+}
+
+/* Keyboard focus on scrollable utility (scrollable regions should be tab-focusable when needed) */
+.praman-scrollbar:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-ring-primary);
+}
+
+/* ------------------------------------------------------------------------- */
+/* Tablet + desktop: custom scrollbars (breakpoint: foundation --bp-*)       */
+/* ------------------------------------------------------------------------- */
+
+@media (min-width: 640px) {
+  /* Firefox */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  }
+
+  .praman-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sb-thumb) var(--scrollbar-track);
+  }
+
+  /* WebKit — document */
+  html::-webkit-scrollbar {
+    width: var(--scrollbar-width-touch);
+    height: var(--scrollbar-width-touch);
+  }
+
+  html::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: var(--scrollbar-radius);
+  }
+
+  html::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: var(--scrollbar-radius);
+    border: var(--space-1) solid transparent;
+    background-clip: padding-box;
+    transition: background-color var(--scrollbar-motion-duration) var(--scrollbar-motion-easing);
+  }
+
+  html::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+
+  html::-webkit-scrollbar-thumb:active {
+    background-color: var(--scrollbar-thumb-active);
+  }
+
+  /* WebKit — utilities */
+  .praman-scrollbar::-webkit-scrollbar {
+    width: var(--scrollbar-width-touch);
+    height: var(--scrollbar-width-touch);
+  }
+
+  .praman-scrollbar::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: var(--scrollbar-radius);
+  }
+
+  .praman-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--sb-thumb);
+    border-radius: var(--scrollbar-radius);
+    border: var(--space-1) solid transparent;
+    background-clip: padding-box;
+    transition: background-color var(--scrollbar-motion-duration) var(--scrollbar-motion-easing);
+  }
+
+  .praman-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--sb-thumb-hover);
+  }
+
+  .praman-scrollbar::-webkit-scrollbar-thumb:active {
+    background-color: var(--sb-thumb-active);
+  }
+}
+
+/* Desktop: thinner bar */
+@media (min-width: 1025px) {
+  html::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+    height: var(--scrollbar-width);
+  }
+
+  .praman-scrollbar::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+    height: var(--scrollbar-width);
+  }
+}
+
+/* Mobile + coarse pointer: restore native scrollbar behavior */
+@media (max-width: 639px) {
+  html {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+
+  .praman-scrollbar {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+}
+
+/* Coarse pointer on small tablets / phones only — keep custom scrollbars on large touch displays */
+@media (pointer: coarse) and (max-width: 639px) {
+  html {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+
+  .praman-scrollbar {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+}
+
+/* Reduced motion: near-instant thumb color transitions */
+@media (prefers-reduced-motion: reduce) {
+  html::-webkit-scrollbar-thumb,
+  .praman-scrollbar::-webkit-scrollbar-thumb {
+    transition-duration: var(--scrollbar-motion-duration-reduced);
+  }
+}

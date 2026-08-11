@@ -1,0 +1,25 @@
+<UserControl x:Class="Aovias.DesignSystem.Controls.DeploymentStepIndicator"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="Root">
+    <ItemsControl ItemsSource="{Binding Steps, ElementName=Root}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <UniformGrid Rows="1" />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <StackPanel Margin="0,0,8,0">
+                    <Border Height="4"
+                            CornerRadius="2"
+                            Background="{DynamicResource SurfaceInsetBrush}" />
+                    <TextBlock Text="{Binding}"
+                               TextTrimming="CharacterEllipsis"
+                               Style="{DynamicResource CaptionTextStyle}"
+                               Margin="0,6,0,0" />
+                </StackPanel>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

@@ -1,0 +1,6 @@
+{
+  "serviceId": "praman-communication",
+  "displayName": "PRAMAN Communication",
+  "port": 7215,
+  "httpPort": 5215
+}

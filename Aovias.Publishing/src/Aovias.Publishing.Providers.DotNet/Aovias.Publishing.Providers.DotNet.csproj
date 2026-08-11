@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.Publishing.Providers.DotNet</RootNamespace>
+    <AssemblyName>Aovias.Publishing.Providers.DotNet</AssemblyName>
+    <Description>.NET publishing provider for APE.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aovias.Publishing.Contracts\Aovias.Publishing.Contracts.csproj" />
+    <ProjectReference Include="..\Aovias.Publishing.Core\Aovias.Publishing.Core.csproj" />
+  </ItemGroup>
+</Project>

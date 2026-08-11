@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "person-service",
+  "displayName": "Person Service",
+  "releaseLibraryCategory": "Person",
+  "includeInDemoBundle": true,
+  "includeInSolutionDeployment": true,
+  "ports": {
+    "containerPort": 5190
+  },
+  "health": {
+    "endpoint": "/health",
+    "expectedStatus": 200,
+    "timeoutSeconds": 15,
+    "retries": 3,
+    "requiresHttpProbe": true
+  },
+  "dependencies": [
+    { "service": "gateway", "required": true, "type": "service" },
+    { "service": "identity-service", "required": true, "type": "service" }
+  ]
+}

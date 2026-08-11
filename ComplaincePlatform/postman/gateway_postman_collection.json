@@ -1,0 +1,1446 @@
+{
+  "info": {
+    "name": "PRAMAN Gateway API",
+    "_postman_id": "00000000-0000-0000-0000-000000000001",
+    "description": "Postman collection for PRAMAN Gateway controllers, generated from docs/backend-api-inventory.md.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "IdentityService - Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"P@ssw0rd!\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});",
+                  "",
+                  "var json = pm.response.json();",
+                  "",
+                  "pm.test(\"Store auth token\", function () {",
+                  "  if (json && json.data) {",
+                  "    var token = json.data.accessToken || json.data.token || json.data.Token;",
+                  "    if (token) {",
+                  "      pm.environment.set(\"authToken\", token);",
+                  "    }",
+                  "  }",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains success flag\", function () {",
+                  "  if (json && json.success !== undefined) {",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "  }",
+                  "});",
+                  "",
+                  "pm.test(\"TraceId exists\", function () {",
+                  "  if (json && json.traceId !== undefined) {",
+                  "    pm.expect(json.traceId).to.not.be.null;",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Gateway IdentityController - Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/identity/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "identity",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"P@ssw0rd!\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});",
+                  "",
+                  "var json = pm.response.json();",
+                  "",
+                  "pm.test(\"Store auth token from Gateway\", function () {",
+                  "  if (json && json.data) {",
+                  "    var token = json.data.accessToken || json.data.token || json.data.Token;",
+                  "    if (token) {",
+                  "      pm.environment.set(\"authToken\", token);",
+                  "    }",
+                  "  }",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains success flag\", function () {",
+                  "  if (json && json.success !== undefined) {",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "  }",
+                  "});",
+                  "",
+                  "pm.test(\"TraceId exists\", function () {",
+                  "  if (json && json.traceId !== undefined) {",
+                  "    pm.expect(json.traceId).to.not.be.null;",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Common",
+      "item": [
+        {
+          "name": "Get Departments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/common/departments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "common",
+                "departments"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Response contains success flag\", function () {",
+                  "  if (json && json.success !== undefined) {",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "  }",
+                  "});",
+                  "pm.test(\"TraceId exists\", function () {",
+                  "  if (json && json.traceId !== undefined) {",
+                  "    pm.expect(json.traceId).to.not.be.null;",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Services",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/common/services",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "common",
+                "services"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Response contains success flag\", function () {",
+                  "  if (json && json.success !== undefined) {",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "  }",
+                  "});",
+                  "pm.test(\"TraceId exists\", function () {",
+                  "  if (json && json.traceId !== undefined) {",
+                  "    pm.expect(json.traceId).to.not.be.null;",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Organizations",
+      "item": [
+        {
+          "name": "Get Tenant Organization Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tenant/{{organizationId}}/organization-detail",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tenant",
+                "{{organizationId}}",
+                "organization-detail"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "if (json && json.data) {",
+                  "  if (json.data.organizationId) {",
+                  "    pm.environment.set(\"organizationId\", json.data.organizationId);",
+                  "  }",
+                  "}",
+                  "pm.test(\"Response contains success flag\", function () {",
+                  "  if (json && json.success !== undefined) {",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "  }",
+                  "});",
+                  "pm.test(\"TraceId exists\", function () {",
+                  "  if (json && json.traceId !== undefined) {",
+                  "    pm.expect(json.traceId).to.not.be.null;",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Regulatory Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/organizations/{{organizationId}}/regulatory-overview",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "organizations",
+                "{{organizationId}}",
+                "regulatory-overview"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Response contains success flag\", function () {",
+                  "  if (json && json.success !== undefined) {",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "  }",
+                  "});",
+                  "pm.test(\"TraceId exists\", function () {",
+                  "  if (json && json.traceId !== undefined) {",
+                  "    pm.expect(json.traceId).to.not.be.null;",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Framework Catalog",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/organizations/{{organizationId}}/frameworks/catalog?page=1&pageSize=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "organizations",
+                "{{organizationId}}",
+                "frameworks",
+                "catalog"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "if (json && json.data && json.data.items && json.data.items.length > 0) {",
+                  "  var first = json.data.items[0];",
+                  "  if (first.frameworkId || first.id) {",
+                  "    pm.environment.set(\"frameworkId\", first.frameworkId || first.id);",
+                  "  }",
+                  "}",
+                  "pm.test(\"Response contains success flag\", function () {",
+                  "  if (json && json.success !== undefined) {",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "  }",
+                  "});",
+                  "pm.test(\"TraceId exists\", function () {",
+                  "  if (json && json.traceId !== undefined) {",
+                  "    pm.expect(json.traceId).to.not.be.null;",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Frameworks",
+      "item": [
+        {
+          "name": "Get All Frameworks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/frameworks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "frameworks"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "pm.test(\"TraceId exists when envelope present\", function () {",
+                  "  if (json && json.traceId !== undefined) {",
+                  "    pm.expect(json.traceId).to.not.be.null;",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Hospital Frameworks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/hospitals/{{hospitalId}}/frameworks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "hospitals",
+                "{{hospitalId}}",
+                "frameworks"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Enroll Hospital in Framework",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/hospitals/{{hospitalId}}/frameworks/{{frameworkId}}/enroll",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "hospitals",
+                "{{hospitalId}}",
+                "frameworks",
+                "{{frameworkId}}",
+                "enroll"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Journeys",
+      "item": [
+        {
+          "name": "Create Journey",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/hospitals/{{hospitalId}}/frameworks/{{frameworkId}}/journeys",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "hospitals",
+                "{{hospitalId}}",
+                "frameworks",
+                "{{frameworkId}}",
+                "journeys"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "if (json && json.data && (json.data.journeyId || json.data.id)) {",
+                  "  pm.environment.set(\"journeyId\", json.data.journeyId || json.data.id);",
+                  "}",
+                  "pm.test(\"Response contains success flag\", function () {",
+                  "  if (json && json.success !== undefined) {",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "  }",
+                  "});",
+                  "pm.test(\"TraceId exists\", function () {",
+                  "  if (json && json.traceId !== undefined) {",
+                  "    pm.expect(json.traceId).to.not.be.null;",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Journey Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/journeys/{{journeyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "journeys",
+                "{{journeyId}}"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Journey By Hospital and Framework",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/hospitals/{{hospitalId}}/frameworks/{{frameworkId}}/journey",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "hospitals",
+                "{{hospitalId}}",
+                "frameworks",
+                "{{frameworkId}}",
+                "journey"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Valid Transitions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/journeys/{{journeyId}}/valid-transitions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "journeys",
+                "{{journeyId}}",
+                "valid-transitions"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Transition Journey",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/journeys/{{journeyId}}/transition",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "journeys",
+                "{{journeyId}}",
+                "transition"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetStatus\": \"InProgress\",\n  \"remarks\": \"Automated workflow transition\",\n  \"metadata\": {\n    \"source\": \"postman-automation\"\n  }\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Approve Journey",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/journeys/{{journeyId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "journeys",
+                "{{journeyId}}",
+                "approve"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Automated approval from test suite\",\n  \"metadata\": {\n    \"approvedBy\": \"postman\"\n  }\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/dashboard/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "dashboard",
+                "summary"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "pm.test(\"Response contains success flag\", function () {",
+                  "  if (json && json.success !== undefined) {",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "  }",
+                  "});",
+                  "pm.test(\"TraceId exists\", function () {",
+                  "  if (json && json.traceId !== undefined) {",
+                  "    pm.expect(json.traceId).to.not.be.null;",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Program Overview Snapshot",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/dashboard/program-overview-snapshot?hospitalIdQuery={{hospitalId}}&frameworkId={{frameworkId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "dashboard",
+                "program-overview-snapshot"
+              ],
+              "query": [
+                {
+                  "key": "hospitalIdQuery",
+                  "value": "{{hospitalId}}"
+                },
+                {
+                  "key": "frameworkId",
+                  "value": "{{frameworkId}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Compliance Score Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/compliance-score?hospitalId={{hospitalId}}&frameworkId={{frameworkId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reports",
+                "compliance-score"
+              ],
+              "query": [
+                {
+                  "key": "hospitalId",
+                  "value": "{{hospitalId}}"
+                },
+                {
+                  "key": "frameworkId",
+                  "value": "{{frameworkId}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Audit Findings Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/audit-findings?hospitalId={{hospitalId}}&frameworkId={{frameworkId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reports",
+                "audit-findings"
+              ],
+              "query": [
+                {
+                  "key": "hospitalId",
+                  "value": "{{hospitalId}}"
+                },
+                {
+                  "key": "frameworkId",
+                  "value": "{{frameworkId}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "NABH Readiness Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/nabh-readiness?hospitalId={{hospitalId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reports",
+                "nabh-readiness"
+              ],
+              "query": [
+                {
+                  "key": "hospitalId",
+                  "value": "{{hospitalId}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Audit",
+      "item": [
+        {
+          "name": "Get Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/audit-logs?entityType=journey&entityId={{journeyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "audit-logs"
+              ],
+              "query": [
+                {
+                  "key": "entityType",
+                  "value": "journey"
+                },
+                {
+                  "key": "entityId",
+                  "value": "{{journeyId}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Audit Logs for Entity",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/audit-logs/journey/{{journeyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "audit-logs",
+                "journey",
+                "{{journeyId}}"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Journey Audit Findings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/journeys/{{journeyId}}/audit-findings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "journeys",
+                "{{journeyId}}",
+                "audit-findings"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Audit Finding",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/audit/findings?journeyId={{journeyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "audit",
+                "findings"
+              ],
+              "query": [
+                {
+                  "key": "journeyId",
+                  "value": "{{journeyId}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clauseId\": \"{{clauseId}}\",\n  \"type\": \"MajorNC\",\n  \"description\": \"Automated test finding\",\n  \"dueDate\": \"2026-12-01T00:00:00Z\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Subscriptions",
+      "item": [
+        {
+          "name": "Get Current Subscription",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/subscriptions/current?organizationId={{organizationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "subscriptions",
+                "current"
+              ],
+              "query": [
+                {
+                  "key": "organizationId",
+                  "value": "{{organizationId}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Subscription",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/subscriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "subscriptions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organizationId\": \"{{organizationId}}\",\n  \"subscriptionPlanId\": \"{{subscriptionPlanId}}\",\n  \"isTrial\": true,\n  \"startsAt\": \"2026-01-01T00:00:00Z\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Upgrade Subscription",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/subscriptions/upgrade",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "subscriptions",
+                "upgrade"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organizationId\": \"{{organizationId}}\",\n  \"targetPlanId\": \"{{subscriptionPlanId}}\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AI",
+      "item": [
+        {
+          "name": "Explain Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ai/explain-task",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ai",
+                "explain-task"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"taskId\": \"{{taskId}}\",\n  \"question\": \"Explain what this compliance task requires and typical evidence.\",\n  \"language\": \"en\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code valid\", function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

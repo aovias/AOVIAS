@@ -1,0 +1,842 @@
+{
+	"info": {
+		"_postman_id": "compliance-platform-collection",
+		"name": "Compliance Platform API",
+		"description": "Complete API collection for Compliance Platform microservices",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "_Auth",
+			"item": [
+				{
+					"name": "Login (Get Token)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('access_token', jsonData.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "postman-client",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "postman-secret",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "user@example.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Password123!",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "openid profile organization.api compliance.api audit.api ai.api",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url_IdentityService}}/connect/token",
+							"host": [
+								"{{base_url_IdentityService}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Authenticate and obtain JWT access token using Resource Owner Password grant. NOTE: Ensure IdentityConfig.cs includes all scopes (organization.api, compliance.api, audit.api, ai.api) and postman-client AllowedScopes includes them all."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User (Me)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_IdentityService}}/api/token/me",
+							"host": [
+								"{{base_url_IdentityService}}"
+							],
+							"path": [
+								"api",
+								"token",
+								"me"
+							]
+						},
+						"description": "Get current authenticated user claims"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints for Identity Service"
+		},
+		{
+			"name": "IdentityService",
+			"item": [
+				{
+					"name": "WeatherForecast",
+					"item": [
+						{
+							"name": "Get Weather Forecast",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url_IdentityService}}/WeatherForecast",
+									"host": [
+										"{{base_url_IdentityService}}"
+									],
+									"path": [
+										"WeatherForecast"
+									]
+								},
+								"description": "Get weather forecast data (sample endpoint)"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Identity Service endpoints"
+		},
+		{
+			"name": "ComplianceService",
+			"item": [
+				{
+					"name": "Programs",
+					"item": [
+						{
+							"name": "Create Program",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"regulation\": \"NABH\",\n  \"organizationId\": \"00000000-0000-0000-0000-000000000001\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url_ComplianceService}}/api/v1/compliance/programs",
+									"host": [
+										"{{base_url_ComplianceService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"compliance",
+										"programs"
+									]
+								},
+								"description": "Create a new compliance program"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Program",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url_ComplianceService}}/api/v1/compliance/programs/:programId",
+									"host": [
+										"{{base_url_ComplianceService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"compliance",
+										"programs",
+										":programId"
+									],
+									"variable": [
+										{
+											"key": "programId",
+											"value": "00000000-0000-0000-0000-000000000001"
+										}
+									]
+								},
+								"description": "Get a compliance program by ID"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Controls",
+					"item": [
+						{
+							"name": "Load Controls",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"regulation\": \"NABH\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url_ComplianceService}}/api/v1/compliance/programs/:programId/controls",
+									"host": [
+										"{{base_url_ComplianceService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"compliance",
+										"programs",
+										":programId",
+										"controls"
+									],
+									"variable": [
+										{
+											"key": "programId",
+											"value": "00000000-0000-0000-0000-000000000001"
+										}
+									]
+								},
+								"description": "Load controls for a compliance program"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Controls by Program",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url_ComplianceService}}/api/v1/compliance/programs/:programId/controls",
+									"host": [
+										"{{base_url_ComplianceService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"compliance",
+										"programs",
+										":programId",
+										"controls"
+									],
+									"variable": [
+										{
+											"key": "programId",
+											"value": "00000000-0000-0000-0000-000000000001"
+										}
+									]
+								},
+								"description": "Get all controls for a compliance program"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Tasks",
+					"item": [
+						{
+							"name": "Assign Tasks",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"organizationId\": \"00000000-0000-0000-0000-000000000001\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url_ComplianceService}}/api/v1/compliance/programs/:programId/tasks",
+									"host": [
+										"{{base_url_ComplianceService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"compliance",
+										"programs",
+										":programId",
+										"tasks"
+									],
+									"variable": [
+										{
+											"key": "programId",
+											"value": "00000000-0000-0000-0000-000000000001"
+										}
+									]
+								},
+								"description": "Assign tasks to a compliance program"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Tasks by Program",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url_ComplianceService}}/api/v1/compliance/programs/:programId/tasks",
+									"host": [
+										"{{base_url_ComplianceService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"compliance",
+										"programs",
+										":programId",
+										"tasks"
+									],
+									"variable": [
+										{
+											"key": "programId",
+											"value": "00000000-0000-0000-0000-000000000001"
+										}
+									]
+								},
+								"description": "Get all tasks for a compliance program"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Task Status",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"status\": \"InProgress\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url_ComplianceService}}/api/v1/compliance/tasks/:taskId/status",
+									"host": [
+										"{{base_url_ComplianceService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"compliance",
+										"tasks",
+										":taskId",
+										"status"
+									],
+									"variable": [
+										{
+											"key": "taskId",
+											"value": "00000000-0000-0000-0000-000000000001"
+										}
+									]
+								},
+								"description": "Update the status of a compliance task"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Evidence",
+					"item": [
+						{
+							"name": "Create Evidence",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"evidenceType\": \"Document\",\n  \"fileUrl\": \"https://example.com/file.pdf\",\n  \"metadata\": \"Additional metadata information\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url_ComplianceService}}/api/v1/compliance/tasks/:taskId/evidence",
+									"host": [
+										"{{base_url_ComplianceService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"compliance",
+										"tasks",
+										":taskId",
+										"evidence"
+									],
+									"variable": [
+										{
+											"key": "taskId",
+											"value": "00000000-0000-0000-0000-000000000001"
+										}
+									]
+								},
+								"description": "Create evidence for a compliance task"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Regulations",
+					"item": [
+						{
+							"name": "Enroll Regulation",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"organizationId\": \"00000000-0000-0000-0000-000000000001\",\n  \"complianceFrameworkId\": \"00000000-0000-0000-0000-000000000002\",\n  \"targetDate\": \"2024-12-31T00:00:00Z\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url_ComplianceService}}/api/regulations/enroll",
+									"host": [
+										"{{base_url_ComplianceService}}"
+									],
+									"path": [
+										"api",
+										"regulations",
+										"enroll"
+									]
+								},
+								"description": "Enroll a regulation for an organization (no authentication required)"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Compliance Service endpoints"
+		},
+		{
+			"name": "AIOrchestratorService",
+			"item": [
+				{
+					"name": "AI",
+					"item": [
+						{
+							"name": "Execute AI Instruction",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"instruction\": \"Start compliance program for NABH regulation\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url_AIOrchestratorService}}/api/v1/ai/execute",
+									"host": [
+										"{{base_url_AIOrchestratorService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"ai",
+										"execute"
+									]
+								},
+								"description": "Execute an AI instruction to trigger workflows"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Drafts",
+					"item": [
+						{
+							"name": "Generate Draft",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"draftType\": 0,\n  \"sourceEntityId\": \"00000000-0000-0000-0000-000000000001\",\n  \"complianceProgram\": {\n    \"id\": \"00000000-0000-0000-0000-000000000001\",\n    \"platformId\": \"PROG-001\",\n    \"organizationId\": \"00000000-0000-0000-0000-000000000001\",\n    \"name\": \"NABH Compliance Program\"\n  },\n  \"control\": {\n    \"id\": \"00000000-0000-0000-0000-000000000002\",\n    \"programId\": \"00000000-0000-0000-0000-000000000001\",\n    \"code\": \"NABH-01\",\n    \"description\": \"Control description\"\n  },\n  \"complianceTask\": {\n    \"id\": \"00000000-0000-0000-0000-000000000003\",\n    \"organizationId\": \"00000000-0000-0000-0000-000000000001\",\n    \"regulationId\": \"00000000-0000-0000-0000-000000000004\",\n    \"requirementId\": \"00000000-0000-0000-0000-000000000005\",\n    \"assignedToUserId\": \"user123\",\n    \"dueDate\": \"2024-12-31T00:00:00Z\",\n    \"status\": \"Pending\"\n  },\n  \"evidences\": [\n    {\n      \"id\": \"00000000-0000-0000-0000-000000000006\",\n      \"taskId\": \"00000000-0000-0000-0000-000000000003\",\n      \"evidenceType\": \"Document\",\n      \"fileUrl\": \"https://example.com/file.pdf\",\n      \"uploadedOn\": \"2024-01-01T00:00:00Z\",\n      \"metadata\": \"Evidence metadata\"\n    }\n  ],\n  \"auditFinding\": {\n    \"id\": \"00000000-0000-0000-0000-000000000007\",\n    \"auditSessionId\": \"00000000-0000-0000-0000-000000000008\",\n    \"controlCode\": \"NABH-01\",\n    \"severity\": \"High\",\n    \"description\": \"Audit finding description\"\n  },\n  \"generatedBy\": \"System\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url_AIOrchestratorService}}/api/v1/drafts/generate",
+									"host": [
+										"{{base_url_AIOrchestratorService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drafts",
+										"generate"
+									]
+								},
+								"description": "Generate an AI-assisted draft (DraftType: 0=ComplianceNarrativeDraft, 1=AuditResponseDraft, 2=CorrectiveActionDraft)"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "AI Orchestrator Service endpoints"
+		},
+		{
+			"name": "AuditService",
+			"item": [
+				{
+					"name": "Audit",
+					"item": [
+						{
+							"name": "Generate Audit",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"organizationId\": \"00000000-0000-0000-0000-000000000001\",\n  \"complianceProgramId\": \"00000000-0000-0000-0000-000000000001\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url_AuditService}}/api/v1/audit/generate",
+									"host": [
+										"{{base_url_AuditService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"audit",
+										"generate"
+									]
+								},
+								"description": "Generate an audit session"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Audit Session",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url_AuditService}}/api/v1/audit/:sessionId",
+									"host": [
+										"{{base_url_AuditService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"audit",
+										":sessionId"
+									],
+									"variable": [
+										{
+											"key": "sessionId",
+											"value": "00000000-0000-0000-0000-000000000001"
+										}
+									]
+								},
+								"description": "Get an audit session by ID"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Audits by Organization",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url_AuditService}}/api/v1/audit/organizations/:organizationId",
+									"host": [
+										"{{base_url_AuditService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"audit",
+										"organizations",
+										":organizationId"
+									],
+									"variable": [
+										{
+											"key": "organizationId",
+											"value": "00000000-0000-0000-0000-000000000001"
+										}
+									]
+								},
+								"description": "Get all audit sessions for an organization"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "WeatherForecast",
+					"item": [
+						{
+							"name": "Get Weather Forecast",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url_AuditService}}/WeatherForecast",
+									"host": [
+										"{{base_url_AuditService}}"
+									],
+									"path": [
+										"WeatherForecast"
+									]
+								},
+								"description": "Get weather forecast data (sample endpoint)"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Audit Service endpoints"
+		},
+		{
+			"name": "OrganizationService",
+			"item": [
+				{
+					"name": "Organizations",
+					"item": [
+						{
+							"name": "Ping",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url_OrganizationService}}/api/v1/organizations/ping",
+									"host": [
+										"{{base_url_OrganizationService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"ping"
+									]
+								},
+								"description": "Ping endpoint to verify Organization API is running"
+							},
+							"response": []
+						},
+						{
+							"name": "Create Organization",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Acme Corporation\",\n  \"type\": \"Healthcare\",\n  \"address\": \"123 Main St, City, State 12345\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url_OrganizationService}}/api/v1/organizations/Create",
+									"host": [
+										"{{base_url_OrganizationService}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"Create"
+									]
+								},
+								"description": "Create a new organization"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Organization Service endpoints"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url_IdentityService",
+			"value": "http://localhost:5062",
+			"type": "string"
+		},
+		{
+			"key": "base_url_ComplianceService",
+			"value": "http://localhost:5001",
+			"type": "string"
+		},
+		{
+			"key": "base_url_AIOrchestratorService",
+			"value": "http://localhost:5002",
+			"type": "string"
+		},
+		{
+			"key": "base_url_AuditService",
+			"value": "http://localhost:5003",
+			"type": "string"
+		},
+		{
+			"key": "base_url_OrganizationService",
+			"value": "http://localhost:5004",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

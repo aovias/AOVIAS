@@ -1,0 +1,26 @@
+<section
+  class="action-bar"
+  [class.action-bar--two]="dangerHidden"
+  aria-label="Primary journey actions"
+>
+  <button type="button" class="btn btn--primary" (click)="actionClick.emit('primary')">
+    <ng-icon name="lucidePlay" class="btn__icon" aria-hidden="true" />
+    <span>{{ primaryLabel }}</span>
+  </button>
+  <button type="button" class="btn btn--secondary" (click)="actionClick.emit('secondary')">
+    <ng-icon name="lucideHistory" class="btn__icon" aria-hidden="true" />
+    <span>{{ secondaryLabel }}</span>
+  </button>
+  @if (!dangerHidden) {
+    <button
+      type="button"
+      class="btn btn--danger"
+      [class.btn--danger-emphasis]="dangerEmphasis"
+      [disabled]="dangerDisabled"
+      (click)="actionClick.emit('danger')"
+    >
+      <ng-icon name="lucideAlertTriangle" class="btn__icon" aria-hidden="true" />
+      <span>{{ dangerLabel }}</span>
+    </button>
+  }
+</section>

@@ -1,0 +1,422 @@
+<UserControl x:Class="ComplianceServiceManager.Views.Overview.OverviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Loaded="OverviewView_OnLoaded">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+        <!-- Metric tile -->
+        <Style x:Key="MetricTileStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource SurfaceInsetBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{StaticResource RadiusSm}" />
+            <Setter Property="Padding" Value="16,14" />
+            <Setter Property="Margin" Value="0,0,12,0" />
+        </Style>
+
+        <Style x:Key="TileIconChipStyle" TargetType="Border">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Background" Value="{StaticResource SurfaceElevatedBrush}" />
+            <Setter Property="Margin" Value="0,0,10,0" />
+        </Style>
+
+        <Style x:Key="QuickActionStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource SurfaceInsetBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="16,12" />
+            <Setter Property="MinHeight" Value="58" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Margin" Value="0,0,12,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="{StaticResource HoverBrush}" />
+                                <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource PrimaryBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="300" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Main column -->
+            <StackPanel Grid.Column="0" Margin="0,0,16,0">
+
+                <!-- Platform Overview -->
+                <Border Style="{StaticResource CardBorderStyle}" Padding="18" Margin="0,0,0,14">
+                    <StackPanel>
+                        <TextBlock Text="Platform Overview" Style="{StaticResource HeadingTextStyle}" Margin="0,0,0,14" />
+                        <UniformGrid Columns="5">
+                            <Border Style="{StaticResource MetricTileStyle}">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                        <Border Style="{StaticResource TileIconChipStyle}">
+                                            <TextBlock Text="{StaticResource IconHealth}" FontFamily="{StaticResource IconFont}" FontSize="14" Foreground="{StaticResource SuccessBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="Platform Health" Style="{StaticResource CaptionTextStyle}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding PlatformHealthStatus}" FontSize="21" FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}" />
+                                    <TextBlock Text="Connected runtime &amp; observability" Style="{StaticResource CaptionTextStyle}" Margin="0,3,0,8" TextTrimming="CharacterEllipsis" />
+                                    <Polyline Points="0,16 12,9 24,13 36,5 48,11 60,3 72,9 84,7 96,12 108,4 120,9"
+                                              Stroke="{StaticResource SuccessBrush}" StrokeThickness="1.4" Opacity="0.7"
+                                              Stretch="Fill" Height="22" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource MetricTileStyle}">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                        <Border Style="{StaticResource TileIconChipStyle}">
+                                            <TextBlock Text="{StaticResource IconEnvironments}" FontFamily="{StaticResource IconFont}" FontSize="14" Foreground="{StaticResource InfoBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="Environments" Style="{StaticResource CaptionTextStyle}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding EnvironmentsCount}" FontSize="21" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                                    <TextBlock Text="Total environments" Style="{StaticResource CaptionTextStyle}" Margin="0,3,0,8" />
+                                    <Polyline Points="0,12 12,14 24,8 36,12 48,6 60,10 72,5 84,11 96,7 108,12 120,8"
+                                              Stroke="{StaticResource InfoBrush}" StrokeThickness="1.4" Opacity="0.7"
+                                              Stretch="Fill" Height="22" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource MetricTileStyle}">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                        <Border Style="{StaticResource TileIconChipStyle}">
+                                            <TextBlock Text="{StaticResource IconAgents}" FontFamily="{StaticResource IconFont}" FontSize="14" Foreground="{StaticResource StatusDeploymentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="Runtime Agents" Style="{StaticResource CaptionTextStyle}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding ConnectedAgentsCount}" FontSize="21" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                                    <TextBlock Text="Connected" Style="{StaticResource CaptionTextStyle}" Margin="0,3,0,8" />
+                                    <Polyline Points="0,10 12,12 24,7 36,13 48,8 60,12 72,6 84,10 96,5 108,11 120,7"
+                                              Stroke="{StaticResource StatusDeploymentBrush}" StrokeThickness="1.4" Opacity="0.7"
+                                              Stretch="Fill" Height="22" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource MetricTileStyle}">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                        <Border Style="{StaticResource TileIconChipStyle}">
+                                            <TextBlock Text="{StaticResource IconDeployments}" FontFamily="{StaticResource IconFont}" FontSize="14" Foreground="{StaticResource WarningBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="Deployments" Style="{StaticResource CaptionTextStyle}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding RunningDeploymentsCount}" FontSize="21" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                                    <TextBlock Text="Running / Queued" Style="{StaticResource CaptionTextStyle}" Margin="0,3,0,8" />
+                                    <Polyline Points="0,14 12,8 24,12 36,7 48,13 60,6 72,11 84,5 96,10 108,7 120,12"
+                                              Stroke="{StaticResource WarningBrush}" StrokeThickness="1.4" Opacity="0.7"
+                                              Stretch="Fill" Height="22" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource MetricTileStyle}" Margin="0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                        <Border Style="{StaticResource TileIconChipStyle}">
+                                            <TextBlock Text="{StaticResource IconAlerts}" FontFamily="{StaticResource IconFont}" FontSize="14" Foreground="{StaticResource DangerBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="Alerts" Style="{StaticResource CaptionTextStyle}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding AlertCount}" FontSize="21" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                                    <TextBlock Text="Active alerts" Style="{StaticResource CaptionTextStyle}" Margin="0,3,0,8" />
+                                    <Polyline Points="0,11 12,13 24,8 36,12 48,7 60,11 72,5 84,9 96,6 108,12 120,8"
+                                              Stroke="{StaticResource DangerBrush}" StrokeThickness="1.4" Opacity="0.7"
+                                              Stretch="Fill" Height="22" />
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Quick Actions -->
+                <Border Style="{StaticResource CardBorderStyle}" Padding="18" Margin="0,0,0,14">
+                    <StackPanel>
+                        <TextBlock Text="Quick Actions" Style="{StaticResource HeadingTextStyle}" Margin="0,0,0,12" />
+                        <UniformGrid Columns="6">
+                            <Button Style="{StaticResource QuickActionStyle}" Command="{Binding OpenBootstrapCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{StaticResource IconBootstrap}" FontFamily="{StaticResource IconFont}" FontSize="15" Foreground="{StaticResource InfoBrush}" Margin="0,0,10,0" VerticalAlignment="Center" />
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Bootstrap" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                                        <TextBlock Text="New Environment" FontSize="10" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource QuickActionStyle}" Command="{Binding OpenEnvironmentsCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{StaticResource IconEnvironments}" FontFamily="{StaticResource IconFont}" FontSize="15" Foreground="{StaticResource InfoBrush}" Margin="0,0,10,0" VerticalAlignment="Center" />
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Register" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                                        <TextBlock Text="Environment" FontSize="10" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource QuickActionStyle}" Command="{Binding OpenPublishingCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{StaticResource IconPublishing}" FontFamily="{StaticResource IconFont}" FontSize="15" Foreground="{StaticResource InfoBrush}" Margin="0,0,10,0" VerticalAlignment="Center" />
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Publish" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                                        <TextBlock Text="Application" FontSize="10" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource QuickActionStyle}" Command="{Binding OpenDeploymentsCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{StaticResource IconDeploy}" FontFamily="{StaticResource IconFont}" FontSize="15" Foreground="{StaticResource InfoBrush}" Margin="0,0,10,0" VerticalAlignment="Center" />
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Deploy" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                                        <TextBlock Text="Application" FontSize="10" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource QuickActionStyle}" Command="{Binding OpenRuntimeCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{StaticResource IconRuntime}" FontFamily="{StaticResource IconFont}" FontSize="15" Foreground="{StaticResource InfoBrush}" Margin="0,0,10,0" VerticalAlignment="Center" />
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Open" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                                        <TextBlock Text="Runtime" FontSize="10" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource QuickActionStyle}" Command="{Binding OpenReleaseLibraryCommand}" Margin="0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{StaticResource IconLibrary}" FontFamily="{StaticResource IconFont}" FontSize="15" Foreground="{StaticResource InfoBrush}" Margin="0,0,10,0" VerticalAlignment="Center" />
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="View" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                                        <TextBlock Text="Releases" FontSize="10" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Recent Activity + Local Dev Services -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="3*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Recent Activity -->
+                    <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Padding="18" Margin="0,0,14,0" MinHeight="320">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="Recent Activity" Style="{StaticResource HeadingTextStyle}" Margin="0,0,0,10" />
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding ActivityFilters}" Margin="0,0,0,10">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Content="{Binding}"
+                                                Command="{Binding DataContext.SelectActivityFilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                Padding="0,2"
+                                                MinHeight="24"
+                                                Margin="0,0,16,0"
+                                                FontSize="12"
+                                                Foreground="{StaticResource TextSecondaryBrush}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <ItemsControl Grid.Row="2"
+                                          ItemsSource="{Binding ActivityView}"
+                                          VirtualizingPanel.IsVirtualizing="True"
+                                          Visibility="{Binding HasActivity, Converter={StaticResource BoolToVis}}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="44" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding Timestamp}" Style="{StaticResource CaptionTextStyle}" />
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                                                <TextBlock Text="{Binding Message}" Style="{StaticResource CaptionTextStyle}" TextWrapping="Wrap" Margin="0,2,0,0" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <StackPanel Grid.Row="2"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HasActivity}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <Border Width="52" Height="52" CornerRadius="26" Background="{StaticResource SurfaceInsetBrush}" HorizontalAlignment="Center">
+                                    <TextBlock Text="{StaticResource IconHistory}" FontFamily="{StaticResource IconFont}" FontSize="20" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <TextBlock Text="No recent activity" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Center" Margin="0,10,0,0" />
+                                <TextBlock Text="Activity will appear here once the platform is in use." Style="{StaticResource CaptionTextStyle}" HorizontalAlignment="Center" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Local Dev Services summary -->
+                    <Border Grid.Column="1" Style="{StaticResource CardBorderStyle}" Padding="18" MinHeight="320">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" Margin="0,0,0,12">
+                                <TextBlock Text="Local Dev Services" Style="{StaticResource HeadingTextStyle}" />
+                                <Button Content="Configure Folder"
+                                        HorizontalAlignment="Right"
+                                        Command="{Binding OpenLocalDevServicesCommand}" />
+                            </Grid>
+
+                            <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,12">
+                                <Border Style="{StaticResource MetricTileStyle}" Padding="12,10">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Services.ServiceCount}" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,8,0" />
+                                        <TextBlock Text="Total Services" Style="{StaticResource CaptionTextStyle}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource MetricTileStyle}" Padding="12,10">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Services.RunningServicesCount}" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}" Margin="0,0,8,0" />
+                                        <TextBlock Text="Running" Style="{StaticResource CaptionTextStyle}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource MetricTileStyle}" Padding="12,10" Margin="0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Services.ErrorServicesCount}" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource WarningBrush}" Margin="0,0,8,0" />
+                                        <TextBlock Text="Attention" Style="{StaticResource CaptionTextStyle}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Border>
+                            </UniformGrid>
+
+                            <DataGrid Grid.Row="2"
+                                      ItemsSource="{Binding Services.ServicesView}"
+                                      VirtualizingPanel.IsVirtualizing="True"
+                                      VirtualizingPanel.VirtualizationMode="Recycling"
+                                      RowHeight="38"
+                                      MaxHeight="220">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Service Name" Binding="{Binding Name}" Width="2*" />
+                                    <DataGridTextColumn Header="Type" Binding="{Binding DisplayKind}" Width="*" />
+                                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" />
+                                    <DataGridTextColumn Header="Port(s)" Binding="{Binding DisplayPort}" Width="80" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </StackPanel>
+
+            <!-- Right rail: Runtime Agent -->
+            <StackPanel Grid.Column="1">
+                <Border Style="{StaticResource CardBorderStyle}" Padding="18">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <TextBlock Text="{StaticResource IconAgents}" FontFamily="{StaticResource IconFont}" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
+                            <TextBlock Text="Runtime Agent" Style="{StaticResource HeadingTextStyle}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                            <Ellipse Width="8" Height="8" VerticalAlignment="Center" Margin="0,0,6,0">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="{StaticResource DangerBrush}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ConnectedAgentsCount}" Value="1">
+                                                <Setter Property="Fill" Value="{StaticResource SuccessBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock FontSize="13" FontWeight="SemiBold">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="Disconnected" />
+                                        <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ConnectedAgentsCount}" Value="1">
+                                                <Setter Property="Text" Value="Connected" />
+                                                <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                        <TextBlock Text="{Binding AgentLastSeen, StringFormat=Last seen: {0}}" Style="{StaticResource CaptionTextStyle}" Margin="0,0,0,14" />
+
+                        <Grid Margin="0,0,0,4">
+                            <TextBlock Text="Agent Version" Style="{StaticResource CaptionTextStyle}" />
+                            <TextBlock Text="{Binding AgentVersion}" FontSize="11.5" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Right" />
+                        </Grid>
+                        <Grid Margin="0,0,0,4">
+                            <TextBlock Text="Host" Style="{StaticResource CaptionTextStyle}" />
+                            <TextBlock Text="{Binding AgentHost}" FontSize="11.5" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" MaxWidth="150" />
+                        </Grid>
+                        <Grid Margin="0,0,0,4">
+                            <TextBlock Text="OS" Style="{StaticResource CaptionTextStyle}" />
+                            <TextBlock Text="{Binding AgentOs}" FontSize="11.5" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" MaxWidth="150" />
+                        </Grid>
+                        <Grid Margin="0,0,0,14">
+                            <TextBlock Text="Docker" Style="{StaticResource CaptionTextStyle}" />
+                            <TextBlock Text="{Binding AgentDocker}" FontSize="11.5" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" MaxWidth="150" />
+                        </Grid>
+
+                        <Button Content="View Agent Details"
+                                HorizontalAlignment="Stretch"
+                                Command="{Binding OpenRuntimeAgentsCommand}" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

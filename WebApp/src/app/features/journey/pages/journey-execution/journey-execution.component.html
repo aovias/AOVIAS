@@ -1,0 +1,46 @@
+<main class="execution-page">
+  <header class="execution-page__header">
+    <a routerLink="/app/journey" class="execution-page__back">Back to Journey</a>
+    <h1>Journey Execution Workspace</h1>
+  </header>
+
+  <section class="execution-page__grid">
+    <aside class="panel panel--left">
+      <app-chapter-navigation
+        [chapters]="chapterItems()"
+        [selectedChapterId]="store.selectedChapterId()"
+        [searchTerm]="searchTerm()"
+        [sortMode]="sortMode()"
+        (searchChange)="searchTerm.set($event)"
+        (sortModeChange)="sortMode.set($event)"
+        (chapterSelected)="onChapterSelected($event)"
+      />
+    </aside>
+
+    <section class="panel panel--center">
+      <app-standards-panel
+        title="Standards Work Area"
+        subtitle="Review standards and execute objective elements."
+        [complianceSummary]="
+          'Compliance summary: ' + (store.selectedChapter()?.complianceScorePercent ?? 0) + '%'
+        "
+        [statusBadge]="store.selectedChapter()?.risk ?? 'low' | titlecase"
+        [openIssues]="openIssues()"
+        [standards]="standardItems()"
+        [expandedIds]="expandedIds()"
+        [chapterRisk]="store.selectedChapter()?.risk ?? 'low'"
+        (standardToggle)="onStandardToggle($event)"
+        (rowActivate)="onOeView($event.oeId)"
+      />
+    </section>
+
+    <aside class="panel panel--right" aria-label="Selected objective context">
+      <h2>Selection Context</h2>
+      <p>
+        Selected OE:
+        {{ selectedOeId() ?? 'None' }}
+      </p>
+      <p>Select an objective element row to focus right-panel workflow updates.</p>
+    </aside>
+  </section>
+</main>

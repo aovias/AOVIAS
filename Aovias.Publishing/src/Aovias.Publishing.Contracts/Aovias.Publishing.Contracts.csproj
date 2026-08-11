@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.Publishing.Contracts</RootNamespace>
+    <AssemblyName>Aovias.Publishing.Contracts</AssemblyName>
+    <Description>Contracts for the AOVIAS Publishing Engine.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Aovias.Deployment.Contracts\Aovias.Deployment.Contracts.csproj" />
+  </ItemGroup>
+</Project>

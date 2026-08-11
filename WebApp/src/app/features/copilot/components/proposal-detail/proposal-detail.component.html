@@ -1,0 +1,110 @@
+<div class="proposal-detail-overlay" (click)="close()">
+  <aside class="proposal-detail" (click)="$event.stopPropagation()">
+
+    <!-- ── Close ────────────────────────────────────────────────────────── -->
+    <div class="proposal-detail__toolbar">
+      <span class="material-icons-outlined proposal-detail__type-icon">
+        {{ getTypeIcon(proposal.proposalTypeEnum) }}
+      </span>
+      <h2 class="proposal-detail__heading">{{ getTypeLabel(proposal.proposalTypeEnum) }}</h2>
+      <button class="btn-icon" (click)="close()" aria-label="Close">
+        <span class="material-icons-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- ── Status badge ──────────────────────────────────────────────────── -->
+    <div class="proposal-detail__status">
+      <span class="badge"
+            [class]="'badge--' + getStatusColor(proposal.statusEnum)">
+        {{ getStatusLabel(proposal.statusEnum) }}
+      </span>
+      <span class="text-muted small">
+        Proposed {{ proposal.proposedAtUtc | date:'mediumDate' }}
+        by {{ proposal.proposedBy }}
+      </span>
+    </div>
+
+    <!-- ── Title + description ───────────────────────────────────────────── -->
+    <div class="proposal-detail__body">
+      <h3 class="proposal-detail__title">{{ proposal.title }}</h3>
+      <p  class="proposal-detail__description">{{ proposal.description }}</p>
+    </div>
+
+    <!-- ── Payload ───────────────────────────────────────────────────────── -->
+    <section class="proposal-detail__section" *ngIf="payloadEntries.length">
+      <h4 class="proposal-detail__section-title">Action Parameters</h4>
+      <dl class="payload-list">
+        <ng-container *ngFor="let entry of payloadEntries">
+          <dt>{{ entry[0] }}</dt>
+          <dd>{{ entry[1] }}</dd>
+        </ng-container>
+      </dl>
+    </section>
+
+    <!-- ── Execution result ──────────────────────────────────────────────── -->
+    <section class="proposal-detail__section"
+             *ngIf="proposal.statusEnum === ProposalStatus.Executed">
+      <h4 class="proposal-detail__section-title">Execution Result</h4>
+      <div class="alert alert--success">
+        <span class="material-icons-outlined">check_circle</span>
+        <div>
+          <strong>{{ proposal.resultEntityType }}</strong>
+          created: {{ proposal.resultEntityId }}<br/>
+          <span *ngIf="proposal.executionNotes">{{ proposal.executionNotes }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Rejection reason ──────────────────────────────────────────────── -->
+    <section class="proposal-detail__section"
+             *ngIf="proposal.statusEnum === ProposalStatus.Rejected">
+      <h4 class="proposal-detail__section-title">Rejection Reason</h4>
+      <div class="alert alert--danger">
+        <span class="material-icons-outlined">cancel</span>
+        <em>{{ proposal.rejectionReason }}</em>
+      </div>
+    </section>
+
+    <!-- ── Audit trail ───────────────────────────────────────────────────── -->
+    <section class="proposal-detail__section" *ngIf="auditTrail().length">
+      <h4 class="proposal-detail__section-title">Audit Trail</h4>
+      <div class="audit-timeline">
+        <div class="audit-timeline__event"
+             *ngFor="let event of auditTrail()">
+          <span class="audit-timeline__dot"></span>
+          <div class="audit-timeline__content">
+            <strong>{{ event.eventType }}</strong>
+            <span class="text-muted">
+              {{ event.occurredAtUtc | date:'medium' }}
+              <ng-container *ngIf="event.actorEmail">by {{ event.actorEmail }}</ng-container>
+            </span>
+            <p *ngIf="event.notes" class="audit-timeline__notes">{{ event.notes }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Actions ───────────────────────────────────────────────────────── -->
+    <div class="proposal-detail__actions">
+      <button class="btn btn--primary"
+              *ngIf="proposal.canApprove"
+              (click)="onApprove()">
+        <span class="material-icons-outlined" aria-hidden="true">thumb_up</span>
+        Approve
+      </button>
+      <button class="btn btn--danger-outline"
+              *ngIf="proposal.canReject"
+              (click)="onReject()">
+        <span class="material-icons-outlined" aria-hidden="true">thumb_down</span>
+        Reject
+      </button>
+      <button class="btn btn--success"
+              *ngIf="proposal.canExecute"
+              (click)="onExecute()">
+        <span class="material-icons-outlined" aria-hidden="true">play_arrow</span>
+        Execute Workflow
+      </button>
+    </div>
+
+  </aside>
+</div>

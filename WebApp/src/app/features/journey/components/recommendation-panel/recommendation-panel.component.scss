@@ -1,0 +1,86 @@
+.recommendation-panel {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-xs);
+}
+
+.recommendation-panel__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.recommendation-panel__title-icon {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.recommendation-panel__copy h2 {
+  margin: 0;
+  font-size: var(--font-size-heading-md);
+  color: var(--color-text-primary);
+}
+
+.recommendation-panel__copy p {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+}
+
+.recommendation-panel__footer {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding-top: var(--space-1);
+  border-top: var(--border-width-hairline) solid var(--color-border-subtle);
+}
+
+.recommendation-panel__warn-icon {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  color: var(--color-status-warning);
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.recommendation-panel__footer-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+}
+
+.recommendation-panel__footer-text--warn {
+  color: var(--color-status-warning);
+}
+
+.recommendation-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.btn {
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-width-hairline) solid transparent;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  min-height: var(--button-height);
+}
+
+.btn--primary {
+  color: var(--color-text-inverse);
+  background: var(--color-brand-primary);
+}
+
+.btn--secondary {
+  color: var(--color-text-primary);
+  background: transparent;
+  border-color: var(--color-border-subtle);
+}

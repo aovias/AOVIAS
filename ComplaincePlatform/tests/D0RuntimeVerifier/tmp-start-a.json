@@ -1,0 +1,11 @@
+{
+  "goal": "AuditPreparationWorkflow",
+  "aiRequest": {
+    "prompt": "Prepare audit plan",
+    "useCase": 5,
+    "hospitalId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "contextVersionId": "ctx-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-v1",
+    "promptTemplateId": "TaskRecommendation",
+    "promptTemplateVersion": "1.0"
+  }
+}

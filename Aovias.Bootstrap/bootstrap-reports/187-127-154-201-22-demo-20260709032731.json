@@ -1,0 +1,72 @@
+{
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "Phases": [
+    {
+      "Phase": 1,
+      "Outcome": 0,
+      "Message": "Target host is reachable, running a supported Ubuntu release (24.04), passed disk/network checks, and privilege mode is PasswordRequired.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:25:23.3722753+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 2,
+      "Outcome": 1,
+      "Message": "Docker is already installed (Docker version 29.6.0, build fb59821).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:25:23.4824897+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 3,
+      "Outcome": 1,
+      "Message": "Docker network \u0027aovias-net\u0027 already exists.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:25:29.7068653+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 4,
+      "Outcome": 1,
+      "Message": "Profile directory \u0027/opt/aovias/config/profiles/demo\u0027 already exists; refreshed ownership of \u0027/opt/aovias\u0027.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:25:29.9595391+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 5,
+      "Outcome": 1,
+      "Message": "\u0027/opt/aovias/config/profiles/demo/settings.deployment-host.json\u0027 and \u0027/opt/aovias/config/profiles/demo/settings.environment-registration.json\u0027 already exist.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:25:30.1376674+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 6,
+      "Outcome": 0,
+      "Message": "Runtime Agent artifact was installed and started.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T03:25:38.4206472+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 7,
+      "Outcome": 2,
+      "Message": "Agent self-registration failed after 5 attempts.",
+      "RootCause": "A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (187.127.154.201:7080)",
+      "CompletedUtc": "2026-07-09T03:27:31.8722417+00:00",
+      "Succeeded": false
+    }
+  ],
+  "OverallSuccess": false,
+  "FirstFailure": {
+    "Phase": 7,
+    "Outcome": 2,
+    "Message": "Agent self-registration failed after 5 attempts.",
+    "RootCause": "A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (187.127.154.201:7080)",
+    "CompletedUtc": "2026-07-09T03:27:31.8722417+00:00",
+    "Succeeded": false
+  },
+  "GeneratedUtc": "2026-07-09T03:27:31.8748632+00:00",
+  "ReportPath": null
+}

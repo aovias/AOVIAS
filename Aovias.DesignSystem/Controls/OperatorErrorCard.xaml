@@ -1,0 +1,145 @@
+<UserControl x:Class="Aovias.DesignSystem.Controls.OperatorErrorCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Aovias.DesignSystem.Converters"
+             x:Name="Root">
+    <UserControl.Resources>
+        <converters:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Border Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{Binding AccentBrush, ElementName=Root}"
+            BorderThickness="1"
+            CornerRadius="{DynamicResource RadiusMd}"
+            Padding="18"
+            Margin="0,0,0,12">
+        <StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0"
+                        Width="38"
+                        Height="38"
+                        CornerRadius="10"
+                        Background="{DynamicResource SurfaceInsetBrush}"
+                        Margin="0,0,14,0">
+                    <TextBlock Text="&#xEA39;"
+                               FontFamily="{DynamicResource IconFont}"
+                               FontSize="17"
+                               Foreground="{Binding AccentBrush, ElementName=Root}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                </Border>
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Title, ElementName=Root}"
+                               Style="{DynamicResource HeadingTextStyle}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                        <TextBlock Text="{Binding Subject, ElementName=Root}"
+                                   Style="{DynamicResource CaptionTextStyle}"
+                                   FontWeight="SemiBold"
+                                   Visibility="{Binding Subject, ElementName=Root, Converter={StaticResource StringNotEmptyToVisibilityConverter}}" />
+                        <TextBlock Text="{Binding SubjectDetail, ElementName=Root}"
+                                   Style="{DynamicResource CaptionTextStyle}"
+                                   Margin="8,0,0,0"
+                                   Visibility="{Binding SubjectDetail, ElementName=Root, Converter={StaticResource StringNotEmptyToVisibilityConverter}}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <Border Grid.Column="2"
+                        CornerRadius="999"
+                        Padding="10,4"
+                        VerticalAlignment="Top"
+                        Background="{DynamicResource SurfaceInsetBrush}"
+                        BorderBrush="{Binding AccentBrush, ElementName=Root}"
+                        BorderThickness="1">
+                    <TextBlock Text="{Binding Category, ElementName=Root}"
+                               FontSize="11"
+                               FontWeight="SemiBold"
+                               Foreground="{Binding AccentBrush, ElementName=Root}" />
+                </Border>
+            </Grid>
+
+            <StackPanel Margin="52,12,0,0"
+                        Visibility="{Binding Problem, ElementName=Root, Converter={StaticResource StringNotEmptyToVisibilityConverter}}">
+                <TextBlock Text="Problem"
+                           Style="{DynamicResource CaptionTextStyle}"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,4" />
+                <TextBlock Text="{Binding Problem, ElementName=Root}"
+                           Style="{DynamicResource BodyTextStyle}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+
+            <StackPanel Margin="52,12,0,0"
+                        Visibility="{Binding RecommendedActionsVisibility, ElementName=Root}">
+                <TextBlock Text="Recommended Actions"
+                           Style="{DynamicResource CaptionTextStyle}"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,4" />
+                <ItemsControl ItemsSource="{Binding RecommendedActions, ElementName=Root}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                                <TextBlock Text="•"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           Margin="0,0,8,0" />
+                                <TextBlock Text="{Binding}"
+                                           Style="{DynamicResource BodyTextStyle}"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <Expander Margin="52,12,0,0"
+                      Foreground="{DynamicResource TextSecondaryBrush}"
+                      Visibility="{Binding Details, ElementName=Root, Converter={StaticResource StringNotEmptyToVisibilityConverter}}">
+                <Expander.Header>
+                    <TextBlock Text="Technical details"
+                               Style="{DynamicResource CaptionTextStyle}"
+                               FontWeight="SemiBold" />
+                </Expander.Header>
+                <Border Background="{DynamicResource SurfaceInsetBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusSm}"
+                        Padding="12"
+                        Margin="0,8,0,0">
+                    <StackPanel>
+                        <Button HorizontalAlignment="Right"
+                                Padding="10,4"
+                                MinHeight="26"
+                                Click="OnCopyDetails">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE8C8;"
+                                           FontFamily="{DynamicResource IconFont}"
+                                           FontSize="12"
+                                           Margin="0,0,6,0"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="Copy" FontSize="11" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <TextBox Text="{Binding Details, ElementName=Root, Mode=OneWay}"
+                                 IsReadOnly="True"
+                                 TextWrapping="Wrap"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 Foreground="{DynamicResource TextSecondaryBrush}"
+                                 FontFamily="Consolas"
+                                 FontSize="11"
+                                 MaxHeight="180"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+            </Expander>
+        </StackPanel>
+    </Border>
+</UserControl>

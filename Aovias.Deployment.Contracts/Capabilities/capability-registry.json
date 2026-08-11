@@ -1,0 +1,25 @@
+{
+  "capabilities": [
+    { "id": "sqlserver", "category": "sql-database", "version": "2022.0.0", "aliases": ["mssql", "sql-server"], "providerMapping": "SqlServer", "description": "Microsoft SQL Server." },
+    { "id": "postgresql", "category": "sql-database", "version": "16.0.0", "aliases": ["postgres", "psql"], "description": "PostgreSQL." },
+    { "id": "rabbitmq", "category": "message-broker", "satisfiesCategories": ["event-stream"], "version": "3.13.0", "aliases": ["amqp"], "providerMapping": "RabbitMQ", "description": "RabbitMQ message broker." },
+    { "id": "azure-service-bus", "category": "message-broker", "satisfiesCategories": ["event-stream"], "version": "1.0.0", "aliases": ["service-bus", "servicebus"], "providerMapping": "AzureServiceBus", "description": "Azure Service Bus." },
+    { "id": "local-filesystem", "category": "persistent-storage", "version": "1.0.0", "aliases": ["local-fs", "hostpath"], "description": "Host-mounted local filesystem volumes." },
+    { "id": "nfs", "category": "persistent-storage", "version": "4.2.0", "aliases": ["network-file-system"], "description": "Network File System shared storage.", "dependsOnCapabilityIds": ["docker-network"] },
+    { "id": "minio", "category": "object-storage", "version": "1.0.0", "aliases": ["s3-compatible"], "description": "S3-compatible object storage (self-hosted)." },
+    { "id": "azure-blob-storage", "category": "object-storage", "version": "1.0.0", "aliases": ["azure-blob"], "description": "Azure Blob Storage." },
+    { "id": "docker-network", "category": "network-connectivity", "version": "1.0.0", "aliases": ["bridge-network"], "description": "Docker Compose bridge network." },
+    { "id": "kubernetes-service", "category": "network-connectivity", "satisfiesCategories": ["reverse-proxy"], "version": "1.28.0", "aliases": ["k8s-service"], "description": "Kubernetes Service networking (declared for future portability; no projection implemented, see M2.3 report §8)." },
+    { "id": "tls-file-certificates", "category": "tls-certificates", "version": "1.0.0", "aliases": ["pfx", "file-certs"], "description": "Certificate files mounted from the host." },
+    { "id": "tls-termination", "category": "tls-certificates", "version": "1.0.0", "aliases": ["reverse-proxy-tls"], "description": "TLS termination performed by a reverse proxy.", "dependsOnCapabilityIds": ["reverse-proxy-nginx"] },
+    { "id": "reverse-proxy-nginx", "category": "reverse-proxy", "version": "1.25.0", "aliases": ["nginx"], "providerMapping": "Nginx", "description": "Nginx reverse proxy." },
+    { "id": "file-secrets", "category": "secrets-provider", "version": "1.0.0", "aliases": ["local-secrets"], "description": "Secrets sourced from a mounted settings.secrets.json file." },
+    { "id": "azure-key-vault", "category": "secrets-provider", "version": "1.0.0", "aliases": ["key-vault", "keyvault"], "description": "Azure Key Vault secret storage." },
+    { "id": "azure-openai", "category": "external-ai-provider", "version": "1.0.0", "aliases": ["azureopenai"], "providerMapping": "AzureOpenAI", "description": "Azure OpenAI Service." },
+    { "id": "sarvam-ai", "category": "external-ai-provider", "version": "1.0.0", "aliases": ["sarvam"], "providerMapping": "Sarvam", "description": "Sarvam AI." },
+    { "id": "prometheus", "category": "metrics", "version": "2.50.0", "aliases": ["prom"], "description": "Prometheus metrics scraping." },
+    { "id": "opentelemetry", "category": "logging", "satisfiesCategories": ["metrics"], "version": "1.0.0", "aliases": ["otel"], "description": "OpenTelemetry log and trace collection." },
+    { "id": "http-health-probe", "category": "health-monitoring", "version": "1.0.0", "aliases": ["http-probe"], "description": "HTTP liveness/readiness probing (the existing HealthContract model)." },
+    { "id": "exec-health-probe", "category": "health-monitoring", "version": "1.0.0", "aliases": ["exec-probe"], "description": "Command-execution health probing for non-HTTP services." }
+  ]
+}

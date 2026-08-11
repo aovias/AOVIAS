@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.Runtime.Contracts</RootNamespace>
+    <AssemblyName>Aovias.Runtime.Contracts</AssemblyName>
+    <Description>Shared DTOs and API contracts for the AOVIAS Runtime control plane.</Description>
+  </PropertyGroup>
+</Project>

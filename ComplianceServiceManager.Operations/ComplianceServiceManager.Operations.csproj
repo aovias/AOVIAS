@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RootNamespace>ComplianceServiceManager.Operations</RootNamespace>
+    <AssemblyName>ComplianceServiceManager.Operations</AssemblyName>
+    <Description>Generic, operation-agnostic execution engine (progress, cancellation, retry, resume, history) shared by every long-running AOVIAS Studio workflow. Deliberately has no WPF/UseWPF and no dependency on any specific operation (Bootstrap, Publish, Deploy, ...) — it is a plain class library so that guarantee is enforced by the compiler, not just by convention.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="ComplianceServiceManager.Operations.Tests" />
+  </ItemGroup>
+</Project>

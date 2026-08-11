@@ -1,0 +1,6 @@
+{
+  "targetFrameworkId": "0FE8A9C0-9EA0-4970-9097-D4F73D45DCA7",
+  "sourceFrameworkIdInHierarchyCsv": "2A244FB6-7095-4643-A7C0-A539419B3FEC",
+  "description": "Masterchapters, Standards, and ObjectiveElements CSV rows reference Entry Level framework Id. Seed remaps ComplianceNodes.FrameworkId (and Frameworks row) to NABH Full Hospital 6th Edition.",
+  "scoringConfigId": "A0000001-0000-0000-0000-000000000001"
+}

@@ -1,0 +1,1283 @@
+/*
+ * AOVIAS COMMAND — enterprise UI system.
+ *
+ * One visual language for every screen. Three layers, in cascade order:
+ *   1. Base normalization  — `:where()` (zero specificity) so component styles still win.
+ *   2. Layout + component primitives — opt-in `.aov-*` classes for pages being standardized.
+ *   3. Framework harmonization — Angular Material token bindings so Mat controls match.
+ *
+ * Rules:
+ *   - No raw hex, px, or shadow literals here; everything resolves through
+ *     foundation.tokens.css / theme.tokens.css.
+ *   - `!important` is used only where Material injects styles at runtime and
+ *     a token override is not exposed.
+ */
+
+/* ==========================================================================
+   1. BASE NORMALIZATION
+   Zero-specificity defaults. Any component style overrides these.
+   ========================================================================== */
+
+/*
+ * Colour is deliberately left to inherit on headings, paragraphs, and anchors:
+ * these elements appear inside inverted and tinted surfaces (banners, filled
+ * cards, dark panels) where a forced token would break contrast. The `.aov-*`
+ * primitives below set colour explicitly where the surface is known.
+ */
+:where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-family-base);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-tight);
+  font-weight: var(--font-weight-semibold);
+  text-wrap: balance;
+}
+
+:where(h1) {
+  font-size: var(--font-size-page-title);
+}
+:where(h2) {
+  font-size: var(--font-size-section-title);
+}
+:where(h3) {
+  font-size: var(--font-size-card-title);
+}
+:where(h4, h5, h6) {
+  font-size: var(--font-size-body);
+}
+
+:where(p) {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-normal);
+}
+
+:where(small) {
+  font-size: var(--font-size-caption);
+}
+
+/*
+ * Anchors keep inherited colour — many are structural (card and row wrappers),
+ * and tinting those would be a regression, not a standardization. Text links
+ * opt in with `.aov-link`.
+ */
+:where(a) {
+  text-decoration: none;
+  transition: var(--transition-control);
+}
+
+.aov-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition-control);
+}
+.aov-link:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+:where(code, kbd, samp, pre) {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-caption);
+}
+
+:where(button, input, select, textarea) {
+  font-family: inherit;
+  font-size: var(--font-size-body);
+  color: inherit;
+}
+
+/* UI-13 — one focus indicator for the whole application */
+:where(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [role='button'],
+  [role='tab'],
+  [role='link'],
+  [tabindex]:not([tabindex='-1'])
+):focus-visible {
+  outline: var(--focus-ring-width) solid var(--state-focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--radius-control);
+}
+
+/* UI-10 — disabled reads the same everywhere */
+:where(button, input, select, textarea, [role='button'], [role='tab'])[disabled],
+:where(button, input, select, textarea, [role='button'], [role='tab'])[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: var(--state-disabled-opacity);
+}
+
+/* UI-12 — media never forces a horizontal scrollbar */
+:where(img, svg, video, canvas) {
+  max-width: 100%;
+}
+
+/* ==========================================================================
+   2a. PAGE LAYOUT PRIMITIVES (UI-2)
+
+   The page container is FLUID: it fills the width the shell gives it and takes
+   the same --page-padding on all four sides. Nothing here caps or centres, so
+   no page can shift left or right relative to another at any screen size.
+
+   Never express page geometry as a child selector inside the shell component —
+   routed hosts are created by router-outlet and do not carry the shell's scoped
+   attribute, so such rules silently fail to match.
+   ========================================================================== */
+
+.aov-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-section-gap);
+  inline-size: 100%;
+  padding: var(--page-padding);
+  box-sizing: border-box;
+  min-inline-size: 0;
+}
+
+/*
+ * UI-4 — module navigation bar. Spans the full width of the page area; the
+ * tab component's own divider therefore runs edge to edge, while `inset` on
+ * app-page-tabs lines the first tab up with the content below it.
+ */
+.aov-module-nav {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-sticky);
+  inline-size: 100%;
+  background: var(--card-bg);
+  min-inline-size: 0;
+  box-sizing: border-box;
+}
+
+.aov-module-nav app-page-tabs {
+  display: block;
+  inline-size: 100%;
+}
+
+/* Workspaces that own their own scroll regions opt out of page-level block padding. */
+.aov-page--flush {
+  padding-block: 0;
+  block-size: 100%;
+}
+
+.aov-page__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--page-header-gap);
+  flex-wrap: wrap;
+}
+
+.aov-page__titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-inline-size: 0;
+}
+
+/* Breadcrumb / eyebrow above the page title */
+.aov-page__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-micro);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-block-end: var(--space-1);
+}
+
+.aov-page__title {
+  margin: 0;
+  font-size: var(--font-size-page-title);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+
+.aov-page__subtitle {
+  margin: 0;
+  font-size: var(--font-size-subtitle);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  color: var(--text-secondary);
+  max-inline-size: 68ch;
+}
+
+.aov-page__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--button-gap);
+  flex-wrap: wrap;
+}
+
+.aov-page__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-card-gap);
+  min-inline-size: 0;
+}
+
+.aov-section-title {
+  margin: 0;
+  font-size: var(--font-size-section-title);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+
+.aov-section-subtitle {
+  margin: 0;
+  font-size: var(--font-size-body-sm);
+  color: var(--text-secondary);
+}
+
+/*
+ * Responsive — UI-12. Padding stays at --page-padding on every screen size;
+ * only the internal rhythm and the header stack change.
+ */
+@media (max-width: 767px) {
+  .aov-page {
+    gap: var(--space-4);
+  }
+
+  .aov-page__title {
+    font-size: var(--font-size-page-title-compact);
+  }
+
+  .aov-page__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ==========================================================================
+   2b. SURFACES + ELEVATION (UI-11)
+   ========================================================================== */
+
+.aov-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--card-bg);
+  border: var(--border-width-hairline) solid var(--border-color);
+  border-radius: var(--radius-surface);
+  padding: var(--card-padding);
+  box-shadow: var(--elevation-card);
+  min-inline-size: 0;
+  transition:
+    box-shadow var(--motion-duration-base) var(--motion-easing-standard),
+    border-color var(--motion-duration-base) var(--motion-easing-standard);
+}
+
+.aov-card--compact {
+  padding: var(--card-padding-compact);
+}
+
+.aov-card--flush {
+  padding: 0;
+  overflow: hidden;
+}
+
+.aov-card--interactive {
+  cursor: pointer;
+}
+.aov-card--interactive:hover {
+  box-shadow: var(--elevation-card-hover);
+  border-color: var(--state-selected-border);
+}
+.aov-card--interactive:focus-visible {
+  outline: var(--focus-ring-width) solid var(--state-focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.aov-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.aov-card__title {
+  margin: 0;
+  font-size: var(--font-size-card-title);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  color: var(--text-primary);
+}
+
+.aov-card__subtitle {
+  margin: 0;
+  font-size: var(--font-size-caption);
+  color: var(--text-secondary);
+}
+
+.aov-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-inline-size: 0;
+}
+
+/* Card grids — UI-7 grid gaps come from one token */
+.aov-grid {
+  display: grid;
+  gap: var(--grid-gap);
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  min-inline-size: 0;
+}
+
+/* ==========================================================================
+   2b-2. METRIC / KPI CARDS (UI-3, UI-11)
+   One KPI pattern for every module. Modules previously each defined their own
+   tile geometry, so value size, label case, padding, and radius differed page
+   to page.
+   ========================================================================== */
+
+.aov-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--grid-gap);
+  min-inline-size: 0;
+}
+
+.aov-metric-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--card-padding-compact);
+  background: var(--card-bg);
+  border: var(--border-width-hairline) solid var(--border-color);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--elevation-card);
+  min-inline-size: 0;
+}
+
+.aov-metric-card__label {
+  font-size: var(--font-size-micro);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.aov-metric-card__value {
+  font-size: var(--font-size-heading-md);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--text-primary);
+  font-variant-numeric: var(--font-variant-numeric-tabular);
+}
+
+.aov-metric-card__meta {
+  font-size: var(--font-size-caption);
+  color: var(--text-secondary);
+}
+
+/* Status is carried by the value colour only — the tile itself stays neutral. */
+.aov-metric-card--success .aov-metric-card__value {
+  color: var(--color-status-success-fg);
+}
+.aov-metric-card--warning .aov-metric-card__value {
+  color: var(--color-status-warning-fg);
+}
+.aov-metric-card--danger .aov-metric-card__value {
+  color: var(--color-status-danger-fg);
+}
+
+/* ==========================================================================
+   2c. TOOLBAR / FILTER BAR (UI-7)
+   ========================================================================== */
+
+.aov-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--toolbar-gap);
+  flex-wrap: wrap;
+  padding: var(--toolbar-padding-block) var(--toolbar-padding-inline);
+  background: var(--card-bg);
+  border: var(--border-width-hairline) solid var(--border-color);
+  border-radius: var(--radius-surface);
+  min-inline-size: 0;
+}
+
+.aov-toolbar--plain {
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.aov-toolbar__spacer {
+  flex: 1 1 auto;
+}
+
+/* ==========================================================================
+   2d. BUTTONS (UI-3, UI-9, UI-10)
+   ========================================================================== */
+
+.aov-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--icon-gap);
+  block-size: var(--control-height-md);
+  padding-inline: var(--control-padding-inline);
+  border: var(--border-width-hairline) solid transparent;
+  border-radius: var(--radius-control);
+  font-family: inherit;
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition-control);
+  min-inline-size: 0;
+}
+
+.aov-btn:disabled,
+.aov-btn[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: var(--state-disabled-opacity);
+  pointer-events: none;
+}
+
+.aov-btn:focus-visible {
+  outline: var(--focus-ring-width) solid var(--state-focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.aov-btn :where(ng-icon, svg, .material-icons-outlined) {
+  font-size: var(--icon-size-md);
+  inline-size: var(--icon-size-md);
+  block-size: var(--icon-size-md);
+  flex-shrink: 0;
+}
+
+.aov-btn--sm {
+  block-size: var(--control-height-sm);
+  padding-inline: var(--control-padding-inline-sm);
+  font-size: var(--font-size-caption);
+}
+
+.aov-btn--lg {
+  block-size: var(--control-height-lg);
+  font-size: var(--font-size-body);
+}
+
+.aov-btn--primary {
+  background: var(--primary-color);
+  color: var(--color-text-inverse);
+  border-color: var(--primary-color);
+}
+.aov-btn--primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+.aov-btn--primary:active:not(:disabled) {
+  background: var(--color-primary-active);
+  border-color: var(--color-primary-active);
+}
+
+.aov-btn--secondary {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+.aov-btn--secondary:hover:not(:disabled) {
+  background: var(--state-hover-bg);
+  border-color: var(--state-selected-border);
+}
+.aov-btn--secondary:active:not(:disabled) {
+  background: var(--state-pressed-bg);
+}
+
+/* Outlined = brand-tinted secondary, for the second-most-important action */
+.aov-btn--outlined {
+  background: transparent;
+  color: var(--color-primary-text);
+  border-color: var(--color-primary-border);
+}
+.aov-btn--outlined:hover:not(:disabled) {
+  background: var(--state-selected-bg);
+}
+
+.aov-btn--text {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: transparent;
+  padding-inline: var(--space-2);
+}
+.aov-btn--text:hover:not(:disabled) {
+  background: var(--state-hover-bg);
+  color: var(--text-primary);
+}
+
+.aov-btn--danger {
+  background: var(--danger-color);
+  color: var(--color-text-inverse);
+  border-color: var(--danger-color);
+}
+.aov-btn--danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--danger-color) 85%, black);
+}
+
+.aov-btn--icon {
+  inline-size: var(--control-height-md);
+  padding-inline: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: transparent;
+}
+.aov-btn--icon:hover:not(:disabled) {
+  background: var(--state-hover-bg);
+  color: var(--text-primary);
+}
+.aov-btn--icon.aov-btn--sm {
+  inline-size: var(--control-height-sm);
+}
+
+/* Loading state — same spinner geometry on every button variant */
+.aov-btn--loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+.aov-btn--loading::after {
+  content: '';
+  position: absolute;
+  inline-size: var(--icon-size-md);
+  block-size: var(--icon-size-md);
+  border: 2px solid currentcolor;
+  border-block-start-color: transparent;
+  border-radius: var(--radius-pill);
+  color: var(--color-text-inverse);
+  animation: aov-spin var(--motion-duration-slow) linear infinite;
+}
+.aov-btn--secondary.aov-btn--loading::after,
+.aov-btn--text.aov-btn--loading::after,
+.aov-btn--outlined.aov-btn--loading::after,
+.aov-btn--icon.aov-btn--loading::after {
+  color: var(--text-secondary);
+}
+
+@keyframes aov-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* UI-13 — pointer-coarse devices get compliant touch targets */
+@media (pointer: coarse) {
+  .aov-btn,
+  .aov-btn--sm {
+    min-block-size: var(--touch-target-min);
+  }
+  .aov-btn--icon {
+    min-inline-size: var(--touch-target-min);
+  }
+}
+
+/* ==========================================================================
+   2e. FORM CONTROLS (UI-3, UI-13)
+   ========================================================================== */
+
+.aov-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--form-field-gap);
+  min-inline-size: 0;
+}
+
+.aov-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--form-row-gap);
+}
+
+.aov-form-grid {
+  display: grid;
+  gap: var(--form-row-gap);
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.aov-label {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  color: var(--text-primary);
+}
+
+.aov-label--required::after {
+  content: ' *';
+  color: var(--color-status-danger-fg);
+}
+
+.aov-hint {
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-normal);
+  color: var(--text-secondary);
+}
+
+.aov-error {
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-normal);
+  color: var(--color-status-danger-fg);
+}
+
+.aov-input,
+.aov-select,
+.aov-textarea {
+  inline-size: 100%;
+  min-inline-size: 0;
+  block-size: var(--control-height-lg);
+  padding-inline: var(--space-3);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: var(--border-width-hairline) solid var(--border-color);
+  border-radius: var(--radius-control);
+  font-family: inherit;
+  font-size: var(--font-size-body);
+  transition: var(--transition-control);
+}
+
+.aov-textarea {
+  block-size: auto;
+  min-block-size: calc(var(--control-height-lg) * 2);
+  padding-block: var(--space-2);
+  line-height: var(--line-height-normal);
+  resize: vertical;
+}
+
+.aov-input::placeholder,
+.aov-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.aov-input:hover:not(:disabled),
+.aov-select:hover:not(:disabled),
+.aov-textarea:hover:not(:disabled) {
+  border-color: var(--text-muted);
+}
+
+.aov-input:focus,
+.aov-select:focus,
+.aov-textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-focus-ring-primary);
+}
+
+.aov-input:disabled,
+.aov-select:disabled,
+.aov-textarea:disabled {
+  background: var(--state-disabled-bg);
+  color: var(--state-disabled-fg);
+  cursor: not-allowed;
+}
+
+.aov-input[aria-invalid='true'],
+.aov-select[aria-invalid='true'],
+.aov-textarea[aria-invalid='true'] {
+  border-color: var(--danger-color);
+}
+.aov-input[aria-invalid='true']:focus,
+.aov-textarea[aria-invalid='true']:focus {
+  box-shadow: 0 0 0 var(--focus-ring-width) color-mix(in srgb, var(--danger-color) 24%, transparent);
+}
+
+.aov-select {
+  appearance: none;
+  padding-inline-end: var(--space-8);
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentcolor 50%),
+    linear-gradient(135deg, currentcolor 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.125rem) 55%,
+    calc(100% - 0.75rem) 55%;
+  background-size:
+    0.375rem 0.375rem,
+    0.375rem 0.375rem;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+/* Search box — icon-leading input */
+.aov-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-inline-size: 0;
+  flex: 1 1 15rem;
+}
+.aov-search .aov-input {
+  padding-inline-start: var(--space-10);
+}
+.aov-search__icon {
+  position: absolute;
+  inset-inline-start: var(--space-3);
+  display: inline-flex;
+  color: var(--text-muted);
+  font-size: var(--icon-size-md);
+  pointer-events: none;
+}
+
+/* Checkbox / radio / switch rows */
+.aov-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-label);
+  color: var(--text-primary);
+  cursor: pointer;
+  min-block-size: var(--control-height-md);
+}
+.aov-check input {
+  accent-color: var(--primary-color);
+  inline-size: 1rem;
+  block-size: 1rem;
+  cursor: pointer;
+}
+.aov-check:has(input:disabled) {
+  color: var(--state-disabled-fg);
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   2f. TABLES (UI-3, UI-12)
+   ========================================================================== */
+
+.aov-table-wrap {
+  inline-size: 100%;
+  overflow-x: auto;
+  border: var(--border-width-hairline) solid var(--border-color);
+  border-radius: var(--radius-table);
+  background: var(--card-bg);
+}
+
+/*
+ * Guard: Tailwind emits global single-word utilities (`.grid`, `.flex`,
+ * `.block`, `.contents`, `.table`). A <table> that happens to carry one of
+ * those as its BEM-ish class silently stops being a table — <thead> and <tbody>
+ * become independent boxes and the header stops aligning with the body. This
+ * re-asserts table layout; prefer a namespaced class (.aov-table) regardless.
+ */
+table.grid,
+table.flex,
+table.block,
+table.contents,
+table.inline-block {
+  display: table;
+}
+
+.aov-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--table-body-font-size);
+  color: var(--text-primary);
+  /* Auto layout lets long text columns absorb slack while the rest fit content. */
+  table-layout: auto;
+}
+
+/* Dense multi-column grids stay readable instead of crushing; the wrap scrolls. */
+.aov-table--wide {
+  min-inline-size: 56rem;
+}
+
+.aov-table tbody tr.is-selectable {
+  cursor: pointer;
+}
+
+.aov-table thead th {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-base);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: var(--table-header-font-size);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  text-align: start;
+  block-size: var(--table-header-min-height);
+  padding: var(--space-2) var(--table-cell-padding-inline);
+  border-block-end: var(--border-width-hairline) solid var(--border-color);
+  white-space: nowrap;
+}
+
+.aov-table tbody td {
+  padding: var(--table-cell-padding-block) var(--table-cell-padding-inline);
+  border-block-end: var(--border-width-hairline) solid var(--border-color);
+  vertical-align: middle;
+  line-height: var(--line-height-normal);
+}
+
+.aov-table tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+.aov-table tbody tr {
+  transition: background-color var(--motion-duration-fast) var(--motion-easing-standard);
+}
+.aov-table tbody tr:hover {
+  background: var(--state-hover-bg);
+}
+.aov-table tbody tr[aria-selected='true'] {
+  background: var(--state-selected-bg);
+}
+
+.aov-table--compact tbody td {
+  padding-block: var(--space-2);
+}
+
+/* Numeric / date columns align on the same glyph width */
+.aov-table :where(.aov-num, [data-align='end']) {
+  text-align: end;
+  font-variant-numeric: var(--font-variant-numeric-tabular);
+}
+
+/* Sortable headers share one affordance */
+.aov-table th[aria-sort] {
+  cursor: pointer;
+  user-select: none;
+}
+.aov-table th[aria-sort]:hover {
+  color: var(--text-primary);
+}
+.aov-table th[aria-sort]::after {
+  content: '↕';
+  margin-inline-start: var(--space-1);
+  font-size: var(--icon-size-xs);
+  opacity: 0.5;
+}
+.aov-table th[aria-sort='ascending']::after {
+  content: '↑';
+  opacity: 1;
+  color: var(--primary-color);
+}
+.aov-table th[aria-sort='descending']::after {
+  content: '↓';
+  opacity: 1;
+  color: var(--primary-color);
+}
+
+/* ==========================================================================
+   2g. CHIPS, BADGES, STATUS (UI-10)
+   ========================================================================== */
+
+.aov-chip,
+.aov-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-chip);
+  border: var(--border-width-hairline) solid transparent;
+  background: var(--color-status-neutral-soft);
+  color: var(--color-status-neutral-fg);
+  font-size: var(--font-size-micro);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  white-space: nowrap;
+}
+
+.aov-chip--success,
+.aov-badge--success {
+  background: var(--color-status-success-soft);
+  color: var(--color-status-success-fg);
+  border-color: var(--color-status-success-border);
+}
+.aov-chip--warning,
+.aov-badge--warning {
+  background: var(--color-status-warning-soft);
+  color: var(--color-status-warning-fg);
+  border-color: var(--color-status-warning-border);
+}
+.aov-chip--danger,
+.aov-badge--danger {
+  background: var(--color-status-danger-soft);
+  color: var(--color-status-danger-fg);
+  border-color: var(--color-status-danger-border);
+}
+.aov-chip--info,
+.aov-badge--info {
+  background: var(--color-status-info-soft);
+  color: var(--color-status-info-fg);
+  border-color: var(--color-status-info-border);
+}
+.aov-chip--primary,
+.aov-badge--primary {
+  background: var(--state-selected-bg);
+  color: var(--state-selected-fg);
+  border-color: var(--state-selected-border);
+}
+
+/* Selectable filter chip */
+.aov-chip--selectable {
+  cursor: pointer;
+  transition: var(--transition-control);
+}
+.aov-chip--selectable:hover {
+  background: var(--state-hover-bg);
+}
+.aov-chip--selectable[aria-pressed='true'],
+.aov-chip--selectable.is-selected {
+  background: var(--state-selected-bg);
+  color: var(--state-selected-fg);
+  border-color: var(--state-selected-border);
+}
+
+/* Status dot — same geometry wherever status is shown inline */
+.aov-status-dot {
+  inline-size: var(--space-2);
+  block-size: var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-status-neutral-fg);
+  flex-shrink: 0;
+}
+.aov-status-dot--success {
+  background: var(--color-status-success);
+}
+.aov-status-dot--warning {
+  background: var(--color-status-warning);
+}
+.aov-status-dot--danger {
+  background: var(--color-status-danger);
+}
+.aov-status-dot--info {
+  background: var(--color-status-info);
+}
+
+/* ==========================================================================
+   2h. FEEDBACK: ALERTS, EMPTY, LOADING, SKELETON (UI-10)
+   ========================================================================== */
+
+.aov-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width-hairline) solid var(--border-color);
+  border-radius: var(--radius-control);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: var(--font-size-body-sm);
+  line-height: var(--line-height-normal);
+}
+.aov-alert--success {
+  background: var(--color-status-success-soft);
+  border-color: var(--color-status-success-border);
+  color: var(--color-status-success-fg);
+}
+.aov-alert--warning {
+  background: var(--color-status-warning-soft);
+  border-color: var(--color-status-warning-border);
+  color: var(--color-status-warning-fg);
+}
+.aov-alert--danger {
+  background: var(--color-status-danger-soft);
+  border-color: var(--color-status-danger-border);
+  color: var(--color-status-danger-fg);
+}
+.aov-alert--info {
+  background: var(--color-status-info-soft);
+  border-color: var(--color-status-info-border);
+  color: var(--color-status-info-fg);
+}
+
+.aov-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-10) var(--space-6);
+  text-align: center;
+  color: var(--text-secondary);
+}
+.aov-empty__icon {
+  font-size: var(--icon-size-xl);
+  color: var(--text-muted);
+  margin-block-end: var(--space-1);
+}
+.aov-empty__title {
+  margin: 0;
+  font-size: var(--font-size-card-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+.aov-empty__message {
+  margin: 0;
+  font-size: var(--font-size-body-sm);
+  max-inline-size: 44ch;
+}
+.aov-empty__actions {
+  margin-block-start: var(--space-3);
+  display: flex;
+  gap: var(--button-gap);
+}
+
+.aov-skeleton {
+  background: var(--state-skeleton-bg);
+  border-radius: var(--radius-control);
+  position: relative;
+  overflow: hidden;
+  min-block-size: var(--space-4);
+}
+.aov-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--state-skeleton-shine), transparent);
+  transform: translateX(-100%);
+  animation: aov-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes aov-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.aov-progress {
+  inline-size: 100%;
+  block-size: var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--bg-tertiary);
+  overflow: hidden;
+}
+.aov-progress__fill {
+  block-size: 100%;
+  border-radius: inherit;
+  background: var(--primary-color);
+  transition: inline-size var(--motion-duration-slow) var(--motion-easing-standard);
+}
+
+/* ==========================================================================
+   2i. TEXT UTILITIES (UI-3)
+   ========================================================================== */
+
+.aov-text-body {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-normal);
+  color: var(--text-primary);
+}
+.aov-text-secondary {
+  color: var(--text-secondary);
+}
+.aov-text-muted {
+  color: var(--text-muted);
+}
+.aov-text-caption {
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-normal);
+  color: var(--text-secondary);
+}
+.aov-text-micro {
+  font-size: var(--font-size-micro);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.aov-text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-inline-size: 0;
+}
+
+/* Numerals, dates, IDs — tabular so columns line up */
+.aov-num,
+.aov-date,
+.aov-metric {
+  font-variant-numeric: var(--font-variant-numeric-tabular);
+}
+.aov-metric {
+  font-size: var(--font-size-display-lg);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+
+.aov-code {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-caption);
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-xs);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* Key/value + description lists */
+.aov-kv {
+  display: grid;
+  grid-template-columns: minmax(8rem, max-content) 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+.aov-kv dt {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+}
+.aov-kv dd {
+  margin: 0;
+  font-size: var(--font-size-body-sm);
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
+   3. ANGULAR MATERIAL HARMONIZATION (UI-5, UI-8, UI-10)
+   Bind Material's own tokens so Mat controls inherit the AOVIAS system
+   instead of M3 defaults. Token assignment, not selector overrides.
+   ========================================================================== */
+
+:root {
+  /* Typography — Material reads these for every component's label text */
+  --mat-sys-body-medium-font: var(--font-family-base);
+  --mat-sys-body-medium-size: var(--font-size-body);
+  --mat-sys-label-large-font: var(--font-family-base);
+  --mat-sys-label-large-size: var(--font-size-body-sm);
+  --mat-sys-label-large-weight: var(--font-weight-semibold);
+
+  /* Radius — UI-8 */
+  --mdc-outlined-text-field-container-shape: var(--radius-control);
+  --mdc-filled-text-field-container-shape: var(--radius-control);
+  --mat-button-filled-container-shape: var(--radius-control);
+  --mat-button-outlined-container-shape: var(--radius-control);
+  --mat-button-protected-container-shape: var(--radius-control);
+  --mat-button-text-container-shape: var(--radius-control);
+  --mdc-dialog-container-shape: var(--radius-dialog);
+  --mat-menu-container-shape: var(--radius-menu);
+  --mat-select-container-shape: var(--radius-menu);
+  --mat-autocomplete-container-shape: var(--radius-menu);
+  --mdc-chip-container-shape-radius: var(--radius-chip);
+  --mat-datepicker-calendar-container-shape: var(--radius-menu);
+
+  /* Surfaces follow the app theme, not the M3 prebuilt palette */
+  --mat-sys-surface: var(--card-bg);
+  --mat-sys-surface-container: var(--card-bg);
+  --mat-sys-on-surface: var(--text-primary);
+  --mat-sys-on-surface-variant: var(--text-secondary);
+  --mat-sys-outline-variant: var(--border-color);
+
+  /* Menus / dialogs / tooltips share the elevation scale — UI-11 */
+  --mat-menu-container-elevation-shadow: var(--elevation-menu);
+  --mat-select-container-elevation-shadow: var(--elevation-menu);
+  --mat-autocomplete-container-elevation-shadow: var(--elevation-menu);
+  --mdc-dialog-container-elevation-shadow: var(--elevation-dialog);
+
+  /* Tooltip — UI-3 typography, UI-8 radius */
+  --mdc-plain-tooltip-container-shape: var(--radius-control);
+  --mdc-plain-tooltip-supporting-text-size: var(--font-size-caption);
+
+  /* Selection controls — UI-5 keeps these on AOVIAS blue, never M3 indigo */
+  --mdc-checkbox-selected-icon-color: var(--color-primary);
+  --mdc-radio-selected-icon-color: var(--color-primary);
+  --mdc-switch-selected-handle-color: var(--color-primary);
+  --mdc-linear-progress-active-indicator-color: var(--color-primary);
+  --mdc-circular-progress-active-indicator-color: var(--color-primary);
+  --mat-tab-header-active-label-text-color: var(--color-primary);
+  --mat-tab-header-active-focus-indicator-color: var(--color-primary);
+  --mat-tab-header-active-hover-indicator-color: var(--color-primary);
+  --mat-paginator-enabled-icon-color: var(--color-primary);
+  --mat-option-selected-state-label-text-color: var(--color-primary-text);
+  --mat-option-selected-state-layer-color: var(--state-selected-bg);
+}
+
+/* Material surfaces that render outside component DOM still use app tokens */
+.mat-mdc-menu-panel,
+.mat-mdc-select-panel,
+.mat-mdc-autocomplete-panel {
+  background: var(--card-bg) !important;
+  border: var(--border-width-hairline) solid var(--border-color);
+  border-radius: var(--radius-menu) !important;
+  box-shadow: var(--elevation-menu) !important;
+}
+
+.mat-mdc-menu-item,
+.mat-mdc-option {
+  font-size: var(--font-size-body-sm) !important;
+  min-height: var(--control-height-md) !important;
+  color: var(--text-primary);
+}
+
+.mat-mdc-menu-item:hover:not([disabled]),
+.mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background: var(--state-hover-bg) !important;
+}
+
+.mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+  background: var(--state-selected-bg) !important;
+  color: var(--state-selected-fg) !important;
+}
+
+.mat-mdc-dialog-container .mat-mdc-dialog-surface {
+  border-radius: var(--radius-dialog);
+  background: var(--card-bg);
+  box-shadow: var(--elevation-dialog);
+}
+
+.mat-mdc-dialog-title {
+  font-size: var(--font-size-section-title) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  color: var(--text-primary);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.mat-mdc-dialog-content {
+  font-size: var(--font-size-body) !important;
+  color: var(--text-primary);
+}
+
+.mat-mdc-tooltip .mdc-tooltip__surface {
+  border-radius: var(--radius-control);
+  font-size: var(--font-size-caption);
+}
+
+.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  border-radius: var(--radius-control);
+}
+
+/* Chips — UI-8 radius, UI-3 typography */
+.mat-mdc-chip {
+  --mdc-chip-label-text-size: var(--font-size-micro);
+  border-radius: var(--radius-chip) !important;
+}
+
+/* Tabs — align Material tabs with the shared tab pattern (UI-4) */
+.mat-mdc-tab-header {
+  --mat-tab-header-label-text-size: var(--font-size-body-sm);
+  --mat-tab-header-label-text-weight: var(--font-weight-medium);
+  border-block-end: var(--border-width-hairline) solid var(--border-color);
+}
+.mat-mdc-tab {
+  min-width: 0 !important;
+}
+
+/* ==========================================================================
+   4. MOTION PREFERENCES (UI-13)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .aov-btn--loading::after,
+  .aov-skeleton::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+
+  .aov-card,
+  .aov-btn,
+  .aov-input,
+  .aov-table tbody tr,
+  .aov-progress__fill {
+    transition-duration: 0.01ms;
+  }
+}

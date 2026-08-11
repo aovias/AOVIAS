@@ -1,0 +1,111 @@
+{{- if .Values.gateway.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aovias.fullname" . }}-gateway
+  labels:
+    {{- include "aovias.labels" . | nindent 4 }}
+    app.kubernetes.io/component: gateway
+spec:
+  replicas: {{ .Values.gateway.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      {{- include "aovias.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: gateway
+  template:
+    metadata:
+      labels:
+        {{- include "aovias.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.gateway.service.targetPort }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "aovias.fullname" . }}-config
+          env:
+            {{- range $key, $value := .Values.gateway.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.gateway.resources | nindent 12 }}
+{{- end }}
+---
+{{- if .Values.compliance.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aovias.fullname" . }}-compliance
+  labels:
+    {{- include "aovias.labels" . | nindent 4 }}
+    app.kubernetes.io/component: compliance
+spec:
+  replicas: {{ .Values.compliance.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      {{- include "aovias.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: compliance
+  template:
+    metadata:
+      labels:
+        {{- include "aovias.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: compliance
+    spec:
+      containers:
+        - name: compliance
+          image: "{{ .Values.compliance.image.repository }}:{{ .Values.compliance.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.compliance.service.targetPort }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "aovias.fullname" . }}-config
+          env:
+            {{- range $key, $value := .Values.compliance.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.compliance.resources | nindent 12 }}
+{{- end }}

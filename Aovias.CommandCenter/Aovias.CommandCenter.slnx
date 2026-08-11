@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Aovias.CommandCenter.Api/Aovias.CommandCenter.Api.csproj" />
+    <Project Path="src/Aovias.CommandCenter.Infrastructure/Aovias.CommandCenter.Infrastructure.csproj" />
+  </Folder>
+  <Project Path="../Aovias.Configuration/Aovias.Configuration.csproj" />
+  <Project Path="../Aovias.Deployment.Contracts/Aovias.Deployment.Contracts.csproj" />
+  <Project Path="../Aovias.Release/src/Aovias.Release.Contracts/Aovias.Release.Contracts.csproj" />
+  <Project Path="../Aovias.Release/src/Aovias.Release.SDK/Aovias.Release.SDK.csproj" />
+</Solution>

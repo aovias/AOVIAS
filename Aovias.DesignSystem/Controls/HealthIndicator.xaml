@@ -1,0 +1,19 @@
+<UserControl x:Class="Aovias.DesignSystem.Controls.HealthIndicator"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Aovias.DesignSystem.Converters"
+             x:Name="Root">
+    <UserControl.Resources>
+        <converters:StatusKindToBrushConverter x:Key="StatusKindToBrushConverter" />
+    </UserControl.Resources>
+
+    <StackPanel Orientation="Horizontal">
+        <Ellipse Width="10"
+                 Height="10"
+                 Margin="0,0,8,0"
+                 VerticalAlignment="Center"
+                 Fill="{Binding StatusKind, ElementName=Root, Converter={StaticResource StatusKindToBrushConverter}}" />
+        <TextBlock Text="{Binding Label, ElementName=Root}"
+                   Style="{StaticResource BodyTextStyle}" />
+    </StackPanel>
+</UserControl>

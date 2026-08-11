@@ -1,0 +1,6 @@
+@Aovias.Runtime.Agent.Api_HostAddress = http://localhost:5220
+
+GET {{Aovias.Runtime.Agent.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "professional-service",
+  "displayName": "Professional Service",
+  "releaseLibraryCategory": "Professional",
+  "includeInDemoBundle": true,
+  "includeInSolutionDeployment": true,
+  "ports": {
+    "containerPort": 5200
+  },
+  "health": {
+    "endpoint": "/health",
+    "expectedStatus": 200,
+    "timeoutSeconds": 15,
+    "retries": 3,
+    "requiresHttpProbe": true
+  },
+  "dependencies": [
+    { "service": "gateway", "required": true, "type": "service" },
+    { "service": "workforce-service", "required": true, "type": "service" },
+    { "service": "organization-service", "required": true, "type": "service" }
+  ]
+}

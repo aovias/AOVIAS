@@ -1,0 +1,64 @@
+.action-bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.action-bar--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-hairline) solid transparent;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  min-height: var(--button-height);
+}
+
+.btn__icon {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  flex-shrink: 0;
+}
+
+.btn--primary {
+  background: var(--color-brand-primary);
+  color: var(--color-text-inverse);
+}
+
+.btn--primary .btn__icon {
+  color: inherit;
+}
+
+.btn--secondary {
+  background: var(--color-bg-surface);
+  border-color: var(--color-border-subtle);
+  color: var(--color-text-primary);
+}
+
+.btn--danger {
+  background: var(--color-status-danger);
+  border-color: var(--color-status-danger);
+  color: var(--color-text-inverse);
+}
+
+.btn--danger .btn__icon {
+  color: inherit;
+}
+
+.btn--danger-emphasis {
+  box-shadow: var(--shadow-focus-ring-danger, 0 0 0 2px color-mix(in srgb, var(--color-status-danger) 45%, transparent));
+}
+
+@media (max-width: 40rem) {
+  .action-bar {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "Phases": [
+    {
+      "Phase": 1,
+      "Outcome": 0,
+      "Message": "Target host is reachable, running a supported Ubuntu release (24.04), passed disk/network checks, and privilege mode is PasswordRequired.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T15:59:07.7905899+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 2,
+      "Outcome": 1,
+      "Message": "Docker is already installed (Docker version 29.6.0, build fb59821).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T15:59:07.8750303+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 3,
+      "Outcome": 1,
+      "Message": "Docker network \u0027aovias-net\u0027 already exists.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T15:59:15.5767128+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 4,
+      "Outcome": 1,
+      "Message": "Profile directory \u0027/opt/aovias/config/profiles/demo\u0027 already exists; refreshed ownership and permissions of \u0027/opt/aovias\u0027.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T15:59:15.8646106+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 5,
+      "Outcome": 0,
+      "Message": "Generated and uploaded: settings.deployment-host.json, settings.environment-registration.json, settings.runtime.json, settings.storage.json, settings.runtime-manifest.json, settings.logging.json, settings.api.json, settings.infrastructure.json, settings.security.json, settings.release-management.json, settings.deployment.json, settings.deployment-storage.json, settings.orchestration.json, settings.docker.json, settings.providers.json, settings.network.json, settings.signalr.json.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T15:59:27.9253843+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 6,
+      "Outcome": 0,
+      "Message": "Validated 17 required configuration files \u2014 all required properties present.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T15:59:27.9516229+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 7,
+      "Outcome": 0,
+      "Message": "Runtime Agent artifact was installed and is running and healthy (status=running, health=healthy).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-09T15:59:43.0143088+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 8,
+      "Outcome": 2,
+      "Message": "Registration Failed \u2014 agent self-registration did not succeed after 5 attempts.",
+      "RootCause": "Response status code does not indicate success: 500 (Internal Server Error).",
+      "CompletedUtc": "2026-07-09T15:59:51.4803421+00:00",
+      "Succeeded": false
+    }
+  ],
+  "OverallSuccess": false,
+  "FirstFailure": {
+    "Phase": 8,
+    "Outcome": 2,
+    "Message": "Registration Failed \u2014 agent self-registration did not succeed after 5 attempts.",
+    "RootCause": "Response status code does not indicate success: 500 (Internal Server Error).",
+    "CompletedUtc": "2026-07-09T15:59:51.4803421+00:00",
+    "Succeeded": false
+  },
+  "GeneratedUtc": "2026-07-09T15:59:51.4822846+00:00",
+  "ReportPath": null
+}

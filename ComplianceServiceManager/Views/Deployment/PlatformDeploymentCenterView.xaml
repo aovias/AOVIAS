@@ -1,0 +1,389 @@
+<UserControl x:Class="ComplianceServiceManager.Views.Deployment.PlatformDeploymentCenterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Aovias.DesignSystem.Controls;assembly=Aovias.DesignSystem"
+             xmlns:deployment="clr-namespace:ComplianceServiceManager.ViewModels.Deployment"
+             xmlns:ds="clr-namespace:Aovias.DesignSystem.Enums;assembly=Aovias.DesignSystem"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="980"
+             d:DesignWidth="1500"
+             Loaded="PlatformDeploymentCenterView_OnLoaded">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <Style x:Key="CatalogCardBorder" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource RadiusMd}" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style x:Key="PanelTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="220" MinHeight="180" />
+            <RowDefinition Height="*" MinHeight="260" />
+            <RowDefinition Height="220" MinHeight="180" />
+            <RowDefinition Height="180" MinHeight="140" />
+        </Grid.RowDefinitions>
+
+        <!-- D2 Header -->
+        <Border Grid.Row="0" Style="{DynamicResource CardBorderStyle}" Padding="18" Margin="0,0,0,10">
+            <StackPanel>
+                <controls:SectionHeader Title="Platform Deployment"
+                                          Subtitle="{Binding StatusMessage}"
+                                          IconGlyph="{StaticResource IconDeploy}">
+                    <controls:SectionHeader.ActionContent>
+                        <WrapPanel>
+                            <ComboBox Width="220"
+                                      ItemsSource="{Binding Environments}"
+                                      SelectedItem="{Binding SelectedEnvironment}"
+                                      DisplayMemberPath="Name"
+                                      Margin="0,0,8,8" />
+                            <Button Content="Single Service Deployment"
+                                    Style="{DynamicResource SecondaryButtonStyle}"
+                                    Command="{Binding OpenSingleServiceWorkspaceCommand}"
+                                    Margin="0,0,8,8" />
+                            <Button Content="Entire Platform"
+                                    Style="{DynamicResource PrimaryButtonStyle}"
+                                    Margin="0,0,8,8" />
+                            <Button Content="Analyze"
+                                    Style="{DynamicResource SecondaryButtonStyle}"
+                                    Command="{Binding AnalyzeSelectedCommand}"
+                                    Margin="0,0,8,8" />
+                            <Button Content="Deploy"
+                                    Style="{DynamicResource PrimaryButtonStyle}"
+                                    Command="{Binding DeployCommand}"
+                                    Margin="0,0,8,8" />
+                            <Button Content="Rollback"
+                                    Style="{DynamicResource SecondaryButtonStyle}"
+                                    Command="{Binding RollbackCommand}"
+                                    Margin="0,0,8,8" />
+                            <Button Content="Browse Package"
+                                    Style="{DynamicResource SecondaryButtonStyle}"
+                                    Command="{Binding BrowsePackageCommand}" />
+                        </WrapPanel>
+                    </controls:SectionHeader.ActionContent>
+                </controls:SectionHeader>
+
+                <Grid Margin="0,14,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Target Environment" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
+                        <TextBlock Text="{Binding SelectedEnvironment.Name, FallbackValue=Not selected}" FontWeight="SemiBold" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Deployment Mode" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
+                        <TextBlock Text="{Binding DeploymentMode}" FontWeight="SemiBold" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Current Phase" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
+                        <TextBlock Text="{Binding CurrentPhase}" FontWeight="SemiBold" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="3">
+                        <TextBlock Text="Elapsed" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
+                        <TextBlock Text="{Binding ElapsedTimeDisplay}" FontWeight="SemiBold" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="Remaining" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
+                        <TextBlock Text="{Binding RemainingTimeDisplay}" FontWeight="SemiBold" />
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Margin="0,12,0,0">
+                    <DockPanel LastChildFill="True">
+                        <TextBlock DockPanel.Dock="Left"
+                                   Text="{Binding OverallProgressPercent, StringFormat={}{0}%}"
+                                   FontWeight="SemiBold"
+                                   Width="48" />
+                        <ProgressBar Height="10"
+                                     Minimum="0"
+                                     Maximum="100"
+                                     Value="{Binding OverallProgressPercent}" />
+                    </DockPanel>
+                    <TextBlock Text="{Binding DeploymentProgressSummary}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               FontSize="11"
+                               Margin="0,6,0,0" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- D3 Release Catalog -->
+        <Border Grid.Row="1" Style="{DynamicResource CardBorderStyle}" Padding="14" Margin="0,0,0,10">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="Release Catalog" Style="{StaticResource PanelTitle}" />
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBox Width="260"
+                             Text="{Binding CatalogSearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,0,8,0"
+                             Tag="Search packages…" />
+                    <ComboBox Width="160"
+                              ItemsSource="{Binding CatalogFilters}"
+                              SelectedItem="{Binding CatalogFilter}"
+                              Margin="0,0,8,0" />
+                    <Button Content="Refresh"
+                            Style="{DynamicResource SecondaryButtonStyle}"
+                            Command="{Binding RefreshCatalogCommand}" />
+                </StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding FilteredCatalogCards}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type deployment:DeploymentCatalogCardItem}">
+                                <Border Style="{StaticResource CatalogCardBorder}" Width="280">
+                                    <Border.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick"
+                                                      Command="{Binding DataContext.SelectCatalogCardCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                      CommandParameter="{Binding}" />
+                                    </Border.InputBindings>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding ServiceName}" FontWeight="SemiBold" FontSize="14" />
+                                        <TextBlock Margin="0,4,0,0">
+                                            <Run Text="Version " /><Run Text="{Binding PackageVersion}" FontWeight="SemiBold" />
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding PublishedDisplay, StringFormat=Published {0}}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                        <TextBlock Text="{Binding PackageSize, StringFormat=Package {0}}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                        <WrapPanel Margin="0,8,0,0">
+                                            <controls:StatusBadge Text="{Binding CertificationDisplay}" StatusKind="{x:Static ds:StatusKind.Healthy}" Margin="0,0,6,4" />
+                                            <controls:StatusBadge Text="{Binding PackageType}" StatusKind="{x:Static ds:StatusKind.Neutral}" Margin="0,0,6,4" />
+                                        </WrapPanel>
+                                        <TextBlock Text="{Binding DependenciesDisplay, StringFormat=Dependencies {0}}"
+                                                   TextWrapping="Wrap"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                   Margin="0,4,0,0" />
+                                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                            <Button Content="Deploy"
+                                                    Style="{DynamicResource PrimaryButtonStyle}"
+                                                    Padding="10,4"
+                                                    Command="{Binding DataContext.DeployCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    Margin="0,0,6,0" />
+                                            <Button Content="Analyze"
+                                                    Style="{DynamicResource SecondaryButtonStyle}"
+                                                    Padding="10,4"
+                                                    Command="{Binding DataContext.AnalyzeSelectedCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- Pipeline + Service Progress + Diagnostics -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="320" />
+                <ColumnDefinition Width="*" MinWidth="320" />
+                <ColumnDefinition Width="320" MinWidth="280" />
+            </Grid.ColumnDefinitions>
+
+            <!-- D4 Pipeline -->
+            <Border Grid.Column="0" Style="{DynamicResource CardBorderStyle}" Padding="14" Margin="0,0,10,0">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Deployment Pipeline" Style="{StaticResource PanelTitle}" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding PipelineStages}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type deployment:DeploymentPipelineStageItem}">
+                                    <Border Margin="0,0,0,10" Padding="10" Background="{DynamicResource SurfaceMutedBrush}" CornerRadius="8">
+                                        <StackPanel>
+                                            <DockPanel>
+                                                <TextBlock Text="{Binding StatusGlyph}" DockPanel.Dock="Left" Margin="0,0,8,0" />
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                                <TextBlock DockPanel.Dock="Right" Text="{Binding Status}" FontWeight="SemiBold" />
+                                            </DockPanel>
+                                            <ProgressBar Margin="0,8,0,0" Height="6" Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" />
+                                            <TextBlock Text="{Binding DurationDisplay, StringFormat=Duration {0}}"
+                                                       FontSize="11"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                                       Margin="0,4,0,0" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <!-- D6/D16 Service Progress -->
+            <Border Grid.Column="1" Style="{DynamicResource CardBorderStyle}" Padding="14" Margin="0,0,10,0">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="Service Progress" Style="{StaticResource PanelTitle}" Margin="0" />
+                        <ComboBox Width="180"
+                                  Margin="12,0,0,0"
+                                  ItemsSource="{Binding SingleServiceOptions}"
+                                  SelectedItem="{Binding SelectedSingleServiceId}"
+                                  Visibility="{Binding IsSingleServiceMode, Converter={StaticResource BoolToVis}}" />
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding ServiceProgressCards}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type deployment:ServiceProgressCardItem}">
+                                    <Border Margin="0,0,0,10" Padding="12" Background="{DynamicResource SurfaceMutedBrush}" CornerRadius="8">
+                                        <StackPanel>
+                                            <DockPanel>
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" />
+                                                <TextBlock DockPanel.Dock="Right" Text="{Binding Phase}" FontWeight="SemiBold" />
+                                            </DockPanel>
+                                            <ProgressBar Margin="0,8,0,0" Height="8" Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" />
+                                            <WrapPanel Margin="0,8,0,0">
+                                                <TextBlock Text="{Binding HealthStatus, StringFormat=Health {0}}" Margin="0,0,12,0" FontSize="11" />
+                                                <TextBlock Text="{Binding CertificationStatus, StringFormat=Certification {0}}" Margin="0,0,12,0" FontSize="11" />
+                                                <TextBlock Text="{Binding DurationDisplay, StringFormat=Duration {0}}" FontSize="11" />
+                                            </WrapPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <!-- D10/D11 Runtime + Certification -->
+            <Border Grid.Column="2" Style="{DynamicResource CardBorderStyle}" Padding="14">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Runtime Diagnostics" Style="{StaticResource PanelTitle}" />
+                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                        <TextBlock Text="{Binding RuntimeConnectionStatus, StringFormat=Runtime {0}}" />
+                        <TextBlock Text="{Binding DeploymentApiStatus, StringFormat=Deployment API {0}}" Margin="0,4,0,0" />
+                        <TextBlock Text="{Binding SignalRStatus, StringFormat=SignalR {0}}" Margin="0,4,0,0" />
+                        <TextBlock Text="{Binding PathPolicyStatus, StringFormat=Path Policy {0}}" Margin="0,4,0,0" />
+                        <TextBlock Text="{Binding ConfigurationStatus, StringFormat=Configuration {0}}" Margin="0,4,0,0" />
+                        <TextBlock Text="{Binding DockerStatus, StringFormat=Docker {0}}" Margin="0,4,0,0" />
+                    </StackPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Certification" Style="{StaticResource PanelTitle}" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding CertificationItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type deployment:CertificationPanelItem}">
+                                    <DockPanel Margin="0,0,0,6">
+                                        <TextBlock Text="{Binding StatusGlyph}" DockPanel.Dock="Left" Width="16" />
+                                        <TextBlock Text="{Binding Label}" FontWeight="SemiBold" />
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding Status}" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- D7 Phase Timeline + D8 Console -->
+        <Grid Grid.Row="3" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320" MinWidth="260" />
+                <ColumnDefinition Width="*" MinWidth="420" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{DynamicResource CardBorderStyle}" Padding="14" Margin="0,0,10,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="100" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Phase Timeline" Style="{StaticResource PanelTitle}" />
+                    <ListBox Grid.Row="1"
+                             ItemsSource="{Binding PhaseTimeline}"
+                             SelectedItem="{Binding SelectedPhaseTimelineItem}"
+                             DisplayMemberPath="Name" />
+                    <TextBlock Grid.Row="2" Text="Selected Phase Logs" Margin="0,10,0,6" FontWeight="SemiBold" />
+                    <ListBox Grid.Row="3" ItemsSource="{Binding SelectedPhaseLogs}" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Style="{DynamicResource CardBorderStyle}" Padding="14">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Deployment Console" Style="{StaticResource PanelTitle}" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding ConsoleEntries}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type deployment:DeploymentConsoleEntry}">
+                                    <Border Margin="0,0,0,10" Padding="12" Background="{DynamicResource SurfaceMutedBrush}" CornerRadius="8">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Summary}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Reason}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                            <TextBlock Text="{Binding RecoveryAction, StringFormat=Recovery {0}}"
+                                                       Foreground="{DynamicResource AccentBrush}"
+                                                       FontWeight="SemiBold"
+                                                       Margin="0,6,0,0" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- D13 History + D14 Rollback + D15 Analyze -->
+        <Border Grid.Row="4" Style="{DynamicResource CardBorderStyle}" Padding="14" Margin="0,10,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <DockPanel Grid.Column="0" Margin="0,0,10,0">
+                    <TextBlock DockPanel.Dock="Top" Text="Deployment History" Style="{StaticResource PanelTitle}" />
+                    <ListBox ItemsSource="{Binding GroupedHistory}" DisplayMemberPath="Summary" />
+                </DockPanel>
+
+                <DockPanel Grid.Column="1" Margin="0,0,10,0">
+                    <TextBlock DockPanel.Dock="Top" Text="Rollback Plan" Style="{StaticResource PanelTitle}" />
+                    <ItemsControl ItemsSource="{Binding RollbackPlanItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type deployment:RollbackPresentationItem}">
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="{Binding ServiceName}" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding TargetVersion, StringFormat=Target v{0}}" FontSize="11" />
+                                    <TextBlock Text="{Binding EstimatedDuration, StringFormat=Estimated {0}}" FontSize="11" />
+                                    <TextBlock Text="{Binding RiskLevel, StringFormat=Risk {0}}" FontSize="11" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DockPanel>
+
+                <DockPanel Grid.Column="2">
+                    <TextBlock DockPanel.Dock="Top" Text="Analyze Before Deploy" Style="{StaticResource PanelTitle}" />
+                    <TextBlock Text="{Binding AnalyzeSummary}" TextWrapping="Wrap" />
+                    <TextBlock Margin="0,8,0,0" Text="{Binding AnalyzeRiskScore, StringFormat=Risk Score {0}}" FontWeight="SemiBold" />
+                    <TextBlock Margin="0,4,0,0" Text="{Binding AnalyzeEstimatedDuration, StringFormat=Estimated Duration {0}}" />
+                </DockPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

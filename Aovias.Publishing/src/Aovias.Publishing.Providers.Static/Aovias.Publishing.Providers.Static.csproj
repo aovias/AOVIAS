@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.Publishing.Providers.Static</RootNamespace>
+    <AssemblyName>Aovias.Publishing.Providers.Static</AssemblyName>
+    <Description>Static web publishing provider for APE.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aovias.Publishing.Contracts\Aovias.Publishing.Contracts.csproj" />
+    <ProjectReference Include="..\Aovias.Publishing.Core\Aovias.Publishing.Core.csproj" />
+  </ItemGroup>
+</Project>

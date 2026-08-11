@@ -1,0 +1,1 @@
+QA evidence upload sample file for Playwright automation.

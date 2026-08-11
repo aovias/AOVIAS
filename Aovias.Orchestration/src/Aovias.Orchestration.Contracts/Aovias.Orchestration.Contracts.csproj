@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Aovias.Orchestration.Contracts</RootNamespace>
+    <AssemblyName>Aovias.Orchestration.Contracts</AssemblyName>
+    <Description>Contracts for the AOVIAS Orchestration Engine.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aovias.Platform.Core\Aovias.Platform.Core.csproj" />
+  </ItemGroup>
+</Project>

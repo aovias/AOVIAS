@@ -1,0 +1,90 @@
+/**
+ * Objective Element execution — dedicated route shell.
+ */
+.oe-execution-route {
+  position: relative;
+  padding: var(--space-6);
+  min-block-size: calc(100vh - var(--header-height));
+  background: var(--color-bg-page);
+}
+
+.oe-execution-route__main {
+  display: grid;
+  gap: var(--section-gap-y-loose);
+  position: relative;
+  min-width: 0;
+}
+
+.oe-execution-route__state {
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  background: var(--color-bg-surface-alt);
+  color: var(--color-text-secondary);
+}
+
+.oe-execution-route__state--error {
+  border-color: color-mix(in srgb, var(--color-status-danger) 35%, var(--color-border-subtle));
+}
+
+.oe-execution-route__retry {
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  border: var(--border-width-hairline) solid var(--color-border-subtle);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.oe-execution-route__wizard-host {
+  min-width: 0;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+/* ── Stage context banner ────────────────────────────────────────────── */
+.oe-execution-route__stage-context {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--stage-color, var(--color-border-subtle));
+  background: color-mix(in srgb, var(--stage-color, var(--primary-color)) 6%, transparent);
+
+  &[data-stage='core']        { --stage-color: var(--color-success, #16a34a); }
+  &[data-stage='commitment']  { --stage-color: var(--color-info, #0284c7);    }
+  &[data-stage='achievement'] { --stage-color: var(--color-warning, #d97706); }
+  &[data-stage='excellence']  { --stage-color: var(--color-primary);  }
+}
+
+.oe-execution-route__stage-label {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--stage-color, var(--color-text-primary));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.oe-execution-route__stage-hint {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  flex: 1;
+}
+
+.oe-execution-route__back {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--stage-color, var(--primary-color));
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: auto;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.75; text-decoration: underline; }
+}

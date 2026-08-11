@@ -1,0 +1,40 @@
+{
+  "TargetIdentity": "187.127.154.201:22:demo",
+  "Phases": [
+    {
+      "Phase": 1,
+      "Outcome": 1,
+      "Message": "Preflight previously passed for this target; host reachability and privilege mode were re-verified at session start.",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-10T07:51:20.9439485+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 2,
+      "Outcome": 1,
+      "Message": "Docker is already installed (Docker version 29.6.0, build fb59821).",
+      "RootCause": null,
+      "CompletedUtc": "2026-07-10T07:51:21.0321103+00:00",
+      "Succeeded": true
+    },
+    {
+      "Phase": 3,
+      "Outcome": 2,
+      "Message": "Phase \u0027DockerNetworkCreation\u0027 threw an unhandled exception.",
+      "RootCause": "This target requires a sudo password to continue, but no elevation handler was supplied to request one.",
+      "CompletedUtc": "2026-07-10T07:51:21.0492905+00:00",
+      "Succeeded": false
+    }
+  ],
+  "OverallSuccess": false,
+  "FirstFailure": {
+    "Phase": 3,
+    "Outcome": 2,
+    "Message": "Phase \u0027DockerNetworkCreation\u0027 threw an unhandled exception.",
+    "RootCause": "This target requires a sudo password to continue, but no elevation handler was supplied to request one.",
+    "CompletedUtc": "2026-07-10T07:51:21.0492905+00:00",
+    "Succeeded": false
+  },
+  "GeneratedUtc": "2026-07-10T07:51:21.0493895+00:00",
+  "ReportPath": null
+}

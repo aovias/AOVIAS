@@ -1,0 +1,114 @@
+/*
+ * Owns the rhythm between its own sections ("Needs your attention", "Quick actions",
+ * "Priorities") and the page content that follows. Previously `display: contents`, which
+ * collapsed the host away and left the sections butting against each other and against the
+ * summary cards beneath, since the page container sets no gap of its own.
+ */
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-section-gap);
+  margin-block-end: var(--page-section-gap);
+}
+
+.attention {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-3);
+}
+
+.attention__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: var(--border-width-hairline) solid var(--border-color);
+  border-radius: var(--radius-control);
+  background: var(--bg-tertiary);
+
+  /* A non-zero count is the whole point of this widget, so it reads first. */
+  &.is-flagged {
+    border-inline-start: 3px solid var(--color-status-warning);
+  }
+}
+
+.attention__count {
+  font-size: var(--font-size-page-title);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  color: var(--text-primary);
+  font-variant-numeric: var(--font-variant-numeric-tabular);
+}
+
+.attention__label {
+  font-size: var(--font-size-micro);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  block-size: var(--control-height-sm);
+  padding-inline: var(--space-3);
+  border: var(--border-width-hairline) solid var(--border-color);
+  border-radius: var(--radius-control);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+
+  &:hover { background: var(--bg-tertiary); }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--primary-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+.priorities {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.priority {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-inline-start: var(--space-3);
+  border-inline-start: 3px solid var(--border-color);
+
+  &.sev-high,
+  &.sev-critical { border-inline-start-color: var(--color-status-danger); }
+
+  &.sev-medium { border-inline-start-color: var(--color-status-warning); }
+}
+
+.priority__title {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+a.priority__title:hover { text-decoration: underline; }
+
+.priority__why {
+  font-size: var(--font-size-micro);
+  color: var(--text-secondary);
+}

@@ -1,0 +1,22 @@
+<button
+  type="button"
+  class="chapter-item"
+  [class.chapter-item--active]="active()"
+  [attr.aria-current]="active() ? 'true' : null"
+  (click)="onSelect()"
+>
+  <div class="chapter-item__header">
+    <span class="chapter-item__code">{{ chapter().code }}</span>
+    <span class="chapter-item__badge">{{ chapter().objectiveCount }}</span>
+  </div>
+  <p class="chapter-item__title">{{ chapter().title }}</p>
+  <div class="chapter-item__meta">
+    <span class="risk-chip" [attr.data-risk]="chapter().risk">{{
+      chapter().risk | titlecase
+    }}</span>
+    <span class="chapter-item__progress-label">{{ chapter().progressPercent }}%</span>
+  </div>
+  <progress class="chapter-item__progress" max="100" [value]="chapter().progressPercent">
+    {{ chapter().progressPercent }}%
+  </progress>
+</button>

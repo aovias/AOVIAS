@@ -1,0 +1,62 @@
+<div class="gap-results-page">
+  <header class="gap-results-page__header">
+    <div class="gap-results-page__titles">
+      <h1 class="gap-results-page__title">Gap Analysis Results</h1>
+      <p class="gap-results-page__subtitle">
+        Assessment-driven compliance gaps with prioritized recommendations and next steps.
+      </p>
+    </div>
+    <div class="gap-results-page__actions">
+      <a routerLink="/app/dashboard" class="gap-results-page__btn gap-results-page__btn--secondary">
+        Back to Dashboard
+      </a>
+      <button
+        type="button"
+        class="gap-results-page__btn gap-results-page__btn--primary"
+        [disabled]="store.loading() || !store.assessmentId()"
+        (click)="onRegenerate()">
+        Regenerate
+      </button>
+    </div>
+  </header>
+
+  @if (store.loading()) {
+    <div class="gap-results-page__state" role="status" aria-live="polite">
+      <div class="gap-results-page__spinner" aria-hidden="true"></div>
+      <p>Loading gap analysis…</p>
+    </div>
+  } @else if (store.error()) {
+    <div class="gap-results-page__state gap-results-page__state--error" role="alert">
+      <p>{{ store.error() }}</p>
+    </div>
+  } @else if (store.vm(); as vm) {
+    <div class="gap-results-page__content">
+      <app-gap-overall-score
+        [overallPercent]="vm.overallPercent"
+        [readinessLabel]="vm.readinessLabel"
+        [coreRulePassed]="vm.coreRulePassed"
+        [generatedAt]="vm.generatedAt" />
+
+      <app-gap-category-kpi-strip [kpis]="vm.categoryKpis" />
+
+      <app-gap-chapter-scores [chapters]="vm.chapterScores" />
+
+      <div class="gap-results-page__gaps-grid">
+        <app-gap-items-list
+          title="Critical Gaps"
+          category="Critical"
+          headingId="gap-critical-title"
+          [items]="vm.criticalGaps" />
+        <app-gap-items-list
+          title="Major Gaps"
+          category="Major"
+          headingId="gap-major-title"
+          [items]="vm.majorGaps" />
+      </div>
+
+      <app-gap-recommendations-panel [recommendations]="vm.recommendations" />
+
+      <app-gap-next-actions [actions]="vm.nextActions" />
+    </div>
+  }
+</div>

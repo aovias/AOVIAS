@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "workforce-service",
+  "displayName": "Workforce Service",
+  "releaseLibraryCategory": "Workforce",
+  "includeInDemoBundle": true,
+  "includeInSolutionDeployment": true,
+  "ports": {
+    "containerPort": 5195
+  },
+  "health": {
+    "endpoint": "/health",
+    "expectedStatus": 200,
+    "timeoutSeconds": 15,
+    "retries": 3,
+    "requiresHttpProbe": true
+  },
+  "dependencies": [
+    { "service": "gateway", "required": true, "type": "service" },
+    { "service": "person-service", "required": true, "type": "service" },
+    { "service": "organization-service", "required": true, "type": "service" }
+  ]
+}

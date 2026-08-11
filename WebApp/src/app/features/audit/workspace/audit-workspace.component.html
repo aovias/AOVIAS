@@ -1,0 +1,25 @@
+<!--
+  Workspace chrome, in the order the user reads it:
+    1. capability tab strip  — which part of the domain am I in
+    2. workflow status bar   — where am I in the lifecycle
+    3. contextual actions    — what can I do here, plus the context entry points
+    4. content               — the work, at full available width
+
+  Stage 1.2 removed the permanent context column. The drawer is a sibling of the
+  content rather than a second layout column: unpinned it is fixed to the
+  viewport and takes no width at all, and only when the user pins it does it
+  rejoin the flex row and push the workspace.
+-->
+<div class="aov-module-nav">
+  <app-page-tabs [tabs]="tabs" variant="primary" [inset]="true" ariaLabel="Audit workspace" />
+</div>
+
+<app-audit-workflow-status-bar />
+<app-audit-contextual-actions />
+
+<div class="workspace-body">
+  <div class="workspace-content">
+    <router-outlet />
+  </div>
+  <app-context-drawer />
+</div>
