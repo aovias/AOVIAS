@@ -1,8 +1,12 @@
 # Agent Task
 
-## Task
+## Task ID
 
-<!-- Short title and one-paragraph description -->
+<!-- Short slug, e.g. worktree-status-improvement -->
+
+## Task objective
+
+<!-- One paragraph: what success looks like -->
 
 ## Agent
 
@@ -10,42 +14,60 @@
 
 ## Worktree
 
-<!-- V:\DevelopmentRepo\AOVIAS.Cursor | V:\DevelopmentRepo\AOVIAS.Claude -->
+```text
+V:\DevelopmentRepo\AOVIAS.Cursor
+# or
+V:\DevelopmentRepo\AOVIAS.Claude
+```
 
-## Branch
+## Task branch
 
 ```text
-agent/<agent>/<task-slug>
+agent/cursor/<task-slug>
+# or
+agent/claude/<task-slug>
 ```
 
 ## Scope
 
-<!-- In-scope / out-of-scope -->
+<!-- What is in scope for this task -->
 
-## Requirements
+## Explicit non-goals
 
--
-
-## Files / Areas
+<!-- What must not be changed -->
 
 -
 
-## Validation
+## Files / areas allowed
 
 -
 
-## Completion Criteria
+## Dependencies
+
+<!-- Other tasks, APIs, or human decisions required first -->
 
 -
 
-## Commit
+## Validation requirements
+
+-
+
+## Completion criteria
+
+-
+
+## Commit requirement
 
 ```text
-Expected message style: feat:|fix:|refactor:|test:|docs:|chore:
+Style: feat: | fix: | refactor: | test: | docs: | chore:
+Message:
 Commit SHA: (fill after commit)
+Working tree after commit: CLEAN
 ```
 
-## Completion Report
+Work is not complete until a commit SHA exists.
+
+## Completion report
 
 ```text
 TASK COMPLETE
@@ -74,4 +96,18 @@ Known issues:
 
 Ready for human review:
 YES
+```
+
+## Known issues
+
+-
+
+## Human review
+
+```text
+Reviewer:
+Diff reviewed: YES/NO
+Merge decision: APPROVE / REQUEST CHANGES
+Merge command (human, on main):
+  git merge --no-ff <task-branch>
 ```
