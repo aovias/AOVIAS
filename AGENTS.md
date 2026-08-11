@@ -273,3 +273,104 @@ scripts/dev/worktree-status.ps1
 scripts/dev/agent-preflight.ps1
 scripts/dev/agent-completion-check.ps1
 ```
+
+---
+
+## Production Task Ownership
+
+Every production development task must have **one primary owner**: Cursor, Claude, or Human.
+
+- No task may be simultaneously assigned to Cursor and Claude unless explicitly designed as a coordinated task.
+- Either agent may receive any task when explicitly assigned; capability guidance below is preference, not a hard restriction.
+
+Typical strengths (capabilities, not restrictions):
+
+| Agent  | Often well suited for                                      |
+| ------ | ----------------------------------------------------------- |
+| Cursor | Implementation-heavy UI/backend, refactoring, tests         |
+| Claude | Architecture analysis, diagnostics, complex reasoning, infra |
+| Human  | Integration, merges, product decisions, conflict arbitration |
+
+Task assignment should use `docs/development/AGENT-TASK-TEMPLATE.md` (Task ID, objective, primary agent, worktree, branch, scope, non-goals, validation, completion criteria).
+
+---
+
+## Parallel Tasks And Shared Files
+
+Cursor and Claude may work simultaneously when tasks are independently scoped and overlap is low.
+
+If both tasks must touch the same important files/subsystem:
+
+1. **Serialize** the tasks, or
+2. Define **explicit ownership boundaries**, or
+3. One agent **implements** while the other **reviews**
+
+Do not assign two agents to independently redesign the same area and hope Git resolves it. Conflict resolution is a fallback, not the strategy.
+
+Task branches must start from the **latest validated `main`**, not from obsolete task branches. Physical worktrees stay fixed (`AOVIAS.Cursor` / `AOVIAS.Claude`); checked-out branch may temporarily be a task branch, then return to `active`.
+
+---
+
+## Abandoned And Interrupted Work
+
+### Abandoned task
+
+Do not delete the branch immediately. Record:
+
+```text
+Task:
+Agent:
+Branch:
+Last commit:
+Reason abandoned:
+Work preserved:
+```
+
+Then decide: resume / archive / merge partial work / discard. **Discard requires explicit human approval.**
+
+### Interrupted agent
+
+If Cursor or Claude stops unexpectedly: **do not clean the worktree**. Inspect `git status`, current branch, `git log`, and `git diff`. Assume dirty work may be valuable. Never use `git reset --hard` or `git clean -fd` as a first response.
+
+---
+
+## Do Not Over-Automate
+
+Remain human-controlled:
+
+```text
+merge
+branch deletion
+destructive reset
+worktree cleanup
+remote configuration
+push
+history rewriting
+```
+
+Automation should primarily provide inspection, validation, preflight, and reporting.
+
+---
+
+## Production Workflow
+
+Canonical production loop:
+
+```text
+1. Roadmap identifies task
+2. Human assigns agent
+3. Agent preflight
+4. Task branch created from main
+5. Agent implements
+6. Agent tests
+7. Agent reviews diff
+8. Agent commits
+9. Agent reports commit
+10. Human reviews
+11. Human merges (--no-ff preferred)
+12. Main validated
+13. Agent worktree returned to active
+14. Next task assigned
+```
+
+No meaningful development work should be performed without Git branch isolation and a reviewable commit.

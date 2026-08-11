@@ -139,3 +139,43 @@ git -C "V:\DevelopmentRepo\AOVIAS.Claude" rev-parse --git-common-dir
 ```
 
 Common directory should resolve to the same repository under `AOVIAS\.git`.
+
+## Production workflow
+
+Canonical production loop (see also `AGENTS.md`):
+
+```text
+1. Roadmap identifies task
+2. Human assigns one primary agent
+3. Verify main clean; agent preflight
+4. Create task branch from latest main in the agent worktree
+5. Implement / test / review diff
+6. Commit + completion report with SHA
+7. Human reviews: git diff main...<task-branch>
+8. Human merges on main: git merge --no-ff <task-branch>
+9. Validate main
+10. Return agent worktree to agent/<agent>/active and FF from main
+```
+
+Example — start a Cursor production task from latest main:
+
+```powershell
+git -C "V:\DevelopmentRepo\AOVIAS" status --short --branch
+powershell -NoProfile -ExecutionPolicy Bypass -File "V:\DevelopmentRepo\AOVIAS\scripts\dev\agent-preflight.ps1" -Agent cursor
+git -C "V:\DevelopmentRepo\AOVIAS.Cursor" fetch  # only if remotes exist later
+git -C "V:\DevelopmentRepo\AOVIAS.Cursor" checkout agent/cursor/active
+git -C "V:\DevelopmentRepo\AOVIAS.Cursor" merge --ff-only main
+git -C "V:\DevelopmentRepo\AOVIAS.Cursor" checkout -b agent/cursor/<task-slug> main
+```
+
+Example — human integrate and retire:
+
+```powershell
+git -C "V:\DevelopmentRepo\AOVIAS" checkout main
+git -C "V:\DevelopmentRepo\AOVIAS" merge --no-ff agent/cursor/<task-slug>
+# validate main, then:
+git -C "V:\DevelopmentRepo\AOVIAS.Cursor" checkout agent/cursor/active
+git -C "V:\DevelopmentRepo\AOVIAS.Cursor" merge --ff-only main
+```
+
+Physical worktrees remain fixed; task branches are temporary. Do not begin implementation before preflight passes. Do not start a task from an obsolete task branch.
