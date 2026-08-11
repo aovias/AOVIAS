@@ -1,6 +1,7 @@
-import { Component, Output, EventEmitter, OnInit, Input, signal } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, Input, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OnboardingJourneyDto } from '../models/onboarding-journey.model';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-welcome-step',
@@ -14,9 +15,13 @@ import { OnboardingJourneyDto } from '../models/onboarding-journey.model';
           <button type="button" class="dismiss" (click)="dismissCoach()">Got it</button>
         </div>
         <div class="welcome-icon">
-          <img src="/assets/praman_logo.png" alt="PRAMAN Logo" class="welcome-logo-image" />
+          <img
+            [src]="themeService.theme() === 'light' ? '/assets/logo_white_background.png' : '/assets/logo_dark_background.png'"
+            alt="AOVIAS Command"
+            class="welcome-logo-image"
+          />
         </div>
-        <h1>Welcome to PRAMAN</h1>
+        <h1>Welcome to AOVIAS Command</h1>
         <p class="org-name" *ngIf="journey?.organizationName">{{ journey?.organizationName }}</p>
         <p class="welcome-subtitle">{{ subtitle }}</p>
         <div class="meta-grid" *ngIf="journey">
@@ -55,7 +60,7 @@ import { OnboardingJourneyDto } from '../models/onboarding-journey.model';
     .welcome-card { max-width:640px; width:100%; text-align:center; }
     .coach-tip { display:flex; justify-content:space-between; gap:12px; text-align:left; margin-bottom:20px; padding:10px 12px; border-left:3px solid var(--color-primary,#0b5fff); background:color-mix(in srgb, var(--color-primary,#0b5fff) 8%, transparent); font-size:13px; }
     .dismiss { border:none; background:transparent; color:var(--color-primary,#0b5fff); cursor:pointer; font-weight:600; }
-    .welcome-logo-image { width:96px; height:96px; object-fit:contain; border-radius:16px; }
+    .welcome-logo-image { width:auto; max-width:220px; height:72px; object-fit:contain; }
     h1 { margin:12px 0 4px; font-size:var(--font-size-page-title); color:var(--color-text-primary,#111827); }
     .org-name { margin:0 0 8px; font-weight:600; }
     .welcome-subtitle { margin:0 0 24px; color:var(--color-text-secondary,#6b7280); line-height:1.5; }
@@ -74,6 +79,7 @@ import { OnboardingJourneyDto } from '../models/onboarding-journey.model';
   `]
 })
 export class WelcomeStepComponent implements OnInit {
+  readonly themeService = inject(ThemeService);
   @Input() journey: OnboardingJourneyDto | null = null;
   @Input() subtitle = 'Set up your hospital compliance system with guided steps';
   @Input() supportEmail: string | null = null;

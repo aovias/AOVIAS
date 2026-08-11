@@ -29,12 +29,14 @@ import { RoleRegistryService } from '../../../core/auth/roles/role-registry.serv
 import { SessionService } from '../../../core/auth/session.service';
 import { NotificationService } from '../../../core/ui/services/notification.service';
 import { buildOnboardSubmitRequest } from '../services/onboard-submit.mapper';
+import { HeaderComponent } from '../../../core/navigation/header/app-header.component';
 
 @Component({
   selector: 'app-ai-setup-assistant',
   standalone: true,
   imports: [
     CommonModule,
+    HeaderComponent,
     OnboardingStepperComponent,
     AiAssistantPanelComponent,
     WelcomeStepComponent,
@@ -48,6 +50,7 @@ import { buildOnboardSubmitRequest } from '../services/onboard-submit.mapper';
   ],
   template: `
     <div class="onboarding-layout">
+      <app-header [onboardingMode]="true"></app-header>
       <app-trial-status-panel [trial]="journey()?.trial ?? null"></app-trial-status-panel>
       <app-onboarding-stepper
         [currentStep]="currentStep()"
@@ -138,12 +141,13 @@ import { buildOnboardSubmitRequest } from '../services/onboard-submit.mapper';
         flex: 1;
         display: grid;
         grid-template-columns: 35% 65%;
-        min-height: calc(100vh - 160px);
+        /* header (64) + trial/stepper chrome (~160) */
+        min-height: calc(100vh - 224px);
       }
       .ai-panel {
         position: sticky;
-        top: 0;
-        height: calc(100vh - 160px);
+        top: var(--header-height, 64px);
+        height: calc(100vh - 224px);
         overflow-y: auto;
       }
       .interaction-panel {

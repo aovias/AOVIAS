@@ -30,7 +30,7 @@ interface AIMessage {
           </svg>
         </div>
         <div class="ai-title">
-          <h3>PRAMAN AI Assistant</h3>
+          <h3>AOVIAS Command AI Assistant</h3>
           <span class="ai-status">
             <span class="status-dot"></span>
             Active
