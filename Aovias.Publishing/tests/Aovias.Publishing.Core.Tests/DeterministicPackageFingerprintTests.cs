@@ -28,6 +28,21 @@ public sealed class DeterministicPackageFingerprintTests : IDisposable
     }
 
     [Fact]
+    public void Compute_SamePackage_ComputedTwice_ProducesIdenticalFingerprint()
+    {
+        // Phase 12 / P8-T05: reproducibility gate — two independent Compute calls over the
+        // same package bytes must yield the same fingerprint (run1 == run2).
+        const string imageIdentity = "sha256:repro-gate-identity";
+        var packagePath = CreateSamplePackage("service-repro", "1.0.0", imageIdentity);
+
+        var run1 = DeterministicPackageFingerprint.Compute(packagePath);
+        var run2 = DeterministicPackageFingerprint.Compute(packagePath);
+
+        Assert.False(string.IsNullOrWhiteSpace(run1));
+        Assert.Equal(run1, run2);
+    }
+
+    [Fact]
     public void Compute_DifferentCompose_ProducesDifferentFingerprint()
     {
         const string imageIdentity = "sha256:abc123identity";
