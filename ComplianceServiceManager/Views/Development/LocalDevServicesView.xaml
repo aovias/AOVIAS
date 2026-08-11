@@ -4,6 +4,7 @@
              xmlns:controls="clr-namespace:Aovias.DesignSystem.Controls;assembly=Aovias.DesignSystem"
              xmlns:helpers="clr-namespace:ComplianceServiceManager.Helpers"
              xmlns:models="clr-namespace:ComplianceServiceManager.Models.Workspaces"
+             xmlns:profiles="clr-namespace:ComplianceServiceManager.Models.RuntimeProfiles"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d">
@@ -15,6 +16,7 @@
                   CanContentScroll="False">
         <Grid Margin="0,0,0,8">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -188,8 +190,125 @@
                 </StackPanel>
             </Border>
 
-            <!-- Solution folders -->
+            <!-- Runtime Profiles (D2) -->
             <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="Runtime Profiles" Style="{StaticResource HeadingTextStyle}" />
+                            <TextBlock Text="Preferred way to start local stacks with dependency order. Start All below remains available as a legacy parallel start."
+                                       Style="{StaticResource CaptionTextStyle}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,4,0,0" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding ProfileStatusMessage}"
+                                   Style="{StaticResource CaptionTextStyle}"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Top"
+                                   MaxWidth="320"
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Right" />
+                    </Grid>
+
+                    <Grid Grid.Row="1" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="240" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <ListBox Grid.Column="0"
+                                 ItemsSource="{Binding RuntimeProfiles}"
+                                 SelectedItem="{Binding SelectedProfile, Mode=TwoWay}"
+                                 DisplayMemberPath="Name"
+                                 MinHeight="120"
+                                 MaxHeight="180"
+                                 Margin="0,0,12,0" />
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="{Binding SelectedProfile.Description}"
+                                       Style="{StaticResource CaptionTextStyle}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,8" />
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <TextBlock Text="{Binding SelectedProfile.StatusDisplay, TargetNullValue=—}"
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource PrimaryBrush}"
+                                           Margin="0,0,16,0" />
+                                <TextBlock Text="{Binding SelectedProfile.ValidationDisplay}"
+                                           Style="{StaticResource CaptionTextStyle}"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding SelectedProfile.ProgressMessage}"
+                                       Style="{StaticResource CaptionTextStyle}"
+                                       TextWrapping="Wrap"
+                                       Visibility="{Binding SelectedProfile.ProgressMessage, Converter={StaticResource NotNullToVis}}" />
+                            <ItemsControl ItemsSource="{Binding SelectedProfile.ValidationIssues}" Margin="0,6,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}"
+                                                   Foreground="{StaticResource WarningBrush}"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,0,0,2" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Validate"
+                                Command="{Binding ValidateSelectedProfileCommand}"
+                                Margin="0,0,8,0" />
+                        <Button Content="Validate All"
+                                Command="{Binding ValidateAllProfilesCommand}"
+                                Margin="0,0,8,0" />
+                        <Button Content="Start Profile"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Command="{Binding StartSelectedProfileCommand}"
+                                Margin="0,0,8,0" />
+                        <Button Content="Stop Owned"
+                                Command="{Binding StopSelectedProfileCommand}"
+                                Margin="0,0,8,0" />
+                        <Button Content="Restart"
+                                Command="{Binding RestartSelectedProfileCommand}"
+                                Margin="0,0,8,0" />
+                        <Button Content="Edit…"
+                                Command="{Binding EditSelectedProfileCommand}" />
+                    </StackPanel>
+
+                    <Expander Grid.Row="3"
+                              Header="Profile members"
+                              IsExpanded="True"
+                              Visibility="{Binding SelectedProfile, Converter={StaticResource NotNullToVis}}">
+                        <DataGrid ItemsSource="{Binding SelectedProfile.Members}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  HeadersVisibility="Column"
+                                  CanUserAddRows="False"
+                                  MaxHeight="160"
+                                  Margin="0,8,0,0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Service" Binding="{Binding ServiceName}" Width="2*" />
+                                <DataGridTextColumn Header="Status" Binding="{Binding StatusDisplay}" Width="*" />
+                                <DataGridCheckBoxColumn Header="Owned" Binding="{Binding OwnedByProfile}" Width="70" IsReadOnly="True" />
+                                <DataGridCheckBoxColumn Header="Reused" Binding="{Binding Reused}" Width="70" IsReadOnly="True" />
+                                <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="3*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Expander>
+                </Grid>
+            </Border>
+
+            <!-- Solution folders -->
+            <Border Grid.Row="3" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
                 <StackPanel>
                     <Grid Margin="0,0,0,8">
                         <TextBlock Text="Solution Folders" Style="{StaticResource HeadingTextStyle}" />
@@ -237,7 +356,7 @@
             </Border>
 
             <!-- Services -->
-            <Border Grid.Row="3" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
+            <Border Grid.Row="4" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -262,9 +381,10 @@
                                      MinWidth="180"
                                      Margin="0,0,8,0"
                                      ToolTip="Filter services" />
-                            <Button Content="Start All"
+                            <Button Content="Start All (legacy)"
                                     Style="{StaticResource PrimaryButtonStyle}"
                                     Command="{Binding Services.StartAllCommand}"
+                                    ToolTip="Legacy parallel start of all discovered services. Prefer Runtime Profiles for dependency-aware startup."
                                     Margin="0,0,8,0" />
                             <Button Content="Stop All"
                                     Command="{Binding Services.StopAllCommand}"

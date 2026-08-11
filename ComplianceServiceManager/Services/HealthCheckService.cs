@@ -4,7 +4,7 @@ using ComplianceServiceManager.Models;
 
 namespace ComplianceServiceManager.Services;
 
-public sealed class HealthCheckService : IDisposable
+public sealed class HealthCheckService : IHealthProbe, IDisposable
 {
     private readonly HttpClient httpClient = new()
     {
