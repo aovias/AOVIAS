@@ -247,7 +247,7 @@ public sealed class ContractDrivenPublishingTests
     [Fact]
     public void Demo_membership_is_declared_in_metadata_not_hardcoded()
     {
-        // Sprint G1: excludes bin/obj (build output), _perf_build_out (perf build drop), and
+        // Sprint G1: excludes bin/obj (build output), _perf_build_out (perf build drop), artifacts/ (build-verify drops), and
         // aovias-config/ (runtime publishing storage — every publish run stages duplicate
         // deployment.metadata.json copies there under
         // aovias-config/storage/local/publishing/temp/sessions/**). None of those are
@@ -258,6 +258,7 @@ public sealed class ContractDrivenPublishingTests
             .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
             .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
             .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}_perf_build_out{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}artifacts{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
             .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}aovias-config{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
             .Select(path => DeploymentMetadataReader.TryLoad(path, Path.GetDirectoryName(path)!))
             .Where(metadata => metadata is not null)
