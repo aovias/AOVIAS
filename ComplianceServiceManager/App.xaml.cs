@@ -11,6 +11,7 @@ using ComplianceServiceManager.Services.Configuration;
 using ComplianceServiceManager.Navigation;
 using ComplianceServiceManager.Services.LocalDev;
 using ComplianceServiceManager.Services.Runtime;
+using ComplianceServiceManager.Services.Workspaces;
 using ComplianceServiceManager.ViewModels;
 using ComplianceServiceManager.ViewModels.AiCopilot;
 using ComplianceServiceManager.ViewModels.ReleaseCenter;
@@ -136,6 +137,11 @@ public partial class App : Application
 
         services.AddSingleton<ILoggingService>(provider => new LoggingService(Current.Dispatcher));
         services.AddSingleton<SolutionFolderRegistry>();
+        services.AddSingleton<DevelopmentWorkspaceRegistry>();
+        services.AddSingleton(provider => new GitCliRunner(
+            () => provider.GetRequiredService<DevelopmentWorkspaceRegistry>().GetAllowedRoots()));
+        services.AddSingleton<IGitWorkspaceService, GitWorkspaceService>();
+        services.AddSingleton<IDevelopmentWorkspaceService, DevelopmentWorkspaceService>();
         services.AddSingleton(provider => new ServiceDiscoveryService(
             provider.GetRequiredService<SolutionFolderRegistry>(),
             provider.GetRequiredService<ILoggingService>()));

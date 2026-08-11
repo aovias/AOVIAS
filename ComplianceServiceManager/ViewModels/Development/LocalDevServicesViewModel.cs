@@ -1,36 +1,50 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ComplianceServiceManager.Models.Workspaces;
 using ComplianceServiceManager.Services.LocalDev;
+using ComplianceServiceManager.Services.Workspaces;
 
 namespace ComplianceServiceManager.ViewModels.Development;
 
 /// <summary>
-/// Development → Local Dev Services workspace. Manages the solution folders whose services are
-/// discoverable, and hosts the existing service manager (start/stop/restart, health, logs and
-/// repair) through the long-lived <see cref="MainViewModel"/>. Solution-agnostic by design:
-/// any .NET or Angular solution folder can be added.
+/// Development → Local Development hub. Hosts read-mostly workspace awareness (D1) and the
+/// existing Local Dev Services manager through the long-lived <see cref="MainViewModel"/>.
 /// </summary>
 public sealed partial class LocalDevServicesViewModel : ObservableObject
 {
     private readonly SolutionFolderRegistry folderRegistry;
+    private readonly IDevelopmentWorkspaceService workspaceService;
 
     [ObservableProperty]
     private string statusMessage = string.Empty;
 
     [ObservableProperty]
+    private string workspaceStatusMessage = string.Empty;
+
+    [ObservableProperty]
     private string? selectedFolder;
+
+    [ObservableProperty]
+    private bool isRefreshingWorkspaces;
 
     public MainViewModel Services { get; }
 
     public ObservableCollection<string> SolutionFolders { get; } = [];
 
-    public LocalDevServicesViewModel(SolutionFolderRegistry folderRegistry, MainViewModel servicesViewModel)
+    public ObservableCollection<DevelopmentWorkspaceItem> Workspaces { get; } = [];
+
+    public LocalDevServicesViewModel(
+        SolutionFolderRegistry folderRegistry,
+        MainViewModel servicesViewModel,
+        IDevelopmentWorkspaceService workspaceService)
     {
         this.folderRegistry = folderRegistry;
+        this.workspaceService = workspaceService;
         Services = servicesViewModel;
         SyncFolders();
         folderRegistry.FoldersChanged += SyncFolders;
+        _ = RefreshWorkspacesAsync();
     }
 
     [RelayCommand]
@@ -66,6 +80,51 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         StatusMessage = "Rediscovering services…";
         await Services.RefreshServicesCommand.ExecuteAsync(null);
         StatusMessage = $"{Services.ServiceCount} service(s) discovered across {SolutionFolders.Count} folder(s).";
+    }
+
+    [RelayCommand]
+    private async Task RefreshWorkspacesAsync()
+    {
+        if (IsRefreshingWorkspaces)
+        {
+            return;
+        }
+
+        IsRefreshingWorkspaces = true;
+        WorkspaceStatusMessage = "Refreshing workspaces…";
+        try
+        {
+            var snapshots = await workspaceService.RefreshAsync();
+            void Apply()
+            {
+                Workspaces.Clear();
+                foreach (var workspace in snapshots)
+                {
+                    Workspaces.Add(workspace);
+                }
+
+                var available = snapshots.Count(item => item.Availability != WorkspaceAvailability.Unavailable);
+                WorkspaceStatusMessage = $"{available}/{snapshots.Count} workspace(s) accessible.";
+            }
+
+            var dispatcher = System.Windows.Application.Current?.Dispatcher;
+            if (dispatcher is not null && !dispatcher.CheckAccess())
+            {
+                dispatcher.Invoke(Apply);
+            }
+            else
+            {
+                Apply();
+            }
+        }
+        catch (Exception ex)
+        {
+            WorkspaceStatusMessage = $"Workspace refresh failed: {ex.Message}";
+        }
+        finally
+        {
+            IsRefreshingWorkspaces = false;
+        }
     }
 
     private void SyncFolders()

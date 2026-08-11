@@ -32,6 +32,11 @@ Desktop.ini
 **/[Oo]ut/
 **/[Dd]ebug/
 **/[Rr]elease/
+# Source folders named Release must remain trackable (build-output ignore above is too broad).
+!ComplianceServiceManager/Contracts/Release/
+!ComplianceServiceManager/Contracts/Release/**
+!ComplianceServiceManager/Services/Release/
+!ComplianceServiceManager/Services/Release/**
 _build_out/
 _build_verify_*/
 artifacts/
