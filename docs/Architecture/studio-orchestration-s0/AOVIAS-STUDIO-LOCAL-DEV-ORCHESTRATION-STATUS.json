@@ -1,0 +1,199 @@
+{
+  "phase": "S0",
+  "name": "Studio Local Development Orchestration Assessment",
+  "status": "COMPLETE",
+  "implementation": false,
+  "assessedAt": "2026-08-11",
+  "agent": "cursor",
+  "worktree": "V:\\DevelopmentRepo\\AOVIAS.Cursor",
+  "branch": "agent/cursor/studio-local-dev-orchestration-assessment",
+  "startingCommit": "9f488ab0a75072e90fa0bbb9f917f8d49787563e",
+  "assessmentArtifactsRoot": "V:\\DevelopmentRepo\\Backups\\Studio-Orchestration-S0",
+  "studioApplication": {
+    "project": "ComplianceServiceManager",
+    "type": "WPF WinExe",
+    "targetFramework": "net10.0-windows",
+    "ui": "CommunityToolkit.Mvvm + ShellViewModel navigation",
+    "localDevWorkspaceId": "Local Dev Services"
+  },
+  "d1": {
+    "status": "ASSESSED",
+    "classificationSummary": {
+      "repositoryDiscovery": "PARTIALLY_EXISTS",
+      "worktreeDiscovery": "MISSING",
+      "branchHead": "PARTIALLY_EXISTS",
+      "cleanDirty": "PARTIALLY_EXISTS",
+      "aheadBehind": "MISSING",
+      "agentOwnership": "MISSING",
+      "workspaceRegistration": "PARTIALLY_EXISTS"
+    },
+    "reusable": [
+      "GitSafetyService status --short (repair scope only)",
+      "DiagnosticsCollector git branch/status/diff capture",
+      "SolutionFolderRegistry JSON persistence pattern",
+      "scripts/dev/worktree-status.ps1 (outside Studio)"
+    ],
+    "gaps": [
+      "No Studio workspace/worktree UI",
+      "ResolveRepositoryRoot ignores linked worktree .git files",
+      "No ahead/behind",
+      "No agent ownership model in Studio"
+    ]
+  },
+  "d2": {
+    "status": "ASSESSED",
+    "localDevProvides": [
+      "solution folder registration",
+      "service discovery (.NET Web + Angular)",
+      "start/stop/restart",
+      "start all/stop all/restart all",
+      "ports/urls from launchSettings/angular.json",
+      "PID tracking",
+      "health checks",
+      "external process attach by port"
+    ],
+    "missing": [
+      "service groups",
+      "dependencies",
+      "startup/shutdown ordering",
+      "Studio runtime profiles",
+      "resource limits",
+      "workspace association",
+      "profile persistence/validation"
+    ],
+    "criticalHazard": "StartAllAsync uses Task.WhenAll over all discovered services"
+  },
+  "d3": {
+    "status": "ASSESSED",
+    "gitSourceOfTruth": true,
+    "localPrExists": false,
+    "partial": [
+      "diagnostics git diff/status",
+      "GitSafety checkpoint branches for AI repair"
+    ],
+    "missing": [
+      "branch comparison UI",
+      "approval workflow",
+      "controlled merge",
+      "conflict detection UX",
+      "local PR metadata store"
+    ],
+    "unsafeToReuseAsIs": [
+      "GitSafetyService.RollbackAsync reset --hard / clean -fd"
+    ],
+    "proposedMetadataLocation": "%LocalAppData%\\AoviasStudio\\local-prs\\"
+  },
+  "d4": {
+    "status": "ASSESSED",
+    "exists": {
+      "aiFixPipeline": true,
+      "cursorCliHook": true,
+      "aiCopilotWorkspace": "placeholder",
+      "runtimeAgentsWorkspace": "platform domain - do not overload"
+    },
+    "missing": [
+      "Cursor/Claude/Human session domain",
+      "task/branch/profile/PR linkage",
+      "session lifecycle in Studio"
+    ]
+  },
+  "d5": {
+    "status": "ASSESSED",
+    "localHostCpuRam": "MISSING",
+    "overviewCpuRamSource": "Runtime Agent observability (remote/container scope)",
+    "recommendation": "NEW local metrics service in S3; intelligent selection in S7; do not reuse Runtime Agent metrics as laptop capacity"
+  },
+  "existingCapabilities": [
+    "Local Dev Services UI",
+    "SolutionFolderRegistry",
+    "ServiceDiscoveryService",
+    "ServiceManagerService process lifecycle",
+    "ProcessService",
+    "HealthCheckService",
+    "PortProcessResolver",
+    "BuildService",
+    "PortRecoveryService",
+    "AI Fix / CursorAutomationService",
+    "GitSafetyService (repair-scoped CLI git)",
+    "AoviasStudio JSON preference root",
+    "OperationHistoryStore under AoviasStudio\\operations"
+  ],
+  "newCapabilities": [
+    "Workspace/worktree management (D1)",
+    "GitWorkspaceService read/write split from GitSafety",
+    "Runtime Profiles for local service groups (D2)",
+    "Local PR orchestration metadata (D3)",
+    "Agent Session domain for Cursor/Claude (D4)",
+    "Local host resource metrics and advisors (S3/D5)",
+    "PathPolicy and command allowlist for orchestration safety"
+  ],
+  "risks": [
+    {
+      "id": "start-all-parallel",
+      "tiedTo": "ServiceManagerService.StartAllAsync",
+      "summary": "Fully parallel start of all discovered services can exhaust 16 GB RAM"
+    },
+    {
+      "id": "port-collision-multi-worktree",
+      "tiedTo": "launchSettings ports + PortProcessResolver attach/kill",
+      "summary": "Cursor and Claude worktrees share default ports; attach/kill may affect the other agent runtime"
+    },
+    {
+      "id": "unrestricted-solution-folders",
+      "tiedTo": "SolutionFolderRegistry.Add",
+      "summary": "Any filesystem folder can be registered and built/run"
+    },
+    {
+      "id": "destructive-git-safety",
+      "tiedTo": "GitSafetyService.RollbackAsync",
+      "summary": "reset --hard and clean -fd unsuitable for Local PR orchestration"
+    },
+    {
+      "id": "linked-worktree-detection",
+      "tiedTo": "GitSafetyService.ResolveRepositoryRoot",
+      "summary": "Only detects .git directories; linked worktrees use .git files"
+    },
+    {
+      "id": "stop-by-port-foreign-process",
+      "tiedTo": "ServiceManagerService.StopAsync / PortProcessResolver.TryStopProcessTree",
+      "summary": "May kill non-Studio processes listening on service ports"
+    },
+    {
+      "id": "cursor-cli-arbitrary-cmd",
+      "tiedTo": "CursorAutomationService COMPLIANCE_CURSOR_CLI_COMMAND",
+      "summary": "Env-configured command executed via cmd /c"
+    },
+    {
+      "id": "shared-infra-duplication",
+      "tiedTo": "future multi-agent profiles",
+      "summary": "Duplicate SQL/Redis/API stacks per worktree will thrash 16 GB machines"
+    },
+    {
+      "id": "domain-collision-runtime-agents",
+      "tiedTo": "RuntimeAgentsViewModel vs proposed Agent Sessions",
+      "summary": "Naming collision risk between platform Runtime Agents and coding agents"
+    },
+    {
+      "id": "domain-collision-profiles",
+      "tiedTo": "Aovias.Configuration ProfileManager vs Local Dev Runtime Profiles",
+      "summary": "Deployment runtime profiles are a different concept and must stay separate"
+    }
+  ],
+  "dependencies": [
+    "S0 -> S1(D1)",
+    "S1 -> S2(D2)",
+    "S1 -> S4(D3)",
+    "S1 -> S5(D4)",
+    "S2 -> S3(resource foundation)",
+    "S2+S3 -> S4(D3 validation quality)",
+    "S2 -> S5(optional profile on session)",
+    "S4+S5 -> S6(session orchestration)",
+    "S2+S3(+S6) -> S7(D5)"
+  ],
+  "gitCapabilityForOrchestration": "NOT_CURRENTLY_PRESENT",
+  "gitPartialRepairDiagnostics": true,
+  "libGit2Sharp": false,
+  "recommendedNextStep": "S1 — D1 Workspace Management",
+  "productImplementationInThisTask": false,
+  "localPrStatus": "READY_FOR_REVIEW"
+}
