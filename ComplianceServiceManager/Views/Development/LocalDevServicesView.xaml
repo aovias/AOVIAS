@@ -455,8 +455,170 @@
                 </Grid>
             </Border>
 
-            <!-- Solution folders -->
+            <!-- Local Pull Requests (D3 — local-only, no remote) -->
             <Border Grid.Row="4" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="Local Pull Requests" Style="{StaticResource HeadingTextStyle}" />
+                            <TextBlock Text="Local Git review lifecycle (no remote). Discover → compare → validate → review → approve → explicit merge."
+                                       Style="{StaticResource CaptionTextStyle}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,4,0,0" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                            <TextBlock Text="{Binding PullRequestStatusMessage}"
+                                       Style="{StaticResource CaptionTextStyle}"
+                                       Margin="0,0,12,0"
+                                       MaxWidth="280"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center" />
+                            <Button Content="Refresh"
+                                    Command="{Binding RefreshLocalPullRequestsCommand}"
+                                    Margin="0,0,8,0" />
+                            <Button Content="Create Local PR"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Command="{Binding CreateLocalPullRequestCommand}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Grid.Row="1" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="260" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <ListBox Grid.Column="0"
+                                 ItemsSource="{Binding LocalPullRequests}"
+                                 SelectedItem="{Binding SelectedPullRequest, Mode=TwoWay}"
+                                 DisplayMemberPath="Title"
+                                 MinHeight="120"
+                                 MaxHeight="200"
+                                 Margin="0,0,12,0" />
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="{Binding SelectedPullRequest.Title}"
+                                       FontWeight="SemiBold"
+                                       FontSize="16"
+                                       Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBlock Margin="0,4,0,0"
+                                       FontSize="12"
+                                       Foreground="{StaticResource TextSecondaryBrush}">
+                                <Run Text="{Binding SelectedPullRequest.AuthorAgent, Mode=OneWay}" />
+                                <Run Text=" → " />
+                                <Run Text="{Binding SelectedPullRequest.TargetBranch, Mode=OneWay}" />
+                                <Run Text="  (" />
+                                <Run Text="{Binding SelectedPullRequest.SourceBranch, Mode=OneWay}" />
+                                <Run Text=")" />
+                            </TextBlock>
+                            <TextBlock Text="{Binding SelectedPullRequest.StatusDisplay}"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource PrimaryBrush}"
+                                       Margin="0,8,0,0" />
+                            <TextBlock Text="{Binding SelectedPullRequest.SummaryDisplay}"
+                                       Style="{StaticResource CaptionTextStyle}"
+                                       Margin="0,4,0,0" />
+                            <TextBlock Text="{Binding SelectedPullRequest.GitStateDisplay}"
+                                       Style="{StaticResource CaptionTextStyle}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,4,0,0" />
+                            <TextBlock Text="{Binding SelectedPullRequest.BlockReason}"
+                                       Foreground="{StaticResource WarningBrush}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,4,0,0"
+                                       Visibility="{Binding SelectedPullRequest.BlockReason, Converter={StaticResource NotNullToVis}}" />
+                            <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,6,0,0">
+                                <Run Text="Validation: " />
+                                <Run Text="{Binding SelectedPullRequest.ValidationDisplay, Mode=OneWay}" />
+                                <Run Text="  ·  Merge: " />
+                                <Run Text="{Binding SelectedPullRequest.MergeCommitSha, Mode=OneWay, TargetNullValue=—}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBox Text="{Binding ReviewComment, UpdateSourceTrigger=PropertyChanged}"
+                                 MinWidth="220"
+                                 Margin="0,0,8,0"
+                                 ToolTip="Review comment for approve / request changes" />
+                        <Button Content="Approve"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Command="{Binding ApproveSelectedPullRequestCommand}"
+                                Margin="0,0,8,0" />
+                        <Button Content="Request Changes"
+                                Command="{Binding RequestChangesSelectedPullRequestCommand}"
+                                Margin="0,0,8,0" />
+                        <Button Content="Merge"
+                                Command="{Binding MergeSelectedPullRequestCommand}"
+                                IsEnabled="{Binding CanMergeSelectedPullRequest}"
+                                ToolTip="Explicit human merge only. Disabled until APPROVED with matching SHAs and clean worktrees." />
+                    </StackPanel>
+
+                    <Grid Grid.Row="3" Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <DataGrid Grid.Column="0"
+                                  ItemsSource="{Binding SelectedPullRequest.Commits}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  HeadersVisibility="Column"
+                                  CanUserAddRows="False"
+                                  MaxHeight="140"
+                                  Margin="0,0,8,0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="SHA" Binding="{Binding ShortSha}" Width="80" />
+                                <DataGridTextColumn Header="Subject" Binding="{Binding Subject}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid Grid.Column="1"
+                                  ItemsSource="{Binding SelectedPullRequest.ChangedFiles}"
+                                  SelectedValuePath="Path"
+                                  SelectedValue="{Binding SelectedPullRequest.SelectedFilePath, Mode=TwoWay}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  HeadersVisibility="Column"
+                                  CanUserAddRows="False"
+                                  MaxHeight="140">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="File" Binding="{Binding Path}" Width="*" />
+                                <DataGridTextColumn Header="St" Binding="{Binding Status}" Width="40" />
+                                <DataGridTextColumn Header="+" Binding="{Binding Additions}" Width="40" />
+                                <DataGridTextColumn Header="-" Binding="{Binding Deletions}" Width="40" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+
+                    <StackPanel Grid.Row="4">
+                        <Button Content="Load Diff"
+                                Command="{Binding LoadSelectedPullRequestDiffCommand}"
+                                HorizontalAlignment="Left"
+                                Margin="0,0,0,6" />
+                        <TextBox Text="{Binding SelectedPullRequest.SelectedDiffText}"
+                                 IsReadOnly="True"
+                                 FontFamily="Consolas"
+                                 FontSize="11"
+                                 TextWrapping="NoWrap"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"
+                                 HorizontalScrollBarVisibility="Auto"
+                                 MinHeight="100"
+                                 MaxHeight="180" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Solution folders -->
+            <Border Grid.Row="5" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
                 <StackPanel>
                     <Grid Margin="0,0,0,8">
                         <TextBlock Text="Solution Folders" Style="{StaticResource HeadingTextStyle}" />
@@ -504,7 +666,7 @@
             </Border>
 
             <!-- Services -->
-            <Border Grid.Row="5" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
+            <Border Grid.Row="6" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

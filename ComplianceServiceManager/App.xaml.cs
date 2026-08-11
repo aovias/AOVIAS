@@ -11,6 +11,7 @@ using ComplianceServiceManager.Services.Configuration;
 using ComplianceServiceManager.Navigation;
 using ComplianceServiceManager.Models.LocalResources;
 using ComplianceServiceManager.Services.LocalDev;
+using ComplianceServiceManager.Services.LocalPullRequests;
 using ComplianceServiceManager.Services.LocalResources;
 using ComplianceServiceManager.Services.Runtime;
 using ComplianceServiceManager.Services.RuntimeProfiles;
@@ -147,6 +148,9 @@ public partial class App : Application
         services.AddSingleton<IDevelopmentWorkspaceService, DevelopmentWorkspaceService>();
         services.AddSingleton<RuntimeProfileRegistry>();
         services.AddSingleton<RuntimeProfileValidator>();
+        services.AddSingleton<LocalPullRequestRegistry>();
+        services.AddSingleton<IGitPullRequestService, GitPullRequestService>();
+        services.AddSingleton<ILocalPullRequestService, LocalPullRequestService>();
         services.AddSingleton(new LocalResourceMonitoringOptions
         {
             PollInterval = TimeSpan.FromSeconds(3),

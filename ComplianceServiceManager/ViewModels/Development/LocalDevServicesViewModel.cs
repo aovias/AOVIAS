@@ -2,11 +2,13 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ComplianceServiceManager.Models.LocalPullRequests;
 using ComplianceServiceManager.Models.LocalResources;
 using ComplianceServiceManager.Models.RuntimeProfiles;
 using ComplianceServiceManager.Models.Workspaces;
 using ComplianceServiceManager.Services;
 using ComplianceServiceManager.Services.LocalDev;
+using ComplianceServiceManager.Services.LocalPullRequests;
 using ComplianceServiceManager.Services.LocalResources;
 using ComplianceServiceManager.Services.RuntimeProfiles;
 using ComplianceServiceManager.Services.Workspaces;
@@ -16,7 +18,7 @@ namespace ComplianceServiceManager.ViewModels.Development;
 
 /// <summary>
 /// Development → Local Development hub. Hosts D1 workspaces, D2 runtime profiles,
-/// S3 local resource telemetry, and Local Dev Services.
+/// S3 local resource telemetry, D3 local PRs, and Local Dev Services.
 /// </summary>
 public sealed partial class LocalDevServicesViewModel : ObservableObject
 {
@@ -25,6 +27,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private readonly IRuntimeProfileOrchestrator profileOrchestrator;
     private readonly ServiceManagerService serviceManager;
     private readonly ILocalResourceMonitoringService resourceMonitoring;
+    private readonly ILocalPullRequestService pullRequestService;
 
     [ObservableProperty]
     private string statusMessage = string.Empty;
@@ -36,6 +39,9 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private string profileStatusMessage = string.Empty;
 
     [ObservableProperty]
+    private string pullRequestStatusMessage = string.Empty;
+
+    [ObservableProperty]
     private string? selectedFolder;
 
     [ObservableProperty]
@@ -45,7 +51,19 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private bool isProfileBusy;
 
     [ObservableProperty]
+    private bool isPullRequestBusy;
+
+    [ObservableProperty]
     private RuntimeProfileItem? selectedProfile;
+
+    [ObservableProperty]
+    private LocalPullRequestItem? selectedPullRequest;
+
+    [ObservableProperty]
+    private string reviewComment = string.Empty;
+
+    [ObservableProperty]
+    private bool canMergeSelectedPullRequest;
 
     public MainViewModel Services { get; }
 
@@ -59,24 +77,30 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     public ObservableCollection<LocalServiceResourceRow> ServiceResourceRows { get; } = [];
 
+    public ObservableCollection<LocalPullRequestItem> LocalPullRequests { get; } = [];
+
     public LocalDevServicesViewModel(
         SolutionFolderRegistry folderRegistry,
         MainViewModel servicesViewModel,
         IDevelopmentWorkspaceService workspaceService,
         IRuntimeProfileOrchestrator profileOrchestrator,
         ServiceManagerService serviceManager,
-        ILocalResourceMonitoringService resourceMonitoring)
+        ILocalResourceMonitoringService resourceMonitoring,
+        ILocalPullRequestService pullRequestService)
     {
         this.folderRegistry = folderRegistry;
         this.workspaceService = workspaceService;
         this.profileOrchestrator = profileOrchestrator;
         this.serviceManager = serviceManager;
         this.resourceMonitoring = resourceMonitoring;
+        this.pullRequestService = pullRequestService;
         Services = servicesViewModel;
         SyncFolders();
         folderRegistry.FoldersChanged += SyncFolders;
         profileOrchestrator.ProfilesChanged += SyncProfiles;
         SyncProfiles();
+        pullRequestService.PullRequestsChanged += SyncPullRequests;
+        SyncPullRequests();
         resourceMonitoring.SnapshotUpdated += OnResourceSnapshotUpdated;
         resourceMonitoring.Start();
         if (resourceMonitoring.LatestSnapshot is not null)
@@ -85,6 +109,13 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         }
 
         _ = RefreshWorkspacesAsync();
+        _ = RefreshLocalPullRequestsAsync();
+    }
+
+    partial void OnSelectedPullRequestChanged(LocalPullRequestItem? value)
+    {
+        UpdateMergeAvailability();
+        ReviewComment = value?.LastReview?.Comment ?? string.Empty;
     }
 
     [RelayCommand]
@@ -338,6 +369,218 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
                 SolutionFolders.Add(folder);
             }
         });
+    }
+
+    [RelayCommand]
+    private async Task RefreshLocalPullRequestsAsync()
+    {
+        if (IsPullRequestBusy)
+        {
+            return;
+        }
+
+        IsPullRequestBusy = true;
+        PullRequestStatusMessage = "Refreshing local PRs from Git…";
+        try
+        {
+            await pullRequestService.RefreshAllAsync();
+            SyncPullRequests();
+            PullRequestStatusMessage = $"{LocalPullRequests.Count} local PR(s).";
+        }
+        catch (Exception ex)
+        {
+            PullRequestStatusMessage = $"PR refresh failed: {ex.Message}";
+        }
+        finally
+        {
+            IsPullRequestBusy = false;
+            UpdateMergeAvailability();
+        }
+    }
+
+    [RelayCommand]
+    private async Task CreateLocalPullRequestAsync()
+    {
+        var dialog = new CreateLocalPullRequestWindow(pullRequestService)
+        {
+            Owner = Application.Current?.MainWindow
+        };
+        if (dialog.ShowDialog() != true || dialog.Result is null)
+        {
+            return;
+        }
+
+        IsPullRequestBusy = true;
+        try
+        {
+            var created = await pullRequestService.CreateAsync(
+                dialog.Result.Title,
+                dialog.Result.Description,
+                dialog.Result.SourceBranch,
+                dialog.Result.TargetBranch,
+                dialog.Result.SourceWorktreePath,
+                dialog.Result.TargetWorktreePath,
+                dialog.Result.AuthorAgent);
+            SyncPullRequests();
+            SelectedPullRequest = LocalPullRequests.FirstOrDefault(item =>
+                string.Equals(item.Id, created.Id, StringComparison.OrdinalIgnoreCase));
+            PullRequestStatusMessage = $"Created local PR '{created.Title}' — {created.StatusDisplay}.";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Create Local PR", MessageBoxButton.OK, MessageBoxImage.Warning);
+            PullRequestStatusMessage = ex.Message;
+        }
+        finally
+        {
+            IsPullRequestBusy = false;
+            UpdateMergeAvailability();
+        }
+    }
+
+    [RelayCommand]
+    private async Task ApproveSelectedPullRequestAsync()
+    {
+        if (SelectedPullRequest is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await pullRequestService.ApproveAsync(SelectedPullRequest, "Human", ReviewComment);
+            SyncPullRequests();
+            PullRequestStatusMessage = $"Approved {SelectedPullRequest.Title} @ {SelectedPullRequest.LastReview?.SourceCommitSha?[..7]}.";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Approve Local PR", MessageBoxButton.OK, MessageBoxImage.Warning);
+            PullRequestStatusMessage = ex.Message;
+        }
+
+        UpdateMergeAvailability();
+    }
+
+    [RelayCommand]
+    private async Task RequestChangesSelectedPullRequestAsync()
+    {
+        if (SelectedPullRequest is null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(ReviewComment))
+        {
+            MessageBox.Show("A comment is required when requesting changes.", "Request Changes", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        try
+        {
+            await pullRequestService.RequestChangesAsync(SelectedPullRequest, "Human", ReviewComment);
+            SyncPullRequests();
+            PullRequestStatusMessage = "Changes requested.";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Request Changes", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        UpdateMergeAvailability();
+    }
+
+    [RelayCommand]
+    private async Task MergeSelectedPullRequestAsync()
+    {
+        if (SelectedPullRequest is null || !CanMergeSelectedPullRequest)
+        {
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            $"Merge '{SelectedPullRequest.SourceBranch}' into '{SelectedPullRequest.TargetBranch}' with an explicit --no-ff merge commit?\n\nThis will modify the target worktree only.",
+            "Merge Local PR",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+        if (confirm != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        IsPullRequestBusy = true;
+        try
+        {
+            var (succeeded, error) = await pullRequestService.MergeAsync(SelectedPullRequest);
+            SyncPullRequests();
+            PullRequestStatusMessage = succeeded
+                ? $"Merged. Commit {SelectedPullRequest.MergeCommitSha}."
+                : error ?? "Merge failed.";
+            if (!succeeded)
+            {
+                MessageBox.Show(error ?? "Merge failed.", "Merge Local PR", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        finally
+        {
+            IsPullRequestBusy = false;
+            UpdateMergeAvailability();
+        }
+    }
+
+    [RelayCommand]
+    private async Task LoadSelectedPullRequestDiffAsync()
+    {
+        if (SelectedPullRequest is null || string.IsNullOrWhiteSpace(SelectedPullRequest.SelectedFilePath))
+        {
+            return;
+        }
+
+        try
+        {
+            SelectedPullRequest.SelectedDiffText = await pullRequestService.LoadFileDiffAsync(
+                SelectedPullRequest,
+                SelectedPullRequest.SelectedFilePath);
+        }
+        catch (Exception ex)
+        {
+            SelectedPullRequest.SelectedDiffText = ex.Message;
+        }
+    }
+
+    private void SyncPullRequests()
+    {
+        void Apply()
+        {
+            var selectedId = SelectedPullRequest?.Id;
+            LocalPullRequests.Clear();
+            foreach (var item in pullRequestService.GetPullRequests())
+            {
+                LocalPullRequests.Add(item);
+            }
+
+            SelectedPullRequest = LocalPullRequests.FirstOrDefault(item =>
+                                       string.Equals(item.Id, selectedId, StringComparison.OrdinalIgnoreCase))
+                                   ?? LocalPullRequests.FirstOrDefault();
+            UpdateMergeAvailability();
+        }
+
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is not null && !dispatcher.CheckAccess())
+        {
+            dispatcher.Invoke(Apply);
+        }
+        else
+        {
+            Apply();
+        }
+    }
+
+    private void UpdateMergeAvailability()
+    {
+        CanMergeSelectedPullRequest =
+            SelectedPullRequest is { Status: LocalPullRequestStatus.Approved }
+            && SelectedPullRequest.LastReview is { IsApproval: true }
+            && SelectedPullRequest.Comparison is { ApprovalIsStale: false, HasConflicts: false, SourceClean: true, TargetClean: true };
     }
 
     private void OnResourceSnapshotUpdated(LocalResourceSnapshot snapshot)
