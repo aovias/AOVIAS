@@ -2,7 +2,8 @@
 .SYNOPSIS
   Read-only health report for AOVIAS main + Cursor + Claude worktrees.
 .DESCRIPTION
-  Never checks out, resets, cleans, fetches, pulls, or modifies files/branches.
+  Never checks out, resets, cleans, fetches, pulls, merges, commits,
+  deletes branches, modifies files, or changes Git configuration.
 #>
 [CmdletBinding()]
 param(
@@ -60,53 +61,84 @@ $claude = Get-SafeState $ClaudePath 'Claude'
 if (-not $main -or -not $cursor -or -not $claude) { $failed = $true }
 
 $remotes = @()
-if ($main) { $remotes = @(git -C $MainPath remote 2>$null) }
+$worktreeCount = 0
+$commonDirResolved = $null
+
+if ($main) {
+  $remotes = @(git -C $MainPath remote 2>$null)
+  $wtLines = @(git -C $MainPath worktree list --porcelain 2>$null | Where-Object { $_ -like 'worktree *' })
+  $worktreeCount = $wtLines.Count
+  $commonDirResolved = Resolve-Full $MainPath $main.CommonDir
+}
 
 Write-Host '=== AOVIAS Worktree Status (read-only) ==='
+Write-Host ''
+Write-Host '--- Repository ---'
 Write-Host ('Repository: ' + $MainPath)
-if ($main) {
-  Write-Host ('Main branch: ' + $main.Branch)
-  Write-Host ('Main status: ' + (Format-CleanLabel $main))
-  Write-Host ('Main HEAD:   ' + $main.Head)
-}
-if ($cursor) {
-  Write-Host ('Cursor worktree: ' + $cursor.Path)
-  Write-Host ('Cursor branch:   ' + $cursor.Branch)
-  Write-Host ('Cursor status:   ' + (Format-CleanLabel $cursor))
-  Write-Host ('Cursor HEAD:     ' + $cursor.Head)
-}
-if ($claude) {
-  Write-Host ('Claude worktree: ' + $claude.Path)
-  Write-Host ('Claude branch:   ' + $claude.Branch)
-  Write-Host ('Claude status:   ' + (Format-CleanLabel $claude))
-  Write-Host ('Claude HEAD:     ' + $claude.Head)
-}
-
-if ($main -and $cursor -and $claude) {
-  $mc = Resolve-Full $MainPath $main.CommonDir
-  $cc = Resolve-Full $CursorPath $cursor.CommonDir
-  $lc = Resolve-Full $ClaudePath $claude.CommonDir
-  Write-Host ('Common Git directory (main):   ' + $mc)
-  Write-Host ('Common Git directory (cursor): ' + $cc)
-  Write-Host ('Common Git directory (claude): ' + $lc)
-  if ($mc -ne $cc -or $mc -ne $lc) {
-    Write-Host '[FAIL] git-common-dir mismatch'
-    $failed = $true
-  } else {
-    Write-Host '[OK] Shared common Git directory'
-  }
-}
-
+Write-Host ('Worktree count: ' + $worktreeCount)
 if ($remotes.Count -eq 0) {
   Write-Host 'Remote status: NOT CONFIGURED'
 } else {
   Write-Host ('Remote status: ' + ($remotes -join ', '))
 }
 
+Write-Host ''
+Write-Host '--- Main ---'
+if ($main) {
+  Write-Host ('Main branch: ' + $main.Branch)
+  Write-Host ('Main HEAD:   ' + $main.Head)
+  Write-Host ('Main status: ' + (Format-CleanLabel $main))
+} else {
+  Write-Host 'Main: UNAVAILABLE'
+}
+
+Write-Host ''
+Write-Host '--- Cursor ---'
+if ($cursor) {
+  Write-Host ('Cursor worktree: ' + $cursor.Path)
+  Write-Host ('Cursor branch:   ' + $cursor.Branch)
+  Write-Host ('Cursor HEAD:     ' + $cursor.Head)
+  Write-Host ('Cursor status:   ' + (Format-CleanLabel $cursor))
+} else {
+  Write-Host 'Cursor: UNAVAILABLE'
+}
+
+Write-Host ''
+Write-Host '--- Claude ---'
+if ($claude) {
+  Write-Host ('Claude worktree: ' + $claude.Path)
+  Write-Host ('Claude branch:   ' + $claude.Branch)
+  Write-Host ('Claude HEAD:     ' + $claude.Head)
+  Write-Host ('Claude status:   ' + (Format-CleanLabel $claude))
+} else {
+  Write-Host 'Claude: UNAVAILABLE'
+}
+
+Write-Host ''
+Write-Host '--- Common Git directory ---'
+if ($main -and $cursor -and $claude) {
+  $mc = $commonDirResolved
+  $cc = Resolve-Full $CursorPath $cursor.CommonDir
+  $lc = Resolve-Full $ClaudePath $claude.CommonDir
+  Write-Host ('Common Git directory: ' + $mc)
+  if ($mc -ne $cc -or $mc -ne $lc) {
+    Write-Host '[FAIL] git-common-dir mismatch across worktrees'
+    Write-Host ('  main:   ' + $mc)
+    Write-Host ('  cursor: ' + $cc)
+    Write-Host ('  claude: ' + $lc)
+    $failed = $true
+  } else {
+    Write-Host '[OK] Shared common Git directory'
+  }
+} else {
+  Write-Host 'Common Git directory: UNAVAILABLE'
+}
+
 if ($main -and $main.Detached) { Write-Host '[FAIL] Main detached'; $failed = $true }
 if ($cursor -and $cursor.Detached) { Write-Host '[FAIL] Cursor detached'; $failed = $true }
 if ($claude -and $claude.Detached) { Write-Host '[FAIL] Claude detached'; $failed = $true }
 
+Write-Host ''
 if ($failed) {
   Write-Host 'RESULT: FAIL'
   exit 1
