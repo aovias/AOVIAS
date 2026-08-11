@@ -247,14 +247,17 @@ public sealed class ContractDrivenPublishingTests
     [Fact]
     public void Demo_membership_is_declared_in_metadata_not_hardcoded()
     {
-        // Sprint G1: excludes bin/ (build output) and aovias-config/ (runtime publishing
-        // storage — every publish run stages duplicate deployment.metadata.json copies there
-        // under aovias-config/storage/local/publishing/temp/sessions/**), neither of which is a
-        // source-of-truth service declaration. Without the second exclusion this test's outcome
-        // depends on whatever publish runs happened to leave on disk, which is exactly the kind
-        // of environment-dependent non-determinism the platform's own testing rules forbid.
+        // Sprint G1: excludes bin/obj (build output), _perf_build_out (perf build drop), and
+        // aovias-config/ (runtime publishing storage — every publish run stages duplicate
+        // deployment.metadata.json copies there under
+        // aovias-config/storage/local/publishing/temp/sessions/**). None of those are
+        // source-of-truth service declarations. Without these exclusions this test's outcome
+        // depends on whatever publish/perf runs happened to leave on disk, which is exactly the
+        // kind of environment-dependent non-determinism the platform's own testing rules forbid.
         var demoServices = Directory.EnumerateFiles(PlatformRoot, DeploymentMetadataReader.FileName, SearchOption.AllDirectories)
             .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}_perf_build_out{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
             .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}aovias-config{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
             .Select(path => DeploymentMetadataReader.TryLoad(path, Path.GetDirectoryName(path)!))
             .Where(metadata => metadata is not null)
