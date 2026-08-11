@@ -1,9 +1,23 @@
 # Operation Engine & Autonomous Bootstrap — Implementation Plan
 
-**Status:** Planned (no implementation started).
+**Status:** Partially implemented (tree evidence as of 2026-08-11). Header previously claimed "Planned (no implementation started)" — that claim is **stale**.
 **Scope:** AOVIAS Studio (ComplianceServiceManager) + additive seams in `Aovias.Bootstrap`.
-**Date:** 2026-07-08.
+**Original plan date:** 2026-07-08.
+**Status reconciliation date:** 2026-08-11 (Phase 12 / P8-T08 — docs only).
 **Prerequisite reading:** `BOOTSTRAP-AND-COMMANDCENTER-ENGINEERING-STATE.md`, ADR-0011/D10 (`ARCHITECTURE_DECISIONS.md`), Sprint M4.1 bootstrap engine.
+
+### Evidence-based phase status (repository tree)
+
+| Phase | Plan intent | Tree status | Evidence |
+| ----- | ----------- | ----------- | -------- |
+| A — Backend seams | `Aovias.Bootstrap.Execution` + runner/executor moves | **EXISTS / PARTIALLY IMPLEMENTED** | `Aovias.Bootstrap/src/Aovias.Bootstrap.Execution/` contains `BootstrapRunner.cs`, `SshBootstrapTargetExecutor.cs`, `HttpBootstrapRegistrationClient.cs`; referenced from `Aovias.Platform.slnx` |
+| B — Operation Engine core | `ComplianceServiceManager.Operations` | **EXISTS / MOSTLY IMPLEMENTED (source + unit tests)** | `ComplianceServiceManager.Operations/` (12 `.cs` files incl. `OperationEngine`, `OperationInstance`, history store); `ComplianceServiceManager.Operations.Tests/` present and in `Aovias.Platform.slnx` |
+| C — Bootstrap on the engine (Studio) | In-proc BootstrapOperationExecutor + UI swap | **PLANNED / NOT VERIFIED COMPLETE** | Do not claim Studio in-proc bootstrap migration complete without dedicated verification |
+| D — CLI thinning | Host becomes thin wrapper | **PLANNED / ABSENT OR UNVERIFIED** | Not reconciled as complete in this pass |
+| E — Future Publish/Deploy/etc. on engine | Later migrations | **DEFERRED / PLANNED** | Explicitly future work in original plan |
+| A4 streamed remote output | Optional enhancement | **DEFERRED** | Original plan marks deferred |
+
+**Honesty rules for this reconciliation:** physical tree + `Aovias.Platform.slnx` prove A/B source presence. This update does **not** claim Runtime Verification of Studio Operation Engine end-to-end, nor completion of Phases C–E.
 
 ---
 
