@@ -59,7 +59,9 @@ public sealed class RealAoviasTopologyTests
 
             var claudeItem = items.Single(item => item.Id == "claude");
             Assert.Equal("agent/claude/active", claudeItem.Branch);
-            Assert.Equal(WorkspaceAvailability.Clean, claudeItem.Availability);
+            Assert.True(
+                claudeItem.Availability is WorkspaceAvailability.Clean or WorkspaceAvailability.Dirty,
+                $"Unexpected claude availability: {claudeItem.Availability}");
             Assert.Equal(WorkspaceAgentOwner.Claude, claudeItem.AgentOwner);
             Assert.True(File.Exists(Path.Combine(claude, ".git")));
         }

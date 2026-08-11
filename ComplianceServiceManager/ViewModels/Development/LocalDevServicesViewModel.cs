@@ -2,10 +2,12 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ComplianceServiceManager.Models.LocalResources;
 using ComplianceServiceManager.Models.RuntimeProfiles;
 using ComplianceServiceManager.Models.Workspaces;
 using ComplianceServiceManager.Services;
 using ComplianceServiceManager.Services.LocalDev;
+using ComplianceServiceManager.Services.LocalResources;
 using ComplianceServiceManager.Services.RuntimeProfiles;
 using ComplianceServiceManager.Services.Workspaces;
 using ComplianceServiceManager.Views.Development;
@@ -13,7 +15,8 @@ using ComplianceServiceManager.Views.Development;
 namespace ComplianceServiceManager.ViewModels.Development;
 
 /// <summary>
-/// Development → Local Development hub. Hosts D1 workspaces, D2 runtime profiles, and Local Dev Services.
+/// Development → Local Development hub. Hosts D1 workspaces, D2 runtime profiles,
+/// S3 local resource telemetry, and Local Dev Services.
 /// </summary>
 public sealed partial class LocalDevServicesViewModel : ObservableObject
 {
@@ -21,6 +24,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private readonly IDevelopmentWorkspaceService workspaceService;
     private readonly IRuntimeProfileOrchestrator profileOrchestrator;
     private readonly ServiceManagerService serviceManager;
+    private readonly ILocalResourceMonitoringService resourceMonitoring;
 
     [ObservableProperty]
     private string statusMessage = string.Empty;
@@ -45,29 +49,49 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     public MainViewModel Services { get; }
 
+    public LocalResourceMonitorItem LocalResources { get; } = new();
+
     public ObservableCollection<string> SolutionFolders { get; } = [];
 
     public ObservableCollection<DevelopmentWorkspaceItem> Workspaces { get; } = [];
 
     public ObservableCollection<RuntimeProfileItem> RuntimeProfiles { get; } = [];
 
+    public ObservableCollection<LocalServiceResourceRow> ServiceResourceRows { get; } = [];
+
     public LocalDevServicesViewModel(
         SolutionFolderRegistry folderRegistry,
         MainViewModel servicesViewModel,
         IDevelopmentWorkspaceService workspaceService,
         IRuntimeProfileOrchestrator profileOrchestrator,
-        ServiceManagerService serviceManager)
+        ServiceManagerService serviceManager,
+        ILocalResourceMonitoringService resourceMonitoring)
     {
         this.folderRegistry = folderRegistry;
         this.workspaceService = workspaceService;
         this.profileOrchestrator = profileOrchestrator;
         this.serviceManager = serviceManager;
+        this.resourceMonitoring = resourceMonitoring;
         Services = servicesViewModel;
         SyncFolders();
         folderRegistry.FoldersChanged += SyncFolders;
         profileOrchestrator.ProfilesChanged += SyncProfiles;
         SyncProfiles();
+        resourceMonitoring.SnapshotUpdated += OnResourceSnapshotUpdated;
+        resourceMonitoring.Start();
+        if (resourceMonitoring.LatestSnapshot is not null)
+        {
+            ApplyResourceSnapshot(resourceMonitoring.LatestSnapshot);
+        }
+
         _ = RefreshWorkspacesAsync();
+    }
+
+    [RelayCommand]
+    private void RefreshLocalResources()
+    {
+        var snapshot = resourceMonitoring.CaptureSnapshot();
+        ApplyResourceSnapshot(snapshot);
     }
 
     [RelayCommand]
@@ -314,5 +338,61 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
                 SolutionFolders.Add(folder);
             }
         });
+    }
+
+    private void OnResourceSnapshotUpdated(LocalResourceSnapshot snapshot)
+    {
+        void Apply() => ApplyResourceSnapshot(snapshot);
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is null)
+        {
+            Apply();
+            return;
+        }
+
+        if (dispatcher.CheckAccess())
+        {
+            Apply();
+        }
+        else
+        {
+            dispatcher.Invoke(Apply);
+        }
+    }
+
+    private void ApplyResourceSnapshot(LocalResourceSnapshot snapshot)
+    {
+        var host = snapshot.Host;
+        LocalResources.CapturedAt = snapshot.CapturedAt.ToLocalTime();
+        LocalResources.CpuPercent = host.CpuPercent ?? 0;
+        LocalResources.CpuDisplay = LocalResourceFormatting.FormatPercent(host.CpuPercent);
+        LocalResources.CpuStatus = host.CpuStatus;
+        LocalResources.MemoryPercent = host.MemoryPercent ?? 0;
+        LocalResources.MemoryDisplay = LocalResourceFormatting.FormatHostMemory(host);
+        LocalResources.MemoryStatus = host.MemoryStatus;
+        LocalResources.DiskPercent = host.DiskPercent ?? 0;
+        LocalResources.DiskDisplay = LocalResourceFormatting.FormatHostDisk(host);
+        LocalResources.DiskRootDisplay = string.IsNullOrWhiteSpace(host.DiskRootPath) ? "—" : host.DiskRootPath;
+        LocalResources.DiskStatus = host.DiskStatus;
+        LocalResources.MeasurementNotes = host.Notes
+            ?? "Local host metrics (not Runtime Agent). Observation only — no automatic orchestration.";
+        LocalResources.StatusMessage =
+            $"Updated {snapshot.CapturedAt.ToLocalTime():HH:mm:ss} · poll {snapshot.SampleInterval.TotalSeconds:0.#}s · {snapshot.Source}";
+
+        ServiceResourceRows.Clear();
+        foreach (var service in snapshot.Services)
+        {
+            var process = service.Process;
+            ServiceResourceRows.Add(new LocalServiceResourceRow
+            {
+                ServiceName = service.ServiceName,
+                ProcessIdDisplay = service.ProcessId?.ToString() ?? "—",
+                CpuDisplay = LocalResourceFormatting.FormatPercent(process?.CpuPercent),
+                MemoryDisplay = process?.MemoryWorkingSetBytes is long bytes
+                    ? LocalResourceFormatting.FormatBytes(bytes)
+                    : "—",
+                Note = service.AssociationNote
+            });
+        }
     }
 }
