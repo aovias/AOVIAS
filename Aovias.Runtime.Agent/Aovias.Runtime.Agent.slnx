@@ -6,6 +6,7 @@
     <Project Path="src/Aovias.Runtime.Agent.Infrastructure/Aovias.Runtime.Agent.Infrastructure.csproj" />
     <Project Path="src/Aovias.Runtime.Contracts/Aovias.Runtime.Contracts.csproj" />
     <Project Path="src/Aovias.Runtime.SDK/Aovias.Runtime.SDK.csproj" />
+    <Project Path="tests/Aovias.Runtime.Agent.Infrastructure.Tests/Aovias.Runtime.Agent.Infrastructure.Tests.csproj" />
   </Folder>
   <!-- Sprint M3.2: completed to the full direct-external-reference closure of every project
        above - Aovias.Runtime.Agent.Application/Infrastructure reach well beyond Configuration
