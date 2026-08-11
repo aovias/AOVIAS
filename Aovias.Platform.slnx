@@ -83,6 +83,7 @@
     <Project Path="Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Infrastructure/Aovias.Runtime.Agent.Infrastructure.csproj" />
     <Project Path="Aovias.Runtime.Agent/src/Aovias.Runtime.Contracts/Aovias.Runtime.Contracts.csproj" />
     <Project Path="Aovias.Runtime.Agent/src/Aovias.Runtime.SDK/Aovias.Runtime.SDK.csproj" />
+    <Project Path="Aovias.Runtime.Agent/tests/Aovias.Runtime.Agent.Infrastructure.Tests/Aovias.Runtime.Agent.Infrastructure.Tests.csproj" />
   </Folder>
   <Folder Name="/ComplianceServiceManager.Operations/">
     <Project Path="ComplianceServiceManager.Operations/ComplianceServiceManager.Operations.csproj" />
