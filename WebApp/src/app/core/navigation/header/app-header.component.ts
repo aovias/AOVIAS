@@ -41,18 +41,19 @@ import { SidebarComplianceProgressComponent } from '../../layout/sidebar-complia
     <header
       class="app-header"
       [class.app-header--rail-collapsed]="
-        !administrationMode() && shellSidebar.isSidebarRailCollapsed()
+        !administrationMode() && !onboardingMode() && shellSidebar.isSidebarRailCollapsed()
       "
       [class.app-header--administration]="administrationMode()"
+      [class.app-header--onboarding]="onboardingMode()"
       [class.app-header--band-laptop]="layout.band() === 'laptop'"
       [class.app-header--band-tablet]="layout.band() === 'tablet'"
       [class.app-header--band-mobile]="layout.band() === 'mobile'"
       [style.--header-rail-px.px]="
-        administrationMode() ? null : shellSidebar.shellSidebarColumnPx()
+        administrationMode() || onboardingMode() ? null : shellSidebar.shellSidebarColumnPx()
       "
     >
       <div class="app-header__brand">
-        @if (!administrationMode()) {
+        @if (!administrationMode() && !onboardingMode()) {
           <button
             type="button"
             class="app-header__nav-toggle"
@@ -79,29 +80,44 @@ import { SidebarComplianceProgressComponent } from '../../layout/sidebar-complia
           </button>
         }
 
-        <a class="app-header__logo" routerLink="/app/dashboard" aria-label="AOVIAS home">
-          @if (!administrationMode() && shellSidebar.isSidebarRailCollapsed()) {
-            <img
-              src="/assets/praman_logo.png"
-              alt=""
-              class="app-header__logo-img app-header__logo-img--mark"
-              width="36"
-              height="36"
-            />
-          } @else if (themeService.theme() === 'light') {
-            <img
-              src="/assets/logo_white_background.png"
-              alt="AOVIAS"
-              class="app-header__logo-img"
-            />
-          } @else {
-            <img src="/assets/logo_dark_background.png" alt="AOVIAS" class="app-header__logo-img" />
-          }
-        </a>
+        @if (onboardingMode()) {
+          <span class="app-header__logo" aria-label="AOVIAS Command">
+            @if (themeService.theme() === 'light') {
+              <img src="/assets/logo_white_background.png" alt="" class="app-header__logo-img" />
+            } @else {
+              <img src="/assets/logo_dark_background.png" alt="" class="app-header__logo-img" />
+            }
+          </span>
+          <span class="aov-badge aov-badge--primary app-header__product-badge">AOVIAS Command</span>
+        } @else {
+          <a class="app-header__logo" routerLink="/app/dashboard" aria-label="AOVIAS home">
+            @if (!administrationMode() && shellSidebar.isSidebarRailCollapsed()) {
+              <img
+                src="/assets/praman_logo.png"
+                alt=""
+                class="app-header__logo-img app-header__logo-img--mark"
+                width="36"
+                height="36"
+              />
+            } @else if (themeService.theme() === 'light') {
+              <img
+                src="/assets/logo_white_background.png"
+                alt="AOVIAS"
+                class="app-header__logo-img"
+              />
+            } @else {
+              <img
+                src="/assets/logo_dark_background.png"
+                alt="AOVIAS"
+                class="app-header__logo-img"
+              />
+            }
+          </a>
+        }
       </div>
 
       <div class="app-header__main">
-        @if (!administrationMode()) {
+        @if (!administrationMode() && !onboardingMode()) {
           <div class="app-header__context" aria-label="Workspace context">
             <app-workspace-context />
             <app-sidebar-compliance-progress class="app-header__compliance" />
@@ -110,7 +126,9 @@ import { SidebarComplianceProgressComponent } from '../../layout/sidebar-complia
 
         <div class="app-header__spacer"></div>
 
-        <app-header-actions [userName]="userName()" (searchActivate)="onSearchActivate()" />
+        @if (!onboardingMode()) {
+          <app-header-actions [userName]="userName()" (searchActivate)="onSearchActivate()" />
+        }
       </div>
     </header>
   `,
@@ -149,9 +167,18 @@ import { SidebarComplianceProgressComponent } from '../../layout/sidebar-complia
       box-sizing: border-box;
     }
 
-    .app-header--administration .app-header__brand {
+    .app-header--administration .app-header__brand,
+    .app-header--onboarding .app-header__brand {
       width: auto;
       max-width: none;
+    }
+
+    .app-header--onboarding .app-header__logo {
+      cursor: default;
+    }
+
+    .app-header__product-badge {
+      flex-shrink: 0;
     }
 
     .app-header__nav-toggle {
@@ -294,6 +321,12 @@ export class HeaderComponent implements OnInit {
   /** When true, hides operational navigation and uses a simplified administration layout. */
   readonly administrationMode = input(false);
 
+  /**
+   * When true, renders brand-only chrome for onboarding:
+   * AOVIAS logo + product badge, no nav/workspace/actions.
+   */
+  readonly onboardingMode = input(false);
+
   readonly themeService = inject(ThemeService);
   readonly shellSidebar = inject(ShellSidebarService);
   readonly layout = inject(HeaderLayoutService);
@@ -305,7 +338,9 @@ export class HeaderComponent implements OnInit {
   private readonly commandPalette = inject(CommandPaletteService);
 
   ngOnInit(): void {
-    this.resolveUserName();
+    if (!this.onboardingMode()) {
+      this.resolveUserName();
+    }
   }
 
   onNavToggle(): void {
