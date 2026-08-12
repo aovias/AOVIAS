@@ -76,7 +76,7 @@ public sealed partial class ShellViewModel : ObservableObject
         [WorkspaceReconciliation] = "Desired vs observed state drift detection",
         [WorkspaceAlerts] = "Warnings and errors across the session",
         [WorkspaceAudit] = "Attributable platform and repair operations",
-        [WorkspaceLocalDevServices] = "Run and monitor local development solutions",
+        [WorkspaceLocalDevServices] = "Workspaces and local development services",
         [WorkspaceAiCopilot] = "AI-assisted operations",
         [WorkspaceSettings] = "Platform configuration"
     };
@@ -245,7 +245,7 @@ public sealed partial class ShellViewModel : ObservableObject
             CreateItem(WorkspaceAudit, "Audit Logs", "IconAudit")
         ]));
 
-        var localDevItem = CreateItem(WorkspaceLocalDevServices, "Local Dev Services", "IconDevServices");
+        var localDevItem = CreateItem(WorkspaceLocalDevServices, "Local Development", "IconDevServices");
         localDevItem.Badge = "NEW";
         NavigationSections.Add(new NavigationSectionViewModel("LOCAL DEVELOPMENT",
         [

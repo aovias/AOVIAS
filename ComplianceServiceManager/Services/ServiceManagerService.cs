@@ -7,7 +7,7 @@ using ComplianceServiceManager.Models;
 
 namespace ComplianceServiceManager.Services;
 
-public sealed class ServiceManagerService : IDisposable
+public sealed class ServiceManagerService : IServiceRuntimeHost, IDisposable
 {
     private readonly ServiceDiscoveryService discoveryService;
     private readonly BuildService buildService;

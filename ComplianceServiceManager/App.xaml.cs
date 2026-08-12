@@ -9,8 +9,16 @@ using ComplianceServiceManager.Services;
 using ComplianceServiceManager.Services.Bootstrap;
 using ComplianceServiceManager.Services.Configuration;
 using ComplianceServiceManager.Navigation;
+using ComplianceServiceManager.Models.LocalResources;
+using ComplianceServiceManager.Models.ResourceIntelligence;
+using ComplianceServiceManager.Services.AgentSessions;
 using ComplianceServiceManager.Services.LocalDev;
+using ComplianceServiceManager.Services.LocalPullRequests;
+using ComplianceServiceManager.Services.LocalResources;
+using ComplianceServiceManager.Services.ResourceIntelligence;
 using ComplianceServiceManager.Services.Runtime;
+using ComplianceServiceManager.Services.RuntimeProfiles;
+using ComplianceServiceManager.Services.Workspaces;
 using ComplianceServiceManager.ViewModels;
 using ComplianceServiceManager.ViewModels.AiCopilot;
 using ComplianceServiceManager.ViewModels.ReleaseCenter;
@@ -136,6 +144,37 @@ public partial class App : Application
 
         services.AddSingleton<ILoggingService>(provider => new LoggingService(Current.Dispatcher));
         services.AddSingleton<SolutionFolderRegistry>();
+        services.AddSingleton<DevelopmentWorkspaceRegistry>();
+        services.AddSingleton(provider => new GitCliRunner(
+            () => provider.GetRequiredService<DevelopmentWorkspaceRegistry>().GetAllowedRoots()));
+        services.AddSingleton<IGitWorkspaceService, GitWorkspaceService>();
+        services.AddSingleton<IDevelopmentWorkspaceService, DevelopmentWorkspaceService>();
+        services.AddSingleton<RuntimeProfileRegistry>();
+        services.AddSingleton<RuntimeProfileValidator>();
+        services.AddSingleton<LocalPullRequestRegistry>();
+        services.AddSingleton<IGitPullRequestService, GitPullRequestService>();
+        services.AddSingleton<ILocalPullRequestService, LocalPullRequestService>();
+        services.AddSingleton<AgentSessionRegistry>();
+        services.AddSingleton<IAgentSessionService, AgentSessionService>();
+        services.AddSingleton(ResourceThresholdPolicy.Default);
+        services.AddSingleton(new LocalResourceMonitoringOptions
+        {
+            PollInterval = TimeSpan.FromSeconds(3),
+            DiskProbePath = @"V:\DevelopmentRepo",
+            Thresholds = LocalResourceThresholds.Default
+        });
+        services.AddSingleton<ILocalResourceCollector, WindowsLocalResourceCollector>();
+        services.AddSingleton<ILocalResourceMonitoringService>(provider =>
+            new LocalResourceMonitoringService(
+                provider.GetRequiredService<ILocalResourceCollector>(),
+                provider.GetRequiredService<LocalResourceMonitoringOptions>(),
+                provider.GetRequiredService<IServiceRuntimeHost>()));
+        services.AddSingleton<IResourceIntelligenceService>(provider =>
+            new ResourceIntelligenceService(
+                provider.GetRequiredService<ILocalResourceMonitoringService>(),
+                provider.GetRequiredService<ResourceThresholdPolicy>(),
+                provider.GetRequiredService<IRuntimeProfileOrchestrator>(),
+                provider.GetRequiredService<IAgentSessionService>()));
         services.AddSingleton(provider => new ServiceDiscoveryService(
             provider.GetRequiredService<SolutionFolderRegistry>(),
             provider.GetRequiredService<ILoggingService>()));
@@ -144,6 +183,7 @@ public partial class App : Application
         services.AddSingleton<ProcessService>();
         services.AddSingleton<BuildService>();
         services.AddSingleton<HealthCheckService>();
+        services.AddSingleton<IHealthProbe>(provider => provider.GetRequiredService<HealthCheckService>());
         services.AddSingleton<BuildRepairService>();
         services.AddSingleton<PortRecoveryService>();
         services.AddSingleton<IRepairHistoryStore, RepairHistoryStore>();
@@ -156,6 +196,8 @@ public partial class App : Application
         services.AddSingleton<IFixExecutionPipeline, FixExecutionPipeline>();
         services.AddSingleton<IAIFixOrchestrator, AIFixOrchestrator>();
         services.AddSingleton<ServiceManagerService>();
+        services.AddSingleton<IServiceRuntimeHost>(provider => provider.GetRequiredService<ServiceManagerService>());
+        services.AddSingleton<IRuntimeProfileOrchestrator, RuntimeProfileOrchestrator>();
         services.AddSingleton<WorkspaceNavigator>();
         services.AddSingleton<IWorkspaceNavigator>(provider => provider.GetRequiredService<WorkspaceNavigator>());
         services.AddSingleton<IRuntimeCapabilitiesService, RuntimeCapabilitiesService>();
