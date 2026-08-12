@@ -310,7 +310,7 @@
                             </Grid.RowDefinitions>
 
                             <Grid Grid.Row="0" Margin="0,0,0,12">
-                                <TextBlock Text="Local Dev Services" Style="{StaticResource HeadingTextStyle}" />
+                                <TextBlock Text="Local Development" Style="{StaticResource HeadingTextStyle}" />
                                 <Button Content="Configure Folder"
                                         HorizontalAlignment="Right"
                                         Command="{Binding OpenLocalDevServicesCommand}" />

@@ -200,4 +200,7 @@ Agent → Task → Workspace (D1) → Branch
 | D4 Agent Sessions | Metadata only (no agent process control) |
 | D3 Local PR | Explicit `--no-ff` merge after SHA-bound approval; target worktree must be on target branch |
 
+Studio UI (V2.0): Local Development is one navigation destination with five tabs —
+Overview · Git & PR · Agent Sessions · Services · Monitoring.
+
 Invariant: Studio must never silently modify Git, runtime, worktrees, or agents.
