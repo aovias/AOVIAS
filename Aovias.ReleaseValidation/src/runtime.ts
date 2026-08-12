@@ -57,10 +57,18 @@ export const test = base.extend<Fixtures, { workerEnvironment: EnvironmentReadin
   },
 
   evidence: async ({ page }, use, testInfo) => {
+    // DEF-ENV-001 — the services log their operational stream to their own Serilog files, not to
+    // stdout. Collect around the test so the managed server log is current at both points
+    // ServerLogReader cares about: level before the step is marked, complete before it is read.
+    const environmentLogs = new EnvironmentManager(RUN_ID, SERVER_LOG_DIR);
+    environmentLogs.collectRuntimeLogs();
+
     const collector = new EvidenceCollector(page, SERVER_LOG_DIR, RUN_ID);
     collector.beginStep();
 
     await use(collector);
+
+    environmentLogs.collectRuntimeLogs();
 
     // Persist regardless of outcome. A green test that logged server errors is a defect this
     // platform exists to surface, and its evidence must survive.

@@ -40,7 +40,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="deployment-assets\signing\identity-signing.pfx">
+    <Content Include="deployment-assets\signing\identity-signing.pfx"
+             Condition="Exists('deployment-assets\signing\identity-signing.pfx')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <Link>signing\identity-signing.pfx</Link>
