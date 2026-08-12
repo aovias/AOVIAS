@@ -19,6 +19,7 @@ using ComplianceServiceManager.Services.ResourceIntelligence;
 using ComplianceServiceManager.Services.Runtime;
 using ComplianceServiceManager.Services.RuntimeProfiles;
 using ComplianceServiceManager.Services.ServiceInstances;
+using ComplianceServiceManager.Services.PortRegistry;
 using ComplianceServiceManager.Services.Workspaces;
 using ComplianceServiceManager.ViewModels;
 using ComplianceServiceManager.ViewModels.AiCopilot;
@@ -159,6 +160,9 @@ public partial class App : Application
         services.AddSingleton<IAgentSessionService, AgentSessionService>();
         services.AddSingleton<ServiceInstanceRegistry>();
         services.AddSingleton<IServiceInstanceService, ServiceInstanceService>();
+        services.AddSingleton<PortRegistryStore>();
+        services.AddSingleton<IPortAvailabilityService, WindowsPortAvailabilityService>();
+        services.AddSingleton<IPortRegistryService, PortRegistryService>();
         services.AddSingleton(ResourceThresholdPolicy.Default);
         services.AddSingleton(new LocalResourceMonitoringOptions
         {

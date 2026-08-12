@@ -10,6 +10,7 @@ using ComplianceServiceManager.Models.RuntimeProfiles;
 using ComplianceServiceManager.Models.ServiceInstances;
 using ComplianceServiceManager.Models.Workspaces;
 using ComplianceServiceManager.Models;
+using ComplianceServiceManager.Models.PortRegistry;
 using ComplianceServiceManager.Services;
 using ComplianceServiceManager.Services.AgentSessions;
 using ComplianceServiceManager.Services.LocalDev;
@@ -18,6 +19,7 @@ using ComplianceServiceManager.Services.LocalResources;
 using ComplianceServiceManager.Services.ResourceIntelligence;
 using ComplianceServiceManager.Services.RuntimeProfiles;
 using ComplianceServiceManager.Services.ServiceInstances;
+using ComplianceServiceManager.Services.PortRegistry;
 using ComplianceServiceManager.Services.Workspaces;
 using ComplianceServiceManager.Views.Development;
 
@@ -37,6 +39,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private readonly IAgentSessionService agentSessionService;
     private readonly IResourceIntelligenceService resourceIntelligence;
     private readonly IServiceInstanceService serviceInstanceService;
+    private readonly IPortRegistryService portRegistryService;
 
     [ObservableProperty]
     private string statusMessage = string.Empty;
@@ -58,6 +61,9 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     [ObservableProperty]
     private string serviceInstanceStatusMessage = string.Empty;
+
+    [ObservableProperty]
+    private string portRegistryStatusMessage = string.Empty;
 
     [ObservableProperty]
     private string? selectedFolder;
@@ -85,6 +91,12 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     [ObservableProperty]
     private ServiceInfoModel? selectedDiscoveredService;
+
+    [ObservableProperty]
+    private PortAllocationItem? selectedPortAllocation;
+
+    [ObservableProperty]
+    private ServiceInstanceItem? selectedServiceInstance;
 
     [ObservableProperty]
     private string reviewComment = string.Empty;
@@ -150,6 +162,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     public ObservableCollection<ServiceInstanceItem> SelectedServiceInstances { get; } = [];
 
+    public ObservableCollection<PortAllocationItem> PortAllocations { get; } = [];
+
     public LocalDevServicesViewModel(
         SolutionFolderRegistry folderRegistry,
         MainViewModel servicesViewModel,
@@ -160,7 +174,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         ILocalPullRequestService pullRequestService,
         IAgentSessionService agentSessionService,
         IResourceIntelligenceService resourceIntelligence,
-        IServiceInstanceService serviceInstanceService)
+        IServiceInstanceService serviceInstanceService,
+        IPortRegistryService portRegistryService)
     {
         this.folderRegistry = folderRegistry;
         this.workspaceService = workspaceService;
@@ -171,6 +186,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         this.agentSessionService = agentSessionService;
         this.resourceIntelligence = resourceIntelligence;
         this.serviceInstanceService = serviceInstanceService;
+        this.portRegistryService = portRegistryService;
         Services = servicesViewModel;
         SyncFolders();
         folderRegistry.FoldersChanged += SyncFolders;
@@ -181,6 +197,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         agentSessionService.SessionsChanged += SyncAgentSessions;
         SyncAgentSessions();
         serviceInstanceService.InstancesChanged += SyncSelectedServiceInstances;
+        portRegistryService.AllocationsChanged += SyncPortAllocations;
         resourceMonitoring.SnapshotUpdated += OnResourceSnapshotUpdated;
         resourceIntelligence.AssessmentUpdated += OnResourceAssessmentUpdated;
         resourceMonitoring.Start();
@@ -198,6 +215,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         _ = RefreshLocalPullRequestsAsync();
         _ = RefreshAgentSessionsAsync();
         _ = RefreshServiceInstancesAsync();
+        _ = RefreshPortRegistryAsync();
     }
 
     partial void OnSelectedDiscoveredServiceChanged(ServiceInfoModel? value)
@@ -928,7 +946,9 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         {
             ServiceInstanceStatusMessage = "Reconciling service instances…";
             await serviceInstanceService.RefreshAsync();
+            await portRegistryService.RefreshAsync();
             SyncSelectedServiceInstances();
+            SyncPortAllocations();
             ServiceInstanceStatusMessage = $"{serviceInstanceService.GetInstances().Count} instance(s) reconciled.";
         }
         catch (Exception ex)
@@ -937,19 +957,129 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private async Task RefreshPortRegistryAsync()
+    {
+        try
+        {
+            PortRegistryStatusMessage = "Refreshing port registry…";
+            await portRegistryService.RefreshAsync();
+            SyncPortAllocations();
+            SyncSelectedServiceInstances();
+            PortRegistryStatusMessage =
+                $"{portRegistryService.GetAllocations().Count} allocation(s) · refreshed {DateTime.Now:HH:mm:ss}.";
+        }
+        catch (Exception ex)
+        {
+            PortRegistryStatusMessage = $"Port registry refresh failed: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void AssignPort()
+    {
+        var instance = SelectedServiceInstance;
+        if (instance is null || !instance.IsConfigured || string.IsNullOrWhiteSpace(instance.InstanceId))
+        {
+            MessageBox.Show(
+                "Select a configured service instance first.",
+                "Assign Port",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return;
+        }
+
+        var dialog = new AssignPortWindow(
+            instance.ServiceName,
+            BuildInstanceLabel(instance),
+            instance.Port,
+            port => portRegistryService.ValidateAssignment(port, instance.InstanceId));
+        var owner = Application.Current?.MainWindow;
+        if (owner is not null)
+        {
+            dialog.Owner = owner;
+        }
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        var result = portRegistryService.Assign(dialog.SelectedPort, instance.InstanceId);
+        if (!result.Succeeded)
+        {
+            MessageBox.Show(
+                result.Error ?? "Port assignment failed.",
+                "Assign Port",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+            PortRegistryStatusMessage = result.Error ?? "Port assignment failed.";
+            return;
+        }
+
+        SyncPortAllocations();
+        SyncSelectedServiceInstances();
+        PortRegistryStatusMessage = $"Assigned port {dialog.SelectedPort} to {BuildInstanceLabel(instance)}.";
+    }
+
+    [RelayCommand]
+    private void ReleasePort()
+    {
+        int? port = SelectedPortAllocation?.Port ?? SelectedServiceInstance?.Port;
+        if (port is null)
+        {
+            MessageBox.Show(
+                "Select a port allocation or an instance with an assigned port.",
+                "Release Port",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            $"Release port {port.Value} from the registry?\n\nThis does not stop any process.",
+            "Release Port",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question,
+            MessageBoxResult.No);
+        if (confirm != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        var result = portRegistryService.Release(port.Value);
+        if (!result.Succeeded)
+        {
+            MessageBox.Show(
+                result.Error ?? "Release failed.",
+                "Release Port",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+            PortRegistryStatusMessage = result.Error ?? "Release failed.";
+            return;
+        }
+
+        SyncPortAllocations();
+        SyncSelectedServiceInstances();
+        PortRegistryStatusMessage = $"Released port {port.Value} from the registry (no process was stopped).";
+    }
+
     private void SyncSelectedServiceInstances()
     {
         void Apply()
         {
+            var selectedId = SelectedServiceInstance?.InstanceId;
             SelectedServiceInstances.Clear();
             if (SelectedDiscoveredService is null || string.IsNullOrWhiteSpace(SelectedDiscoveredService.Name))
             {
+                SelectedServiceInstance = null;
                 return;
             }
 
             var serviceId = SelectedDiscoveredService.Name;
             foreach (var instance in serviceInstanceService.GetInstancesForService(serviceId))
             {
+                ApplyRegistryPort(instance);
                 SelectedServiceInstances.Add(instance);
             }
 
@@ -957,6 +1087,11 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
             {
                 SelectedServiceInstances.Add(placeholder);
             }
+
+            SelectedServiceInstance = SelectedServiceInstances.FirstOrDefault(item =>
+                                           !string.IsNullOrWhiteSpace(selectedId)
+                                           && string.Equals(item.InstanceId, selectedId, StringComparison.OrdinalIgnoreCase))
+                                       ?? SelectedServiceInstances.FirstOrDefault();
         }
 
         var dispatcher = Application.Current?.Dispatcher;
@@ -968,6 +1103,64 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         {
             Apply();
         }
+    }
+
+    private void SyncPortAllocations()
+    {
+        void Apply()
+        {
+            var selectedPort = SelectedPortAllocation?.Port;
+            PortAllocations.Clear();
+            foreach (var item in portRegistryService.GetAllocations().OrderBy(a => a.Port))
+            {
+                PortAllocations.Add(item);
+            }
+
+            SelectedPortAllocation = PortAllocations.FirstOrDefault(item => item.Port == selectedPort)
+                                     ?? PortAllocations.FirstOrDefault();
+        }
+
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is not null && !dispatcher.CheckAccess())
+        {
+            dispatcher.Invoke(Apply);
+        }
+        else
+        {
+            Apply();
+        }
+    }
+
+    private void ApplyRegistryPort(ServiceInstanceItem instance)
+    {
+        if (string.IsNullOrWhiteSpace(instance.InstanceId))
+        {
+            return;
+        }
+
+        var allocation = portRegistryService.GetByInstanceId(instance.InstanceId);
+        if (allocation is not null)
+        {
+            instance.ApplyPort(allocation.Port);
+        }
+    }
+
+    private static string BuildInstanceLabel(ServiceInstanceItem instance)
+    {
+        if (instance.ExecutionScope == ServiceExecutionScope.Shared)
+        {
+            return "Shared";
+        }
+
+        if (!string.IsNullOrWhiteSpace(instance.WorkspaceId))
+        {
+            var id = instance.WorkspaceId.Trim();
+            return string.Equals(id, "cursor", StringComparison.OrdinalIgnoreCase) ? "Cursor"
+                : string.Equals(id, "claude", StringComparison.OrdinalIgnoreCase) ? "Claude"
+                : id;
+        }
+
+        return instance.WorkspaceDisplay;
     }
 
     private void SyncAgentSessions()

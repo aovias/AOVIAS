@@ -205,6 +205,11 @@ Overview · Git & PR · Agent Sessions · Services · Monitoring.
 
 Service Instance Model (V2.1): distinguishes Service Definition (discovered service) from
 Service Instance (Shared vs Workspace-scoped execution context). Read-only awareness only —
-no port allocation and no isolated runtime execution.
+no isolated runtime execution.
+
+Local Port Registry (V2.2): maps local TCP ports to ServiceInstance identity
+(`%LocalAppData%\AoviasStudio\port-registry.json`). Registry assignment is authoritative for
+configured ownership; OS listener state is a point-in-time availability check. Does not start,
+stop, or kill processes. Does not auto-allocate or auto-resolve conflicts.
 
 Invariant: Studio must never silently modify Git, runtime, worktrees, or agents.
