@@ -7,7 +7,9 @@ using ComplianceServiceManager.Models.LocalPullRequests;
 using ComplianceServiceManager.Models.LocalResources;
 using ComplianceServiceManager.Models.ResourceIntelligence;
 using ComplianceServiceManager.Models.RuntimeProfiles;
+using ComplianceServiceManager.Models.ServiceInstances;
 using ComplianceServiceManager.Models.Workspaces;
+using ComplianceServiceManager.Models;
 using ComplianceServiceManager.Services;
 using ComplianceServiceManager.Services.AgentSessions;
 using ComplianceServiceManager.Services.LocalDev;
@@ -15,6 +17,7 @@ using ComplianceServiceManager.Services.LocalPullRequests;
 using ComplianceServiceManager.Services.LocalResources;
 using ComplianceServiceManager.Services.ResourceIntelligence;
 using ComplianceServiceManager.Services.RuntimeProfiles;
+using ComplianceServiceManager.Services.ServiceInstances;
 using ComplianceServiceManager.Services.Workspaces;
 using ComplianceServiceManager.Views.Development;
 
@@ -33,6 +36,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private readonly ILocalPullRequestService pullRequestService;
     private readonly IAgentSessionService agentSessionService;
     private readonly IResourceIntelligenceService resourceIntelligence;
+    private readonly IServiceInstanceService serviceInstanceService;
 
     [ObservableProperty]
     private string statusMessage = string.Empty;
@@ -51,6 +55,9 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     [ObservableProperty]
     private string resourceIntelligenceStatusMessage = string.Empty;
+
+    [ObservableProperty]
+    private string serviceInstanceStatusMessage = string.Empty;
 
     [ObservableProperty]
     private string? selectedFolder;
@@ -75,6 +82,9 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     [ObservableProperty]
     private AgentSessionItem? selectedAgentSession;
+
+    [ObservableProperty]
+    private ServiceInfoModel? selectedDiscoveredService;
 
     [ObservableProperty]
     private string reviewComment = string.Empty;
@@ -138,6 +148,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     public ObservableCollection<AgentSessionItem> AgentSessions { get; } = [];
 
+    public ObservableCollection<ServiceInstanceItem> SelectedServiceInstances { get; } = [];
+
     public LocalDevServicesViewModel(
         SolutionFolderRegistry folderRegistry,
         MainViewModel servicesViewModel,
@@ -147,7 +159,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         ILocalResourceMonitoringService resourceMonitoring,
         ILocalPullRequestService pullRequestService,
         IAgentSessionService agentSessionService,
-        IResourceIntelligenceService resourceIntelligence)
+        IResourceIntelligenceService resourceIntelligence,
+        IServiceInstanceService serviceInstanceService)
     {
         this.folderRegistry = folderRegistry;
         this.workspaceService = workspaceService;
@@ -157,6 +170,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         this.pullRequestService = pullRequestService;
         this.agentSessionService = agentSessionService;
         this.resourceIntelligence = resourceIntelligence;
+        this.serviceInstanceService = serviceInstanceService;
         Services = servicesViewModel;
         SyncFolders();
         folderRegistry.FoldersChanged += SyncFolders;
@@ -166,6 +180,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         SyncPullRequests();
         agentSessionService.SessionsChanged += SyncAgentSessions;
         SyncAgentSessions();
+        serviceInstanceService.InstancesChanged += SyncSelectedServiceInstances;
         resourceMonitoring.SnapshotUpdated += OnResourceSnapshotUpdated;
         resourceIntelligence.AssessmentUpdated += OnResourceAssessmentUpdated;
         resourceMonitoring.Start();
@@ -182,6 +197,12 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         _ = RefreshWorkspacesAsync();
         _ = RefreshLocalPullRequestsAsync();
         _ = RefreshAgentSessionsAsync();
+        _ = RefreshServiceInstancesAsync();
+    }
+
+    partial void OnSelectedDiscoveredServiceChanged(ServiceInfoModel? value)
+    {
+        SyncSelectedServiceInstances();
     }
 
     partial void OnSelectedPullRequestChanged(LocalPullRequestItem? value)
@@ -303,6 +324,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         await Services.RefreshServicesCommand.ExecuteAsync(null);
         profileOrchestrator.ValidateAll();
         SyncProfiles();
+        await RefreshServiceInstancesAsync();
         StatusMessage = $"{Services.ServiceCount} service(s) discovered across {SolutionFolders.Count} folder(s).";
     }
 
@@ -896,6 +918,55 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         catch (Exception ex)
         {
             MessageBox.Show(ex.Message, "Cancel Session", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    [RelayCommand]
+    private async Task RefreshServiceInstancesAsync()
+    {
+        try
+        {
+            ServiceInstanceStatusMessage = "Reconciling service instances…";
+            await serviceInstanceService.RefreshAsync();
+            SyncSelectedServiceInstances();
+            ServiceInstanceStatusMessage = $"{serviceInstanceService.GetInstances().Count} instance(s) reconciled.";
+        }
+        catch (Exception ex)
+        {
+            ServiceInstanceStatusMessage = $"Instance refresh failed: {ex.Message}";
+        }
+    }
+
+    private void SyncSelectedServiceInstances()
+    {
+        void Apply()
+        {
+            SelectedServiceInstances.Clear();
+            if (SelectedDiscoveredService is null || string.IsNullOrWhiteSpace(SelectedDiscoveredService.Name))
+            {
+                return;
+            }
+
+            var serviceId = SelectedDiscoveredService.Name;
+            foreach (var instance in serviceInstanceService.GetInstancesForService(serviceId))
+            {
+                SelectedServiceInstances.Add(instance);
+            }
+
+            foreach (var placeholder in serviceInstanceService.GetNotConfiguredPlaceholders(serviceId, serviceId))
+            {
+                SelectedServiceInstances.Add(placeholder);
+            }
+        }
+
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is not null && !dispatcher.CheckAccess())
+        {
+            dispatcher.Invoke(Apply);
+        }
+        else
+        {
+            Apply();
         }
     }
 

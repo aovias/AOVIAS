@@ -203,4 +203,8 @@ Agent → Task → Workspace (D1) → Branch
 Studio UI (V2.0): Local Development is one navigation destination with five tabs —
 Overview · Git & PR · Agent Sessions · Services · Monitoring.
 
+Service Instance Model (V2.1): distinguishes Service Definition (discovered service) from
+Service Instance (Shared vs Workspace-scoped execution context). Read-only awareness only —
+no port allocation and no isolated runtime execution.
+
 Invariant: Studio must never silently modify Git, runtime, worktrees, or agents.

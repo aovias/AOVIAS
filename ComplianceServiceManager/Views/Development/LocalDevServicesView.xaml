@@ -909,6 +909,7 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <Grid Grid.Row="0" Margin="0,0,0,10">
@@ -942,51 +943,100 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <DataGrid Grid.Row="1"
-                                          ItemsSource="{Binding Services.ServicesView}"
-                                          VirtualizingPanel.IsVirtualizing="True"
-                                          VirtualizingPanel.VirtualizationMode="Recycling"
-                                          RowHeight="48"
-                                          MaxHeight="420">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Service" Binding="{Binding Name}" Width="2*" />
-                                        <DataGridTextColumn Header="Type" Binding="{Binding DisplayKind}" Width="*" />
-                                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" />
-                                        <DataGridTextColumn Header="URL" Binding="{Binding DisplayHttpsUrl}" Width="2*" />
-                                        <DataGridTextColumn Header="PID" Binding="{Binding DisplayProcessId}" Width="70" />
-                                        <DataGridTextColumn Header="Since" Binding="{Binding DisplayRunningSince}" Width="90" />
-                                        <DataGridTemplateColumn Header="Actions" Width="230">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <Button Content="Start"
-                                                                Padding="10,3"
-                                                                MinHeight="26"
-                                                                Command="{Binding DataContext.Services.StartServiceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                                CommandParameter="{Binding}"
-                                                                Margin="0,0,6,0" />
-                                                        <Button Content="Stop"
-                                                                Padding="10,3"
-                                                                MinHeight="26"
-                                                                Command="{Binding DataContext.Services.StopServiceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                                CommandParameter="{Binding}"
-                                                                Margin="0,0,6,0" />
-                                                        <Button Content="Open"
-                                                                Padding="10,3"
-                                                                MinHeight="26"
-                                                                Command="{Binding DataContext.Services.OpenSwaggerCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                                CommandParameter="{Binding}" />
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Grid>
-                        </Border>
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
+                                    <DataGrid Grid.Row="1"
+                                              ItemsSource="{Binding Services.ServicesView}"
+                                              SelectedItem="{Binding SelectedDiscoveredService, Mode=TwoWay}"
+                                              VirtualizingPanel.IsVirtualizing="True"
+                                              VirtualizingPanel.VirtualizationMode="Recycling"
+                                              RowHeight="48"
+                                              MaxHeight="320">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Service" Binding="{Binding Name}" Width="2*" />
+                                            <DataGridTextColumn Header="Type" Binding="{Binding DisplayKind}" Width="*" />
+                                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" />
+                                            <DataGridTextColumn Header="URL" Binding="{Binding DisplayHttpsUrl}" Width="2*" />
+                                            <DataGridTextColumn Header="PID" Binding="{Binding DisplayProcessId}" Width="70" />
+                                            <DataGridTextColumn Header="Since" Binding="{Binding DisplayRunningSince}" Width="90" />
+                                            <DataGridTemplateColumn Header="Actions" Width="230">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Button Content="Start"
+                                                                    Padding="10,3"
+                                                                    MinHeight="26"
+                                                                    Command="{Binding DataContext.Services.StartServiceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                    CommandParameter="{Binding}"
+                                                                    Margin="0,0,6,0" />
+                                                            <Button Content="Stop"
+                                                                    Padding="10,3"
+                                                                    MinHeight="26"
+                                                                    Command="{Binding DataContext.Services.StopServiceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                    CommandParameter="{Binding}"
+                                                                    Margin="0,0,6,0" />
+                                                            <Button Content="Open"
+                                                                    Padding="10,3"
+                                                                    MinHeight="26"
+                                                                    Command="{Binding DataContext.Services.OpenSwaggerCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                    CommandParameter="{Binding}" />
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <Border Grid.Row="2"
+                                            Style="{StaticResource CardBorderStyle}"
+                                            Padding="12"
+                                            Margin="0,12,0,0"
+                                            Visibility="{Binding SelectedDiscoveredService, Converter={StaticResource NotNullToVis}}">
+                                        <StackPanel>
+                                            <Grid Margin="0,0,0,8">
+                                                <StackPanel>
+                                                    <TextBlock Text="Service Instances" Style="{StaticResource HeadingTextStyle}" />
+                                                    <TextBlock Text="Definition vs execution context (V2.1). Read-only awareness — no isolated start or port allocation."
+                                                               Style="{StaticResource CaptionTextStyle}"
+                                                               TextWrapping="Wrap"
+                                                               Margin="0,4,0,0" />
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                                    <TextBlock Text="{Binding ServiceInstanceStatusMessage}"
+                                                               Style="{StaticResource CaptionTextStyle}"
+                                                               Margin="0,0,12,0"
+                                                               VerticalAlignment="Center" />
+                                                    <Button Content="Refresh Instances"
+                                                            Command="{Binding RefreshServiceInstancesCommand}" />
+                                                </StackPanel>
+                                            </Grid>
+                                            <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,0,0,8">
+                                                <Run Text="Definition: " />
+                                                <Run Text="{Binding SelectedDiscoveredService.Name, Mode=OneWay}" FontWeight="SemiBold" />
+                                                <Run Text=" · " />
+                                                <Run Text="{Binding SelectedDiscoveredService.DisplayKind, Mode=OneWay}" />
+                                            </TextBlock>
+                                            <DataGrid ItemsSource="{Binding SelectedServiceInstances}"
+                                                      AutoGenerateColumns="False"
+                                                      IsReadOnly="True"
+                                                      HeadersVisibility="Column"
+                                                      CanUserAddRows="False"
+                                                      MaxHeight="180">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Scope" Binding="{Binding ScopeDisplay}" Width="90" />
+                                                    <DataGridTextColumn Header="Workspace" Binding="{Binding WorkspaceDisplay}" Width="*" />
+                                                    <DataGridTextColumn Header="Branch" Binding="{Binding Branch, TargetNullValue=—}" Width="*" />
+                                                    <DataGridTextColumn Header="Status" Binding="{Binding StateDisplay}" Width="110" />
+                                                    <DataGridTextColumn Header="Port" Binding="{Binding PortDisplay}" Width="90" />
+                                                    <DataGridTextColumn Header="PID" Binding="{Binding ProcessIdDisplay}" Width="70" />
+                                                    <DataGridTextColumn Header="Config" Binding="{Binding ConfigurationDisplay}" Width="110" />
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
 
             <!-- 5. Monitoring -->
             <TabItem Header="Monitoring">
