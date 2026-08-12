@@ -24,6 +24,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" MinHeight="320" />
             </Grid.RowDefinitions>
 
@@ -727,8 +728,113 @@
                 </Grid>
             </Border>
 
-            <!-- Solution folders -->
+            <!-- Resource Intelligence (D5 — recommend only, no auto mutation) -->
             <Border Grid.Row="6" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
+                <StackPanel>
+                    <Grid Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="Resource Intelligence" Style="{StaticResource HeadingTextStyle}" />
+                            <TextBlock Text="Advisory assessment over S3 telemetry. Observe → analyze → recommend → ask. No automatic profile/process/Git changes."
+                                       Style="{StaticResource CaptionTextStyle}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,4,0,0" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                            <TextBlock Text="{Binding ResourceIntelligenceStatusMessage}"
+                                       Style="{StaticResource CaptionTextStyle}"
+                                       Margin="0,0,12,0"
+                                       MaxWidth="260"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center" />
+                            <Button Content="Refresh Assessment"
+                                    Command="{Binding RefreshResourceIntelligenceCommand}"
+                                    Margin="0,0,8,0" />
+                            <Button Content="Use Suggested Profile"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Command="{Binding UseSuggestedProfileCommand}"
+                                    IsEnabled="{Binding ResourceIntelligence.HasSuggestedProfile}"
+                                    ToolTip="Explicit confirmation required. Invokes D2 start only after you confirm." />
+                        </StackPanel>
+                    </Grid>
+
+                    <UniformGrid Columns="4" Margin="0,0,0,10">
+                        <StackPanel Margin="0,0,8,0">
+                            <TextBlock Text="Overall" Style="{StaticResource CaptionTextStyle}" />
+                            <TextBlock Text="{Binding ResourceIntelligence.OverallPressureDisplay}" FontWeight="SemiBold" FontSize="16" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,0">
+                            <TextBlock Text="Memory" Style="{StaticResource CaptionTextStyle}" />
+                            <TextBlock Text="{Binding ResourceIntelligence.MemoryPressureDisplay}" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding ResourceIntelligence.MemoryDisplay}" Style="{StaticResource CaptionTextStyle}" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,0">
+                            <TextBlock Text="CPU" Style="{StaticResource CaptionTextStyle}" />
+                            <TextBlock Text="{Binding ResourceIntelligence.CpuPressureDisplay}" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding ResourceIntelligence.CpuDisplay}" Style="{StaticResource CaptionTextStyle}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="Disk" Style="{StaticResource CaptionTextStyle}" />
+                            <TextBlock Text="{Binding ResourceIntelligence.DiskPressureDisplay}" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding ResourceIntelligence.DiskDisplay}" Style="{StaticResource CaptionTextStyle}" />
+                        </StackPanel>
+                    </UniformGrid>
+
+                    <TextBlock Text="{Binding ResourceIntelligence.Summary}"
+                               Style="{StaticResource CaptionTextStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,10" />
+
+                    <TextBlock Text="Recommendation" FontWeight="SemiBold" Margin="0,0,0,4" />
+                    <TextBlock Text="{Binding ResourceIntelligence.PrimaryRecommendationTitle}"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource PrimaryBrush}" />
+                    <TextBlock Text="{Binding ResourceIntelligence.PrimaryRecommendationExplanation}"
+                               Style="{StaticResource CaptionTextStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,4,0,10" />
+                    <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,0,0,10">
+                        <Run Text="Suggested: " />
+                        <Run Text="{Binding ResourceIntelligence.SuggestedProfileName, Mode=OneWay, TargetNullValue=—}" />
+                    </TextBlock>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <DataGrid Grid.Column="0"
+                                  ItemsSource="{Binding ResourceIntelligence.ActiveSessions}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  HeadersVisibility="Column"
+                                  CanUserAddRows="False"
+                                  MaxHeight="120"
+                                  Margin="0,0,8,0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Agent" Binding="{Binding AgentDisplay}" Width="80" />
+                                <DataGridTextColumn Header="Session" Binding="{Binding Title}" Width="*" />
+                                <DataGridTextColumn Header="Runtime" Binding="{Binding RuntimeProfileDisplay}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid Grid.Column="1"
+                                  ItemsSource="{Binding ResourceIntelligence.ProfileEstimates}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  HeadersVisibility="Column"
+                                  CanUserAddRows="False"
+                                  MaxHeight="120">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Profile" Binding="{Binding ProfileName}" Width="*" />
+                                <DataGridTextColumn Header="Svc" Binding="{Binding ExpectedProcessCount}" Width="40" />
+                                <DataGridTextColumn Header="Mem" Binding="{Binding MemoryClass}" Width="70" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Solution folders -->
+            <Border Grid.Row="7" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
                 <StackPanel>
                     <Grid Margin="0,0,0,8">
                         <TextBlock Text="Solution Folders" Style="{StaticResource HeadingTextStyle}" />
@@ -776,7 +882,7 @@
             </Border>
 
             <!-- Services -->
-            <Border Grid.Row="7" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
+            <Border Grid.Row="8" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

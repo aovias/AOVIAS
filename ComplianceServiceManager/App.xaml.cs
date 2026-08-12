@@ -10,10 +10,12 @@ using ComplianceServiceManager.Services.Bootstrap;
 using ComplianceServiceManager.Services.Configuration;
 using ComplianceServiceManager.Navigation;
 using ComplianceServiceManager.Models.LocalResources;
+using ComplianceServiceManager.Models.ResourceIntelligence;
 using ComplianceServiceManager.Services.AgentSessions;
 using ComplianceServiceManager.Services.LocalDev;
 using ComplianceServiceManager.Services.LocalPullRequests;
 using ComplianceServiceManager.Services.LocalResources;
+using ComplianceServiceManager.Services.ResourceIntelligence;
 using ComplianceServiceManager.Services.Runtime;
 using ComplianceServiceManager.Services.RuntimeProfiles;
 using ComplianceServiceManager.Services.Workspaces;
@@ -154,6 +156,7 @@ public partial class App : Application
         services.AddSingleton<ILocalPullRequestService, LocalPullRequestService>();
         services.AddSingleton<AgentSessionRegistry>();
         services.AddSingleton<IAgentSessionService, AgentSessionService>();
+        services.AddSingleton(ResourceThresholdPolicy.Default);
         services.AddSingleton(new LocalResourceMonitoringOptions
         {
             PollInterval = TimeSpan.FromSeconds(3),
@@ -166,6 +169,12 @@ public partial class App : Application
                 provider.GetRequiredService<ILocalResourceCollector>(),
                 provider.GetRequiredService<LocalResourceMonitoringOptions>(),
                 provider.GetRequiredService<IServiceRuntimeHost>()));
+        services.AddSingleton<IResourceIntelligenceService>(provider =>
+            new ResourceIntelligenceService(
+                provider.GetRequiredService<ILocalResourceMonitoringService>(),
+                provider.GetRequiredService<ResourceThresholdPolicy>(),
+                provider.GetRequiredService<IRuntimeProfileOrchestrator>(),
+                provider.GetRequiredService<IAgentSessionService>()));
         services.AddSingleton(provider => new ServiceDiscoveryService(
             provider.GetRequiredService<SolutionFolderRegistry>(),
             provider.GetRequiredService<ILoggingService>()));

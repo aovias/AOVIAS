@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using ComplianceServiceManager.Models.AgentSessions;
 using ComplianceServiceManager.Models.LocalPullRequests;
 using ComplianceServiceManager.Models.LocalResources;
+using ComplianceServiceManager.Models.ResourceIntelligence;
 using ComplianceServiceManager.Models.RuntimeProfiles;
 using ComplianceServiceManager.Models.Workspaces;
 using ComplianceServiceManager.Services;
@@ -12,6 +13,7 @@ using ComplianceServiceManager.Services.AgentSessions;
 using ComplianceServiceManager.Services.LocalDev;
 using ComplianceServiceManager.Services.LocalPullRequests;
 using ComplianceServiceManager.Services.LocalResources;
+using ComplianceServiceManager.Services.ResourceIntelligence;
 using ComplianceServiceManager.Services.RuntimeProfiles;
 using ComplianceServiceManager.Services.Workspaces;
 using ComplianceServiceManager.Views.Development;
@@ -19,7 +21,7 @@ using ComplianceServiceManager.Views.Development;
 namespace ComplianceServiceManager.ViewModels.Development;
 
 /// <summary>
-/// Development → Local Development hub. Hosts D1–D4 and S3 Local Dev capabilities.
+/// Development → Local Development hub. Hosts D1–D5 and S3 Local Dev capabilities.
 /// </summary>
 public sealed partial class LocalDevServicesViewModel : ObservableObject
 {
@@ -30,6 +32,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private readonly ILocalResourceMonitoringService resourceMonitoring;
     private readonly ILocalPullRequestService pullRequestService;
     private readonly IAgentSessionService agentSessionService;
+    private readonly IResourceIntelligenceService resourceIntelligence;
 
     [ObservableProperty]
     private string statusMessage = string.Empty;
@@ -45,6 +48,9 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     [ObservableProperty]
     private string agentSessionStatusMessage = string.Empty;
+
+    [ObservableProperty]
+    private string resourceIntelligenceStatusMessage = string.Empty;
 
     [ObservableProperty]
     private string? selectedFolder;
@@ -80,6 +86,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     public LocalResourceMonitorItem LocalResources { get; } = new();
 
+    public ResourceIntelligenceItem ResourceIntelligence { get; } = new();
+
     public ObservableCollection<string> SolutionFolders { get; } = [];
 
     public ObservableCollection<DevelopmentWorkspaceItem> Workspaces { get; } = [];
@@ -100,7 +108,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         ServiceManagerService serviceManager,
         ILocalResourceMonitoringService resourceMonitoring,
         ILocalPullRequestService pullRequestService,
-        IAgentSessionService agentSessionService)
+        IAgentSessionService agentSessionService,
+        IResourceIntelligenceService resourceIntelligence)
     {
         this.folderRegistry = folderRegistry;
         this.workspaceService = workspaceService;
@@ -109,6 +118,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         this.resourceMonitoring = resourceMonitoring;
         this.pullRequestService = pullRequestService;
         this.agentSessionService = agentSessionService;
+        this.resourceIntelligence = resourceIntelligence;
         Services = servicesViewModel;
         SyncFolders();
         folderRegistry.FoldersChanged += SyncFolders;
@@ -119,10 +129,16 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         agentSessionService.SessionsChanged += SyncAgentSessions;
         SyncAgentSessions();
         resourceMonitoring.SnapshotUpdated += OnResourceSnapshotUpdated;
+        resourceIntelligence.AssessmentUpdated += OnResourceAssessmentUpdated;
         resourceMonitoring.Start();
         if (resourceMonitoring.LatestSnapshot is not null)
         {
             ApplyResourceSnapshot(resourceMonitoring.LatestSnapshot);
+        }
+
+        if (resourceIntelligence.LatestAssessment is not null)
+        {
+            ApplyResourceAssessment(resourceIntelligence.LatestAssessment);
         }
 
         _ = RefreshWorkspacesAsync();
@@ -141,6 +157,67 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     {
         var snapshot = resourceMonitoring.CaptureSnapshot();
         ApplyResourceSnapshot(snapshot);
+        ApplyResourceAssessment(resourceIntelligence.AssessFromSnapshot(snapshot, SelectedProfile?.Id));
+    }
+
+    [RelayCommand]
+    private void RefreshResourceIntelligence()
+    {
+        var assessment = resourceIntelligence.Assess(SelectedProfile?.Id);
+        ApplyResourceAssessment(assessment);
+        ResourceIntelligenceStatusMessage = $"Assessed {assessment.Timestamp.ToLocalTime():HH:mm:ss} · {assessment.OverallPressure}";
+    }
+
+    [RelayCommand]
+    private async Task UseSuggestedProfileAsync()
+    {
+        var profileId = ResourceIntelligence.SuggestedProfileId;
+        if (string.IsNullOrWhiteSpace(profileId))
+        {
+            return;
+        }
+
+        var profile = RuntimeProfiles.FirstOrDefault(item =>
+                          string.Equals(item.Id, profileId, StringComparison.OrdinalIgnoreCase))
+                      ?? profileOrchestrator.GetProfiles().FirstOrDefault(item =>
+                          string.Equals(item.Id, profileId, StringComparison.OrdinalIgnoreCase));
+        if (profile is null)
+        {
+            MessageBox.Show("Suggested profile is not available.", "Resource Intelligence", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var pressure = ResourceIntelligence.OverallPressure;
+        if (pressure is ResourcePressureLevel.High or ResourcePressureLevel.Critical)
+        {
+            var warn = MessageBox.Show(
+                $"Memory/resource pressure is currently {pressure}.\n\nStart '{profile.Name}' anyway?\n\nThis explicit confirmation is required — Studio will not auto-switch profiles.",
+                "Start Anyway?",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+            if (warn != MessageBoxResult.Yes)
+            {
+                return;
+            }
+        }
+        else
+        {
+            var confirm = MessageBox.Show(
+                $"Start runtime profile '{profile.Name}'?\n\nThis invokes D2 explicitly. D5 itself does not mutate runtime.",
+                "Use Suggested Profile",
+                MessageBoxButton.OKCancel,
+                MessageBoxImage.Question);
+            if (confirm != MessageBoxResult.OK)
+            {
+                return;
+            }
+        }
+
+        SelectedProfile = RuntimeProfiles.FirstOrDefault(item =>
+                              string.Equals(item.Id, profile.Id, StringComparison.OrdinalIgnoreCase))
+                          ?? profile;
+        await StartSelectedProfileAsync();
+        ResourceIntelligenceStatusMessage = $"Explicitly started suggested profile '{profile.Name}'.";
     }
 
     [RelayCommand]
@@ -846,5 +923,69 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
                 Note = service.AssociationNote
             });
         }
+    }
+
+    private void OnResourceAssessmentUpdated(ResourceAssessment assessment)
+    {
+        void Apply() => ApplyResourceAssessment(assessment);
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is null || dispatcher.CheckAccess())
+        {
+            Apply();
+            return;
+        }
+
+        dispatcher.Invoke(Apply);
+    }
+
+    private void ApplyResourceAssessment(ResourceAssessment assessment)
+    {
+        ResourceIntelligence.OverallPressure = assessment.OverallPressure;
+        ResourceIntelligence.OverallPressureDisplay = assessment.OverallPressure.ToString().ToUpperInvariant();
+        ResourceIntelligence.CpuDisplay = assessment.CpuWindowAveragePercent is double cpuAvg
+            ? $"{cpuAvg:0.#}% avg"
+            : assessment.CpuPercent is double cpu
+                ? $"{cpu:0.#}%"
+                : "—";
+        ResourceIntelligence.CpuPressureDisplay = assessment.CpuPressure.ToString().ToUpperInvariant();
+        ResourceIntelligence.MemoryDisplay = assessment.MemoryTotalBytes <= 0
+            ? "—"
+            : $"{LocalResourceFormatting.FormatBytes(assessment.MemoryUsedBytes)} / {LocalResourceFormatting.FormatBytes(assessment.MemoryTotalBytes)} ({assessment.MemoryPercent:0.#}%)";
+        ResourceIntelligence.MemoryPressureDisplay = assessment.MemoryPressure.ToString().ToUpperInvariant();
+        ResourceIntelligence.DiskDisplay = assessment.DiskPercent is double disk ? $"{disk:0.#}% used" : "—";
+        ResourceIntelligence.DiskPressureDisplay = assessment.DiskPressure.ToString().ToUpperInvariant();
+        ResourceIntelligence.Summary = assessment.Summary;
+
+        ResourceIntelligence.Recommendations.Clear();
+        foreach (var recommendation in assessment.Recommendations)
+        {
+            ResourceIntelligence.Recommendations.Add(recommendation);
+        }
+
+        var primary = assessment.Recommendations.FirstOrDefault();
+        ResourceIntelligence.PrimaryRecommendationTitle = primary?.Title ?? string.Empty;
+        ResourceIntelligence.PrimaryRecommendationExplanation = primary?.Explanation ?? string.Empty;
+        ResourceIntelligence.SuggestedProfileId = assessment.Recommendations
+            .Select(item => item.RelatedProfileId)
+            .FirstOrDefault(id => !string.IsNullOrWhiteSpace(id));
+        ResourceIntelligence.SuggestedProfileName = assessment.Recommendations
+            .Select(item => item.RelatedProfileName)
+            .FirstOrDefault(name => !string.IsNullOrWhiteSpace(name));
+        ResourceIntelligence.HasSuggestedProfile = !string.IsNullOrWhiteSpace(ResourceIntelligence.SuggestedProfileId);
+
+        ResourceIntelligence.ActiveSessions.Clear();
+        foreach (var session in assessment.ActiveSessions)
+        {
+            ResourceIntelligence.ActiveSessions.Add(session);
+        }
+
+        ResourceIntelligence.ProfileEstimates.Clear();
+        foreach (var estimate in assessment.ProfileEstimates)
+        {
+            ResourceIntelligence.ProfileEstimates.Add(estimate);
+        }
+
+        ResourceIntelligenceStatusMessage =
+            $"Assessed {assessment.Timestamp.ToLocalTime():HH:mm:ss} · overall {assessment.OverallPressure}";
     }
 }
