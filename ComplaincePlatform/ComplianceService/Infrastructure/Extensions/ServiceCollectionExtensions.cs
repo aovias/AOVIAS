@@ -22,6 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 using Shared.Infrastructure.Domain;
 using Shared.Infrastructure.Services;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Threading.RateLimiting;
 using System.Text;
 
@@ -290,20 +291,44 @@ namespace ComplianceService.Infrastructure.Extensions
         public static IServiceCollection AddRateLimiting(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddMemoryCache();
-            
+
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                ?? "Production";
+            var isDevelopment = string.Equals(environment, "Development", StringComparison.OrdinalIgnoreCase);
+
             // Configure rate limiting using .NET built-in rate limiting
             services.AddRateLimiter(options =>
             {
+                // 429 is the correct semantic for rate limiting; avoids masquerading as downstream outage (503).
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
                 // Global rate limiter
                 options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
-                    RateLimitPartition.GetFixedWindowLimiter(
+                {
+                    // Infrastructure probes must answer even once the budget is spent. Throttling them
+                    // made a healthy service report itself unavailable to its own orchestrator: 636
+                    // /health requests were rejected while the service was demonstrably serving.
+                    if (IsRateLimitExemptPath(context.Request.Path))
+                    {
+                        return RateLimitPartition.GetNoLimiter("health-probes");
+                    }
+
+                    // Development/QA: Playwright and ng serve proxy funnel all traffic through loopback.
+                    if (isDevelopment && IsLoopbackClient(context.Connection.RemoteIpAddress))
+                    {
+                        return RateLimitPartition.GetNoLimiter("dev-loopback");
+                    }
+
+                    return RateLimitPartition.GetFixedWindowLimiter(
                         partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
                         factory: partition => new FixedWindowRateLimiterOptions
                         {
                             AutoReplenishment = true,
                             PermitLimit = 100,
                             Window = TimeSpan.FromMinutes(1)
-                        }));
+                        });
+                });
 
                 // Specific rate limiter for login endpoint
                 options.AddPolicy("LoginPolicy", context =>
@@ -318,6 +343,35 @@ namespace ComplianceService.Infrastructure.Extensions
             });
 
             return services;
+        }
+
+        /// <summary>
+        /// Infrastructure probe paths mapped by MapPramanAoviasPlatform: /health, /health/ready,
+        /// /liveness, /readiness and /platform/registration. These belong to the orchestrator, not
+        /// to a client, so they are never counted against a client's request budget.
+        /// </summary>
+        private static bool IsRateLimitExemptPath(PathString path)
+        {
+            var value = path.Value ?? string.Empty;
+            return value.StartsWith("/health", StringComparison.OrdinalIgnoreCase)
+                || value.StartsWith("/liveness", StringComparison.OrdinalIgnoreCase)
+                || value.StartsWith("/readiness", StringComparison.OrdinalIgnoreCase)
+                || value.StartsWith("/platform/", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsLoopbackClient(IPAddress? address)
+        {
+            if (address is null)
+            {
+                return false;
+            }
+
+            if (IPAddress.IsLoopback(address))
+            {
+                return true;
+            }
+
+            return address.IsIPv4MappedToIPv6 && IPAddress.IsLoopback(address.MapToIPv4());
         }
 
         public static IServiceCollection AddSecurityServices(this IServiceCollection services)
