@@ -82,6 +82,44 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     [ObservableProperty]
     private bool canMergeSelectedPullRequest;
 
+    /// <summary>Active Local Development tab (0=Overview … 4=Monitoring). Preserved across refreshes.</summary>
+    [ObservableProperty]
+    private int selectedLocalDevTabIndex;
+
+    public const int OverviewTabIndex = 0;
+    public const int GitAndPrTabIndex = 1;
+    public const int AgentSessionsTabIndex = 2;
+    public const int ServicesTabIndex = 3;
+    public const int MonitoringTabIndex = 4;
+
+    public static IReadOnlyList<string> LocalDevelopmentTabHeaders { get; } =
+    [
+        "Overview",
+        "Git & PR",
+        "Agent Sessions",
+        "Services",
+        "Monitoring"
+    ];
+
+    public int OverviewActiveAgentCount =>
+        AgentSessions.Count(session =>
+            session.Status is AgentSessionStatus.Active or AgentSessionStatus.Paused or AgentSessionStatus.Blocked or AgentSessionStatus.Stale);
+
+    public string OverviewRuntimeProfileDisplay
+    {
+        get
+        {
+            var running = RuntimeProfiles.FirstOrDefault(profile =>
+                profile.Status is RuntimeProfileStatus.Running or RuntimeProfileStatus.PartiallyRunning or RuntimeProfileStatus.Starting);
+            if (running is not null)
+            {
+                return running.Name;
+            }
+
+            return SelectedProfile?.Name ?? "—";
+        }
+    }
+
     public MainViewModel Services { get; }
 
     public LocalResourceMonitorItem LocalResources { get; } = new();
@@ -150,6 +188,17 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     {
         UpdateMergeAvailability();
         ReviewComment = value?.LastReview?.Comment ?? string.Empty;
+    }
+
+    partial void OnSelectedProfileChanged(RuntimeProfileItem? value)
+    {
+        NotifyOverviewSummariesChanged();
+    }
+
+    private void NotifyOverviewSummariesChanged()
+    {
+        OnPropertyChanged(nameof(OverviewActiveAgentCount));
+        OnPropertyChanged(nameof(OverviewRuntimeProfileDisplay));
     }
 
     [RelayCommand]
@@ -441,6 +490,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
                                    string.Equals(profile.Id, selectedId, StringComparison.OrdinalIgnoreCase))
                                ?? RuntimeProfiles.FirstOrDefault();
             ProfileStatusMessage = $"{RuntimeProfiles.Count} runtime profile(s) loaded.";
+            NotifyOverviewSummariesChanged();
         }
 
         var dispatcher = Application.Current?.Dispatcher;
@@ -863,6 +913,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
             SelectedAgentSession = AgentSessions.FirstOrDefault(item =>
                                        string.Equals(item.Id, selectedId, StringComparison.OrdinalIgnoreCase))
                                    ?? AgentSessions.FirstOrDefault();
+            NotifyOverviewSummariesChanged();
         }
 
         var dispatcher = Application.Current?.Dispatcher;
