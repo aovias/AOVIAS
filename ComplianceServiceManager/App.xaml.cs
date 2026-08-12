@@ -10,6 +10,7 @@ using ComplianceServiceManager.Services.Bootstrap;
 using ComplianceServiceManager.Services.Configuration;
 using ComplianceServiceManager.Navigation;
 using ComplianceServiceManager.Models.LocalResources;
+using ComplianceServiceManager.Services.AgentSessions;
 using ComplianceServiceManager.Services.LocalDev;
 using ComplianceServiceManager.Services.LocalPullRequests;
 using ComplianceServiceManager.Services.LocalResources;
@@ -151,6 +152,8 @@ public partial class App : Application
         services.AddSingleton<LocalPullRequestRegistry>();
         services.AddSingleton<IGitPullRequestService, GitPullRequestService>();
         services.AddSingleton<ILocalPullRequestService, LocalPullRequestService>();
+        services.AddSingleton<AgentSessionRegistry>();
+        services.AddSingleton<IAgentSessionService, AgentSessionService>();
         services.AddSingleton(new LocalResourceMonitoringOptions
         {
             PollInterval = TimeSpan.FromSeconds(3),

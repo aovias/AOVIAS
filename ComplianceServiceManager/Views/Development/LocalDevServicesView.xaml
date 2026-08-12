@@ -23,6 +23,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" MinHeight="320" />
             </Grid.RowDefinitions>
 
@@ -617,8 +618,117 @@
                 </Grid>
             </Border>
 
-            <!-- Solution folders -->
+            <!-- Agent Sessions (D4 — development agents, not Runtime Agent) -->
             <Border Grid.Row="5" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="Agent Sessions" Style="{StaticResource HeadingTextStyle}" />
+                            <TextBlock Text="Development-agent context (Cursor/Claude): task → workspace → branch → runtime → resources → local PR. Metadata only — no Git/runtime auto-actions."
+                                       Style="{StaticResource CaptionTextStyle}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,4,0,0" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                            <TextBlock Text="{Binding AgentSessionStatusMessage}"
+                                       Style="{StaticResource CaptionTextStyle}"
+                                       Margin="0,0,12,0"
+                                       MaxWidth="260"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center" />
+                            <Button Content="Refresh"
+                                    Command="{Binding RefreshAgentSessionsCommand}"
+                                    Margin="0,0,8,0" />
+                            <Button Content="New Agent Session"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Command="{Binding CreateAgentSessionCommand}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Grid.Row="1" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="240" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <ListBox Grid.Column="0"
+                                 ItemsSource="{Binding AgentSessions}"
+                                 SelectedItem="{Binding SelectedAgentSession, Mode=TwoWay}"
+                                 DisplayMemberPath="Title"
+                                 MinHeight="120"
+                                 MaxHeight="200"
+                                 Margin="0,0,12,0" />
+                        <StackPanel Grid.Column="1">
+                            <TextBlock>
+                                <Run Text="{Binding SelectedAgentSession.AgentDisplay, Mode=OneWay}" FontWeight="SemiBold" />
+                                <Run Text=" · " />
+                                <Run Text="{Binding SelectedAgentSession.StatusDisplay, Mode=OneWay}" FontWeight="SemiBold" />
+                                <Run Text=" · " />
+                                <Run Text="{Binding SelectedAgentSession.HealthDisplay, Mode=OneWay}" />
+                            </TextBlock>
+                            <TextBlock Text="{Binding SelectedAgentSession.Title}"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       Margin="0,6,0,0" />
+                            <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,6,0,0">
+                                <Run Text="Task: " />
+                                <Run Text="{Binding SelectedAgentSession.TaskId, Mode=OneWay, TargetNullValue=—}" />
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0" TextWrapping="Wrap">
+                                <Run Text="Workspace: " />
+                                <Run Text="{Binding SelectedAgentSession.WorkspaceDisplay, Mode=OneWay}" />
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0" TextWrapping="Wrap">
+                                <Run Text="Branch expected: " />
+                                <Run Text="{Binding SelectedAgentSession.ExpectedBranch, Mode=OneWay}" />
+                                <Run Text="  · actual: " />
+                                <Run Text="{Binding SelectedAgentSession.ActualBranch, Mode=OneWay, TargetNullValue=—}" />
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0">
+                                <Run Text="Runtime: " />
+                                <Run Text="{Binding SelectedAgentSession.RuntimeProfileDisplay, Mode=OneWay}" />
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0" TextWrapping="Wrap">
+                                <Run Text="PR: " />
+                                <Run Text="{Binding SelectedAgentSession.PullRequestDisplay, Mode=OneWay}" />
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0">
+                                <Run Text="Resources: " />
+                                <Run Text="{Binding SelectedAgentSession.ResourcesDisplay, Mode=OneWay}" />
+                            </TextBlock>
+                            <ItemsControl ItemsSource="{Binding SelectedAgentSession.AttentionReasons}" Margin="0,8,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}"
+                                                   Foreground="{StaticResource WarningBrush}"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,0,0,2" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Content="Start" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding StartSelectedAgentSessionCommand}" Margin="0,0,8,0" />
+                        <Button Content="Pause" Command="{Binding PauseSelectedAgentSessionCommand}" Margin="0,0,8,0" />
+                        <Button Content="Resume" Command="{Binding ResumeSelectedAgentSessionCommand}" Margin="0,0,8,0" />
+                        <Button Content="Complete" Command="{Binding CompleteSelectedAgentSessionCommand}" Margin="0,0,8,0" />
+                        <Button Content="Cancel" Command="{Binding CancelSelectedAgentSessionCommand}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Solution folders -->
+            <Border Grid.Row="6" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
                 <StackPanel>
                     <Grid Margin="0,0,0,8">
                         <TextBlock Text="Solution Folders" Style="{StaticResource HeadingTextStyle}" />
@@ -666,7 +776,7 @@
             </Border>
 
             <!-- Services -->
-            <Border Grid.Row="6" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
+            <Border Grid.Row="7" Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

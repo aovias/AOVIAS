@@ -2,11 +2,13 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ComplianceServiceManager.Models.AgentSessions;
 using ComplianceServiceManager.Models.LocalPullRequests;
 using ComplianceServiceManager.Models.LocalResources;
 using ComplianceServiceManager.Models.RuntimeProfiles;
 using ComplianceServiceManager.Models.Workspaces;
 using ComplianceServiceManager.Services;
+using ComplianceServiceManager.Services.AgentSessions;
 using ComplianceServiceManager.Services.LocalDev;
 using ComplianceServiceManager.Services.LocalPullRequests;
 using ComplianceServiceManager.Services.LocalResources;
@@ -17,8 +19,7 @@ using ComplianceServiceManager.Views.Development;
 namespace ComplianceServiceManager.ViewModels.Development;
 
 /// <summary>
-/// Development → Local Development hub. Hosts D1 workspaces, D2 runtime profiles,
-/// S3 local resource telemetry, D3 local PRs, and Local Dev Services.
+/// Development → Local Development hub. Hosts D1–D4 and S3 Local Dev capabilities.
 /// </summary>
 public sealed partial class LocalDevServicesViewModel : ObservableObject
 {
@@ -28,6 +29,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private readonly ServiceManagerService serviceManager;
     private readonly ILocalResourceMonitoringService resourceMonitoring;
     private readonly ILocalPullRequestService pullRequestService;
+    private readonly IAgentSessionService agentSessionService;
 
     [ObservableProperty]
     private string statusMessage = string.Empty;
@@ -42,6 +44,9 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private string pullRequestStatusMessage = string.Empty;
 
     [ObservableProperty]
+    private string agentSessionStatusMessage = string.Empty;
+
+    [ObservableProperty]
     private string? selectedFolder;
 
     [ObservableProperty]
@@ -54,10 +59,16 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private bool isPullRequestBusy;
 
     [ObservableProperty]
+    private bool isAgentSessionBusy;
+
+    [ObservableProperty]
     private RuntimeProfileItem? selectedProfile;
 
     [ObservableProperty]
     private LocalPullRequestItem? selectedPullRequest;
+
+    [ObservableProperty]
+    private AgentSessionItem? selectedAgentSession;
 
     [ObservableProperty]
     private string reviewComment = string.Empty;
@@ -79,6 +90,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     public ObservableCollection<LocalPullRequestItem> LocalPullRequests { get; } = [];
 
+    public ObservableCollection<AgentSessionItem> AgentSessions { get; } = [];
+
     public LocalDevServicesViewModel(
         SolutionFolderRegistry folderRegistry,
         MainViewModel servicesViewModel,
@@ -86,7 +99,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         IRuntimeProfileOrchestrator profileOrchestrator,
         ServiceManagerService serviceManager,
         ILocalResourceMonitoringService resourceMonitoring,
-        ILocalPullRequestService pullRequestService)
+        ILocalPullRequestService pullRequestService,
+        IAgentSessionService agentSessionService)
     {
         this.folderRegistry = folderRegistry;
         this.workspaceService = workspaceService;
@@ -94,6 +108,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         this.serviceManager = serviceManager;
         this.resourceMonitoring = resourceMonitoring;
         this.pullRequestService = pullRequestService;
+        this.agentSessionService = agentSessionService;
         Services = servicesViewModel;
         SyncFolders();
         folderRegistry.FoldersChanged += SyncFolders;
@@ -101,6 +116,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         SyncProfiles();
         pullRequestService.PullRequestsChanged += SyncPullRequests;
         SyncPullRequests();
+        agentSessionService.SessionsChanged += SyncAgentSessions;
+        SyncAgentSessions();
         resourceMonitoring.SnapshotUpdated += OnResourceSnapshotUpdated;
         resourceMonitoring.Start();
         if (resourceMonitoring.LatestSnapshot is not null)
@@ -110,6 +127,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
         _ = RefreshWorkspacesAsync();
         _ = RefreshLocalPullRequestsAsync();
+        _ = RefreshAgentSessionsAsync();
     }
 
     partial void OnSelectedPullRequestChanged(LocalPullRequestItem? value)
@@ -581,6 +599,197 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
             SelectedPullRequest is { Status: LocalPullRequestStatus.Approved }
             && SelectedPullRequest.LastReview is { IsApproval: true }
             && SelectedPullRequest.Comparison is { ApprovalIsStale: false, HasConflicts: false, SourceClean: true, TargetClean: true };
+    }
+
+    [RelayCommand]
+    private async Task RefreshAgentSessionsAsync()
+    {
+        if (IsAgentSessionBusy)
+        {
+            return;
+        }
+
+        IsAgentSessionBusy = true;
+        AgentSessionStatusMessage = "Reconciling agent sessions…";
+        try
+        {
+            await agentSessionService.RefreshAllAsync();
+            SyncAgentSessions();
+            AgentSessionStatusMessage = $"{AgentSessions.Count} agent session(s).";
+        }
+        catch (Exception ex)
+        {
+            AgentSessionStatusMessage = $"Session refresh failed: {ex.Message}";
+        }
+        finally
+        {
+            IsAgentSessionBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task CreateAgentSessionAsync()
+    {
+        var dialog = new CreateAgentSessionWindow(agentSessionService)
+        {
+            Owner = Application.Current?.MainWindow
+        };
+        if (dialog.ShowDialog() != true || dialog.Result is null)
+        {
+            return;
+        }
+
+        IsAgentSessionBusy = true;
+        try
+        {
+            var created = await agentSessionService.CreateAsync(
+                dialog.Result.AgentType,
+                dialog.Result.Title,
+                dialog.Result.Description,
+                dialog.Result.TaskId,
+                dialog.Result.WorkspaceId,
+                dialog.Result.ExpectedBranch,
+                dialog.Result.RuntimeProfileId,
+                dialog.Result.PullRequestId);
+            SyncAgentSessions();
+            SelectedAgentSession = AgentSessions.FirstOrDefault(item =>
+                string.Equals(item.Id, created.Id, StringComparison.OrdinalIgnoreCase));
+            AgentSessionStatusMessage = $"Created {created.AgentDisplay} session '{created.Title}'.";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "New Agent Session", MessageBoxButton.OK, MessageBoxImage.Warning);
+            AgentSessionStatusMessage = ex.Message;
+        }
+        finally
+        {
+            IsAgentSessionBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task StartSelectedAgentSessionAsync()
+    {
+        if (SelectedAgentSession is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await agentSessionService.StartAsync(SelectedAgentSession);
+            SyncAgentSessions();
+            AgentSessionStatusMessage = $"Started session '{SelectedAgentSession.Title}'.";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Start Session", MessageBoxButton.OK, MessageBoxImage.Warning);
+            SyncAgentSessions();
+        }
+    }
+
+    [RelayCommand]
+    private async Task PauseSelectedAgentSessionAsync()
+    {
+        if (SelectedAgentSession is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await agentSessionService.PauseAsync(SelectedAgentSession);
+            SyncAgentSessions();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Pause Session", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    [RelayCommand]
+    private async Task ResumeSelectedAgentSessionAsync()
+    {
+        if (SelectedAgentSession is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await agentSessionService.ResumeAsync(SelectedAgentSession);
+            SyncAgentSessions();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Resume Session", MessageBoxButton.OK, MessageBoxImage.Warning);
+            SyncAgentSessions();
+        }
+    }
+
+    [RelayCommand]
+    private async Task CompleteSelectedAgentSessionAsync()
+    {
+        if (SelectedAgentSession is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await agentSessionService.CompleteAsync(SelectedAgentSession);
+            SyncAgentSessions();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Complete Session", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    [RelayCommand]
+    private async Task CancelSelectedAgentSessionAsync()
+    {
+        if (SelectedAgentSession is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await agentSessionService.CancelAsync(SelectedAgentSession);
+            SyncAgentSessions();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Cancel Session", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private void SyncAgentSessions()
+    {
+        void Apply()
+        {
+            var selectedId = SelectedAgentSession?.Id;
+            AgentSessions.Clear();
+            foreach (var session in agentSessionService.GetSessions())
+            {
+                AgentSessions.Add(session);
+            }
+
+            SelectedAgentSession = AgentSessions.FirstOrDefault(item =>
+                                       string.Equals(item.Id, selectedId, StringComparison.OrdinalIgnoreCase))
+                                   ?? AgentSessions.FirstOrDefault();
+        }
+
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is not null && !dispatcher.CheckAccess())
+        {
+            dispatcher.Invoke(Apply);
+        }
+        else
+        {
+            Apply();
+        }
     }
 
     private void OnResourceSnapshotUpdated(LocalResourceSnapshot snapshot)
