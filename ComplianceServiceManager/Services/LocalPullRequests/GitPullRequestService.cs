@@ -94,6 +94,23 @@ public sealed class GitPullRequestService : IGitPullRequestService
         return result.Succeeded && string.IsNullOrWhiteSpace(result.StandardOutput);
     }
 
+    public async Task<string?> GetCurrentBranchAsync(string worktreePath, CancellationToken cancellationToken = default)
+    {
+        var result = await git.RunAsync(worktreePath, "rev-parse --abbrev-ref HEAD", cancellationToken);
+        if (!result.Succeeded)
+        {
+            return null;
+        }
+
+        var branch = result.StandardOutput.Trim();
+        if (string.IsNullOrWhiteSpace(branch) || string.Equals(branch, "HEAD", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        return branch;
+    }
+
     public async Task<IReadOnlyList<LocalPullRequestCommitInfo>> GetCommitsAsync(
         string worktreePath,
         string sourceBranch,
@@ -298,10 +315,20 @@ public sealed class GitPullRequestService : IGitPullRequestService
     public async Task<(bool Succeeded, string? MergeCommitSha, string? Error)> MergeNoFfAsync(
         string targetWorktreePath,
         string sourceBranch,
+        string expectedTargetBranch,
         string message,
         CancellationToken cancellationToken = default)
     {
         EnsureSafeRef(sourceBranch);
+        EnsureSafeRef(expectedTargetBranch);
+
+        var current = await GetCurrentBranchAsync(targetWorktreePath, cancellationToken);
+        if (!string.Equals(current, expectedTargetBranch, StringComparison.OrdinalIgnoreCase))
+        {
+            return (false, null,
+                $"Target worktree is on '{current ?? "detached HEAD"}' but Local PR target is '{expectedTargetBranch}'. Check out the target branch explicitly before merge.");
+        }
+
         if (string.IsNullOrWhiteSpace(message))
         {
             message = $"Merge branch '{sourceBranch}'";

@@ -250,6 +250,33 @@ public sealed class LocalPullRequestLifecycleTests : IDisposable
     }
 
     [Fact]
+    public async Task Merge_Blocked_WhenTargetWorktreeNotOnTargetBranch()
+    {
+        var pr = await service.CreateAsync(
+            "WrongCheckout",
+            "",
+            "agent/cursor/feature-test",
+            "main",
+            agentWorktree,
+            mainWorktree,
+            "Cursor");
+        await service.ApproveAsync(pr, "Human", null);
+
+        RunGit(mainWorktree, "checkout -b agent/cursor/not-main");
+        try
+        {
+            var (ok, error) = await service.MergeAsync(pr);
+            Assert.False(ok);
+            Assert.Contains("target branch", error ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+            Assert.False(File.Exists(Path.Combine(mainWorktree, "feature.txt")));
+        }
+        finally
+        {
+            RunGit(mainWorktree, "checkout main");
+        }
+    }
+
+    [Fact]
     public async Task Persistence_RoundTrip()
     {
         var pr = await service.CreateAsync(

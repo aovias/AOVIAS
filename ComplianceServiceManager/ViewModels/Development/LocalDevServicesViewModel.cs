@@ -675,7 +675,14 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         CanMergeSelectedPullRequest =
             SelectedPullRequest is { Status: LocalPullRequestStatus.Approved }
             && SelectedPullRequest.LastReview is { IsApproval: true }
-            && SelectedPullRequest.Comparison is { ApprovalIsStale: false, HasConflicts: false, SourceClean: true, TargetClean: true };
+            && SelectedPullRequest.Comparison is
+            {
+                ApprovalIsStale: false,
+                HasConflicts: false,
+                SourceClean: true,
+                TargetClean: true,
+                TargetIsOnTargetBranch: true
+            };
     }
 
     [RelayCommand]

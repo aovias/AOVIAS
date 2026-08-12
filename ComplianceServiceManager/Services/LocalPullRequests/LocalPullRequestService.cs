@@ -342,6 +342,7 @@ public sealed class LocalPullRequestService : ILocalPullRequestService
         var (succeeded, mergeSha, error) = await git.MergeNoFfAsync(
             pullRequest.TargetWorktreePath,
             pullRequest.SourceBranch,
+            pullRequest.TargetBranch,
             message,
             cancellationToken);
 
@@ -390,6 +391,11 @@ public sealed class LocalPullRequestService : ILocalPullRequestService
             return "Target worktree is dirty.";
         }
 
+        if (!comparison.TargetIsOnTargetBranch)
+        {
+            return $"Target worktree is on '{comparison.TargetCheckedOutBranch ?? "detached HEAD"}' but Local PR target is '{pullRequest.TargetBranch}'. Check out the target branch explicitly before merge.";
+        }
+
         if (!string.Equals(comparison.SourceTipSha, pullRequest.LastReview.SourceCommitSha, StringComparison.OrdinalIgnoreCase))
         {
             return "Source tip no longer matches the approved source SHA.";
@@ -433,6 +439,11 @@ public sealed class LocalPullRequestService : ILocalPullRequestService
             var targetExists = await git.BranchExistsAsync(pullRequest.TargetWorktreePath, pullRequest.TargetBranch, cancellationToken);
             var sourceClean = await git.IsWorkingTreeCleanAsync(pullRequest.SourceWorktreePath, cancellationToken);
             var targetClean = await git.IsWorkingTreeCleanAsync(pullRequest.TargetWorktreePath, cancellationToken);
+            var targetCheckedOut = await git.GetCurrentBranchAsync(pullRequest.TargetWorktreePath, cancellationToken);
+            var targetIsOnTargetBranch = string.Equals(
+                targetCheckedOut,
+                pullRequest.TargetBranch,
+                StringComparison.OrdinalIgnoreCase);
             var sourceTip = sourceExists
                 ? await git.GetTipShaAsync(pullRequest.SourceWorktreePath, pullRequest.SourceBranch, cancellationToken)
                 : null;
@@ -481,6 +492,8 @@ public sealed class LocalPullRequestService : ILocalPullRequestService
                 TargetClean = targetClean,
                 SourceBranchExists = sourceExists,
                 TargetBranchExists = targetExists,
+                TargetCheckedOutBranch = targetCheckedOut,
+                TargetIsOnTargetBranch = targetIsOnTargetBranch,
                 HasConflicts = hasConflicts,
                 ConflictSummary = conflictSummary,
                 ApprovalIsStale = approvalStale,

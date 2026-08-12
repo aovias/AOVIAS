@@ -179,3 +179,25 @@ git -C "V:\DevelopmentRepo\AOVIAS.Cursor" merge --ff-only main
 ```
 
 Physical worktrees remain fixed; task branches are temporary. Do not begin implementation before preflight passes. Do not start a task from an obsolete task branch.
+
+## Studio Local Development Orchestration (v1)
+
+AOVIAS Studio observes and recommends; it executes only explicit user-authorized actions.
+
+```text
+Agent → Task → Workspace (D1) → Branch
+  → Runtime Profile (D2) → Resource Telemetry (S3)
+  → Resource Recommendation (D5) → Agent Session metadata (D4)
+  → Local PR (D3) → Human Review → Explicit Merge → main
+```
+
+| Capability | Mutates |
+|---|---|
+| D1 Workspaces | Git read-only |
+| D2 Runtime Profiles | Owned runtime processes only (explicit Start/Stop) |
+| S3 Local Resources | Read-only telemetry |
+| D5 Resource Intelligence | Advisory only (no auto switch/stop) |
+| D4 Agent Sessions | Metadata only (no agent process control) |
+| D3 Local PR | Explicit `--no-ff` merge after SHA-bound approval; target worktree must be on target branch |
+
+Invariant: Studio must never silently modify Git, runtime, worktrees, or agents.
