@@ -41,7 +41,17 @@ public partial class CreateLocalPullRequestWindow : Window
 
         var selected = candidates[SourceBranchBox.SelectedIndex];
         var targetBranch = string.IsNullOrWhiteSpace(TargetBranchBox.Text) ? "main" : TargetBranchBox.Text.Trim();
-        var targetWorktree = ResolveMainWorktree(selected.WorktreePath);
+        if (string.Equals(selected.Branch, targetBranch, StringComparison.OrdinalIgnoreCase))
+        {
+            MessageBox.Show(this, "Source and target branches must differ.", "Local PR", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        if (!TryResolveMainWorktree(selected.WorktreePath, out var targetWorktree, out var resolveError))
+        {
+            MessageBox.Show(this, resolveError, "Local PR", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
 
         Result = new LocalPullRequestCreateResult
         {
@@ -63,16 +73,26 @@ public partial class CreateLocalPullRequestWindow : Window
         Close();
     }
 
-    private static string ResolveMainWorktree(string sourceWorktreePath)
+    private static bool TryResolveMainWorktree(string sourceWorktreePath, out string targetWorktree, out string error)
     {
+        targetWorktree = string.Empty;
+        error = string.Empty;
         var parent = Path.GetDirectoryName(Path.GetFullPath(sourceWorktreePath));
         if (string.IsNullOrWhiteSpace(parent))
         {
-            return sourceWorktreePath;
+            error = "Cannot resolve DevelopmentRepo parent from the source worktree.";
+            return false;
         }
 
         var main = Path.Combine(parent, "AOVIAS");
-        return Directory.Exists(main) ? main : sourceWorktreePath;
+        if (!Directory.Exists(main))
+        {
+            error = $"Main integration worktree not found at '{main}'. Local PR merge target must be AOVIAS.";
+            return false;
+        }
+
+        targetWorktree = main;
+        return true;
     }
 }
 

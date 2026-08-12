@@ -268,6 +268,41 @@ public sealed class RuntimeProfileOrchestratorTests
     }
 
     [Fact]
+    public async Task Start_ReStart_RetainsOwnership_OfPreviouslyStartedServices()
+    {
+        var host = new FakeServiceRuntimeHost();
+        host.Services.Add(Service("IdentityService", ServiceStatus.Running));
+        host.Services.Add(Service("Gateway", ServiceStatus.Stopped));
+
+        var orchestrator = CreateOrchestrator(host, out var storePath);
+        try
+        {
+            var profile = ProfileItem(
+                ("IdentityService", []),
+                ("Gateway", ["IdentityService"]));
+
+            await orchestrator.StartAsync(profile);
+            Assert.Contains("Gateway", profile.OwnedServiceNames);
+            Assert.DoesNotContain("IdentityService", profile.OwnedServiceNames);
+
+            host.StartCalls.Clear();
+            await orchestrator.StartAsync(profile);
+
+            Assert.Contains("Gateway", profile.OwnedServiceNames);
+            Assert.DoesNotContain("IdentityService", profile.OwnedServiceNames);
+            Assert.Empty(host.StartCalls);
+
+            host.StopCalls.Clear();
+            await orchestrator.StopAsync(profile);
+            Assert.Equal(["Gateway"], host.StopCalls);
+        }
+        finally
+        {
+            Cleanup(storePath);
+        }
+    }
+
+    [Fact]
     public async Task Restart_StopsOwnedThenStartsAgain()
     {
         var host = new FakeServiceRuntimeHost();

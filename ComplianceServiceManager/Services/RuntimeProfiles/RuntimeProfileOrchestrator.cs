@@ -89,8 +89,10 @@ public sealed class RuntimeProfileOrchestrator : IRuntimeProfileOrchestrator
         }
 
         profile.ServiceCount = profile.Services.Count(entry => entry.Enabled);
+        var ownershipSnapshot = SnapshotOwnership();
         registry.Upsert(profile.ToDefinition());
         Reload();
+        RestoreOwnership(ownershipSnapshot);
     }
 
     public async Task StartAsync(RuntimeProfileItem profile, CancellationToken cancellationToken = default)
@@ -103,8 +105,12 @@ public sealed class RuntimeProfileOrchestrator : IRuntimeProfileOrchestrator
             return;
         }
 
+        HashSet<string> previouslyOwned = new(StringComparer.OrdinalIgnoreCase);
         OnUi(() =>
         {
+            previouslyOwned = new HashSet<string>(profile.OwnedServiceNames, StringComparer.OrdinalIgnoreCase);
+            // Do not wipe ownership yet — StartMemberAsync reclaims previously owned running services.
+            // Clear only members for a fresh wave UI; OwnedServiceNames is rebuilt during start.
             profile.OwnedServiceNames.Clear();
             profile.Members.Clear();
             foreach (var serviceName in validation.StartupOrder)
@@ -160,7 +166,14 @@ public sealed class RuntimeProfileOrchestrator : IRuntimeProfileOrchestrator
                     break;
                 }
 
-                var tasks = wave.Select(name => StartMemberAsync(profile, name, ready, failed, remaining, cancellationToken));
+                var tasks = wave.Select(name => StartMemberAsync(
+                    profile,
+                    name,
+                    previouslyOwned,
+                    ready,
+                    failed,
+                    remaining,
+                    cancellationToken));
                 await Task.WhenAll(tasks);
             }
 
@@ -249,6 +262,7 @@ public sealed class RuntimeProfileOrchestrator : IRuntimeProfileOrchestrator
     private async Task StartMemberAsync(
         RuntimeProfileItem profile,
         string serviceName,
+        HashSet<string> previouslyOwned,
         HashSet<string> ready,
         HashSet<string> failed,
         HashSet<string> remaining,
@@ -267,13 +281,32 @@ public sealed class RuntimeProfileOrchestrator : IRuntimeProfileOrchestrator
 
         if (service.Status == ServiceStatus.Running)
         {
+            // Preserve ownership across re-Start so Stop still only affects profile-started processes.
+            var reclaimOwned = previouslyOwned.Contains(serviceName);
             OnUi(() =>
             {
-                member.Apply(RuntimeProfileMemberStatus.Reused, "Already running — reused.", owned: false, reused: true);
-                profile.ApplyStatus(RuntimeProfileStatus.Starting, $"✓ {serviceName} already running");
+                if (reclaimOwned)
+                {
+                    member.Apply(
+                        RuntimeProfileMemberStatus.Ready,
+                        "Already running — ownership retained.",
+                        owned: true,
+                        reused: true);
+                    profile.OwnedServiceNames.Add(serviceName);
+                    profile.ApplyStatus(RuntimeProfileStatus.Starting, $"✓ {serviceName} ownership retained");
+                }
+                else
+                {
+                    member.Apply(RuntimeProfileMemberStatus.Reused, "Already running — reused.", owned: false, reused: true);
+                    profile.ApplyStatus(RuntimeProfileStatus.Starting, $"✓ {serviceName} already running");
+                }
             });
             ready.Add(serviceName);
-            logger.Info("RuntimeProfiles", $"{serviceName} already running; reused.");
+            logger.Info(
+                "RuntimeProfiles",
+                reclaimOwned
+                    ? $"{serviceName} already running; ownership retained."
+                    : $"{serviceName} already running; reused.");
             return;
         }
 
@@ -315,6 +348,42 @@ public sealed class RuntimeProfileOrchestrator : IRuntimeProfileOrchestrator
             OnUi(() => member.Apply(RuntimeProfileMemberStatus.Failed, ex.Message, owned: true));
             failed.Add(serviceName);
             logger.Error("RuntimeProfiles", $"{serviceName} failed: {ex.Message}");
+        }
+    }
+
+    private Dictionary<string, List<string>> SnapshotOwnership()
+    {
+        lock (gate)
+        {
+            return profiles.ToDictionary(
+                item => item.Id,
+                item => item.OwnedServiceNames.ToList(),
+                StringComparer.OrdinalIgnoreCase);
+        }
+    }
+
+    private void RestoreOwnership(Dictionary<string, List<string>> ownershipSnapshot)
+    {
+        if (ownershipSnapshot.Count == 0)
+        {
+            return;
+        }
+
+        lock (gate)
+        {
+            foreach (var profile in profiles)
+            {
+                if (!ownershipSnapshot.TryGetValue(profile.Id, out var owned) || owned.Count == 0)
+                {
+                    continue;
+                }
+
+                profile.OwnedServiceNames.Clear();
+                foreach (var name in owned)
+                {
+                    profile.OwnedServiceNames.Add(name);
+                }
+            }
         }
     }
 

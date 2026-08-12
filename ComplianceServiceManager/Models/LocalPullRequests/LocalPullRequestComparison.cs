@@ -45,6 +45,12 @@ public sealed class LocalPullRequestComparison
 
     public bool TargetBranchExists { get; init; }
 
+    /// <summary>Branch currently checked out in the target worktree (live Git state).</summary>
+    public string? TargetCheckedOutBranch { get; init; }
+
+    /// <summary>True when the target worktree HEAD is on <c>TargetBranch</c>.</summary>
+    public bool TargetIsOnTargetBranch { get; init; }
+
     public bool HasConflicts { get; init; }
 
     public string? ConflictSummary { get; init; }
