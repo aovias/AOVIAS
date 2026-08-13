@@ -77,6 +77,34 @@ export const SERVICES: readonly ServiceDefinition[] = [
   },
 ] as const;
 
+/**
+ * The Angular development server.
+ *
+ * Deliberately *not* a ServiceDefinition. That contract describes a `dotnet run` project — a
+ * .csproj to build, a launch profile, a /health endpoint — and Angular satisfies none of it: the
+ * dev server compiles itself, exposes no health route, and readiness can only be inferred from an
+ * HTTP response. Adding it to SERVICES would mean threading exceptions through buildSequentially,
+ * spawnService and probeAllServices, all of which exist to serve the six backend services.
+ *
+ * It also starts last rather than alongside them: proxy.conf.json routes /api and /hubs to the
+ * Gateway, so a dev server brought up first would proxy into nothing.
+ */
+export const APP_SERVER = {
+  name: 'AngularDevServer',
+  /** Working directory relative to the repository root; proxy.conf.json resolves from here. */
+  workingDirectory: 'WebApp',
+  /**
+   * Angular CLI entry point, taken from the installed package's own `bin` mapping
+   * (@angular/cli 21.2.2 → { "ng": "bin/ng.js" }). Invoked through Node rather than `npm start`
+   * so Windows never has to exec npm.cmd through a shell.
+   */
+  cliEntry: 'WebApp/node_modules/@angular/cli/bin/ng.js',
+  args: ['serve'] as readonly string[],
+  readinessUrl: APP_BASE_URL,
+  /** A cold Angular compile takes far longer than starting six pre-built services. */
+  startupTimeoutMs: 240_000,
+} as const;
+
 /** Services whose stdout the Evidence Collector tails. */
 export const LOGGED_SERVICES = ['ComplianceService', 'Gateway'] as const;
 

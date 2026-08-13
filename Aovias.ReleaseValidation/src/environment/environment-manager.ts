@@ -10,7 +10,7 @@ import {
   statSync,
 } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { APP_BASE_URL, ARTIFACT_ROOT, SERVICES, type ServiceDefinition } from './service-registry.js';
+import { APP_BASE_URL, APP_SERVER, ARTIFACT_ROOT, SERVICES, type ServiceDefinition } from './service-registry.js';
 import { probeAllServices, probeApplication, probeDatabase, type ProbeResult } from './probes.js';
 
 export const REPO_ROOT = resolve(process.cwd(), '..');
@@ -105,13 +105,19 @@ export class EnvironmentManager {
       this.spawnService(service);
     }
 
-    if (toStart.length > 0) {
-      await this.waitForServices(180_000);
-    }
+    const backendsReady = toStart.length === 0 || (await this.waitForServices(180_000));
 
     // Bring the managed logs level with the running services, so a later collection yields only
     // what happened after startup rather than replaying the whole day's log.
     this.collectRuntimeLogs();
+
+    // Angular starts only once the backends answer. proxy.conf.json routes /api and /hubs to the
+    // Gateway, so starting it earlier would only produce a dev server proxying into nothing — and
+    // if the backends never came up, the useful report is that failure, not a second one on top.
+    if (backendsReady && (await probeApplication(APP_BASE_URL)).state !== 'ok') {
+      this.spawnAppServer();
+      await this.waitForApplication(APP_SERVER.startupTimeoutMs);
+    }
 
     return this.assess();
   }
@@ -228,13 +234,49 @@ export class EnvironmentManager {
     child.unref();
   }
 
-  private async waitForServices(timeoutMs: number): Promise<void> {
+  /**
+   * DEF-ENV-006 — starts the Angular dev server, which is not a ServiceDefinition.
+   *
+   * The command is the Angular CLI's own entry point run through this process's Node binary, not
+   * `npm start`: on Windows npm is a .cmd, which spawn cannot exec without a shell, and a shell
+   * would put cmd.exe between the manager and the server for no benefit. The fd discipline is the
+   * same as spawnService — the child owns real file descriptors and outlives this process — and
+   * here it captures everything, because the dev server logs to stdout rather than to a file sink.
+   */
+  private spawnAppServer(): void {
+    const outFd = openSync(join(this.logDir, `${APP_SERVER.name}.log`), 'a');
+    const errFd = openSync(join(this.logDir, `${APP_SERVER.name}.err.log`), 'a');
+
+    const child = spawn(process.execPath, [join(REPO_ROOT, APP_SERVER.cliEntry), ...APP_SERVER.args], {
+      cwd: join(REPO_ROOT, APP_SERVER.workingDirectory),
+      detached: true,
+      stdio: ['ignore', outFd, errFd],
+    });
+
+    closeSync(outFd);
+    closeSync(errFd);
+    child.unref();
+  }
+
+  /** Angular exposes no health route, so readiness is an HTTP answer from the app itself. */
+  private async waitForApplication(timeoutMs: number): Promise<boolean> {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      if ((await probeApplication(APP_BASE_URL)).state === 'ok') return true;
+      await new Promise(r => setTimeout(r, 3_000));
+    }
+    return false;
+  }
+
+  /** True when every service answered before the deadline. */
+  private async waitForServices(timeoutMs: number): Promise<boolean> {
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       const results = await probeAllServices();
-      if (results.every(r => r.state === 'ok')) return;
+      if (results.every(r => r.state === 'ok')) return true;
       await new Promise(r => setTimeout(r, 3_000));
     }
+    return false;
   }
 
   /** Human-readable readiness report for the certification artifact and for CI logs. */
