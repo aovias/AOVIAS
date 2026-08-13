@@ -94,8 +94,8 @@ public sealed partial class ServiceInstanceItem : ObservableObject
             WorkspaceId = definition.WorkspaceId,
             AgentSessionId = definition.AgentSessionId,
             RuntimeProfileId = definition.RuntimeProfileId,
-            ScopeDisplay = definition.ExecutionScope == ServiceExecutionScope.Shared ? "Shared" : "Workspace",
-            OwnershipDisplay = definition.Ownership == ServiceInstanceOwnership.Shared ? "Shared Runtime" : "Workspace",
+            ScopeDisplay = FormatScopeDisplay(definition.ExecutionScope, definition.WorkspaceId),
+            OwnershipDisplay = FormatOwnershipDisplay(definition.Ownership, definition.WorkspaceId),
             IsConfigured = true,
             ConfigurationDisplay = "Configured"
         };
@@ -114,8 +114,8 @@ public sealed partial class ServiceInstanceItem : ObservableObject
             Ownership = ServiceInstanceOwnership.Workspace,
             WorkspaceId = workspaceId,
             WorkspaceDisplay = workspaceDisplay,
-            ScopeDisplay = "Workspace",
-            OwnershipDisplay = "Workspace",
+            ScopeDisplay = FormatWorkspaceLabel(workspaceId),
+            OwnershipDisplay = FormatOwnershipDisplay(ServiceInstanceOwnership.Workspace, workspaceId),
             State = ServiceInstanceState.Defined,
             StateDisplay = "Not Configured",
             PortDisplay = "Unassigned",
@@ -123,6 +123,37 @@ public sealed partial class ServiceInstanceItem : ObservableObject
             IsConfigured = false,
             ConfigurationDisplay = "Not Configured"
         };
+
+    public static string FormatWorkspaceLabel(string? workspaceId)
+    {
+        if (string.Equals(workspaceId, "cursor", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Cursor";
+        }
+
+        if (string.Equals(workspaceId, "claude", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Claude";
+        }
+
+        return string.IsNullOrWhiteSpace(workspaceId) ? "Workspace" : workspaceId.Trim();
+    }
+
+    public static string FormatScopeDisplay(ServiceExecutionScope scope, string? workspaceId)
+        => scope == ServiceExecutionScope.Shared ? "Shared" : FormatWorkspaceLabel(workspaceId);
+
+    public static string FormatOwnershipDisplay(
+        ServiceInstanceOwnership ownership,
+        string? workspaceId,
+        bool owned = true)
+    {
+        if (ownership == ServiceInstanceOwnership.Shared)
+        {
+            return "Shared Runtime";
+        }
+
+        return owned ? $"Workspace: {FormatWorkspaceLabel(workspaceId)}" : "External";
+    }
 
     public void ApplyPort(int? value)
     {

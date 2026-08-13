@@ -69,6 +69,9 @@ public sealed partial class AgentSessionItem : ObservableObject
     [ObservableProperty]
     private string summaryDisplay = string.Empty;
 
+    [ObservableProperty]
+    private string runtimeDisplay = "—";
+
     public ObservableCollection<string> AttentionReasons { get; } = [];
 
     public DateTimeOffset CreatedAt { get; set; }

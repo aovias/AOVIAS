@@ -13,6 +13,7 @@ using ComplianceServiceManager.Models.Workspaces;
 using ComplianceServiceManager.Models;
 using ComplianceServiceManager.Models.PortRegistry;
 using ComplianceServiceManager.Models.SharedRuntime;
+using ComplianceServiceManager.Models.WorkspaceRuntime;
 using ComplianceServiceManager.Services;
 using ComplianceServiceManager.Services.AgentSessions;
 using ComplianceServiceManager.Services.LocalDev;
@@ -23,6 +24,7 @@ using ComplianceServiceManager.Services.RuntimeProfiles;
 using ComplianceServiceManager.Services.ServiceInstances;
 using ComplianceServiceManager.Services.PortRegistry;
 using ComplianceServiceManager.Services.SharedRuntime;
+using ComplianceServiceManager.Services.WorkspaceRuntime;
 using ComplianceServiceManager.Services.Workspaces;
 using ComplianceServiceManager.Views.Development;
 
@@ -44,6 +46,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private readonly IServiceInstanceService serviceInstanceService;
     private readonly IPortRegistryService portRegistryService;
     private readonly ISharedRuntimeService sharedRuntimeService;
+    private readonly IWorkspaceRuntimeService workspaceRuntimeService;
+    private readonly IWorkspaceRuntimeTruth workspaceRuntimeTruth;
 
     [ObservableProperty]
     private string statusMessage = string.Empty;
@@ -71,6 +75,9 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     [ObservableProperty]
     private string sharedRuntimeStatusMessage = string.Empty;
+
+    [ObservableProperty]
+    private string workspaceRuntimeStatusMessage = string.Empty;
 
     [ObservableProperty]
     private string? selectedFolder;
@@ -157,6 +164,16 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     public string OverviewSharedRuntimePorts => SharedRuntime.PortsDisplay;
 
+    public string OverviewCursorRuntimeStatus => CursorRuntime.StatusDisplay;
+
+    public string OverviewCursorRuntimeDetail =>
+        $"{CursorRuntime.IsolatedCount} isolated · {CursorRuntime.ReuseSharedCount} shared";
+
+    public string OverviewClaudeRuntimeStatus => ClaudeRuntime.StatusDisplay;
+
+    public string OverviewClaudeRuntimeDetail =>
+        $"{ClaudeRuntime.IsolatedCount} isolated · {ClaudeRuntime.ReuseSharedCount} shared";
+
     public MainViewModel Services { get; }
 
     public LocalResourceMonitorItem LocalResources { get; } = new();
@@ -164,6 +181,22 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     public ResourceIntelligenceItem ResourceIntelligence { get; } = new();
 
     public SharedRuntimeItem SharedRuntime { get; } = new();
+
+    public WorkspaceRuntimeItem CursorRuntime { get; } = new()
+    {
+        WorkspaceId = "cursor",
+        WorkspaceDisplay = "CURSOR",
+        AgentDisplay = "Cursor"
+    };
+
+    public WorkspaceRuntimeItem ClaudeRuntime { get; } = new()
+    {
+        WorkspaceId = "claude",
+        WorkspaceDisplay = "CLAUDE",
+        AgentDisplay = "Claude"
+    };
+
+    public ObservableCollection<WorkspaceRuntimeItem> WorkspaceRuntimes { get; } = [];
 
     public ObservableCollection<string> SolutionFolders { get; } = [];
 
@@ -193,7 +226,9 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         IResourceIntelligenceService resourceIntelligence,
         IServiceInstanceService serviceInstanceService,
         IPortRegistryService portRegistryService,
-        ISharedRuntimeService sharedRuntimeService)
+        ISharedRuntimeService sharedRuntimeService,
+        IWorkspaceRuntimeService workspaceRuntimeService,
+        IWorkspaceRuntimeTruth workspaceRuntimeTruth)
     {
         this.folderRegistry = folderRegistry;
         this.workspaceService = workspaceService;
@@ -206,7 +241,11 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         this.serviceInstanceService = serviceInstanceService;
         this.portRegistryService = portRegistryService;
         this.sharedRuntimeService = sharedRuntimeService;
+        this.workspaceRuntimeService = workspaceRuntimeService;
+        this.workspaceRuntimeTruth = workspaceRuntimeTruth;
         Services = servicesViewModel;
+        WorkspaceRuntimes.Add(CursorRuntime);
+        WorkspaceRuntimes.Add(ClaudeRuntime);
         SyncFolders();
         folderRegistry.FoldersChanged += SyncFolders;
         profileOrchestrator.ProfilesChanged += SyncProfiles;
@@ -218,6 +257,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         serviceInstanceService.InstancesChanged += SyncSelectedServiceInstances;
         portRegistryService.AllocationsChanged += SyncPortAllocations;
         sharedRuntimeService.StateChanged += SyncSharedRuntime;
+        workspaceRuntimeService.StateChanged += SyncWorkspaceRuntimes;
         serviceManager.Services.CollectionChanged += OnDiscoveredServicesChanged;
         resourceMonitoring.SnapshotUpdated += OnResourceSnapshotUpdated;
         resourceIntelligence.AssessmentUpdated += OnResourceAssessmentUpdated;
@@ -257,11 +297,14 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         if (value is not null)
         {
             ApplySharedRuntimePlan(sharedRuntimeService.Plan(value));
+            RebuildIsolationChoices();
         }
         else
         {
             SyncSharedRuntime();
         }
+
+        SyncWorkspaceRuntimes();
     }
 
     partial void OnIsProfileBusyChanged(bool value)
@@ -277,6 +320,10 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         OnPropertyChanged(nameof(OverviewSharedRuntimeHealthy));
         OnPropertyChanged(nameof(OverviewSharedRuntimeOwned));
         OnPropertyChanged(nameof(OverviewSharedRuntimePorts));
+        OnPropertyChanged(nameof(OverviewCursorRuntimeStatus));
+        OnPropertyChanged(nameof(OverviewCursorRuntimeDetail));
+        OnPropertyChanged(nameof(OverviewClaudeRuntimeStatus));
+        OnPropertyChanged(nameof(OverviewClaudeRuntimeDetail));
     }
 
     [RelayCommand]
@@ -407,6 +454,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
                 var available = snapshots.Count(item => item.Availability != WorkspaceAvailability.Unavailable);
                 WorkspaceStatusMessage = $"{available}/{snapshots.Count} workspace(s) accessible.";
+                SyncWorkspaceRuntimes();
             }
 
             var dispatcher = Application.Current?.Dispatcher;
@@ -653,6 +701,150 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         SharedRuntimeStatusMessage = "Cancel requested — already-started owned services remain running.";
     }
 
+    [RelayCommand]
+    private void PlanWorkspaceRuntime(WorkspaceRuntimeItem? item)
+    {
+        if (item is null || SelectedProfile is null)
+        {
+            MessageBox.Show("Select a Runtime Profile first.", "Workspace Runtime", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var snapshot = FindWorkspaceSnapshot(item.WorkspaceId);
+        var plan = workspaceRuntimeService.Plan(
+            SelectedProfile,
+            item.WorkspaceId,
+            snapshot,
+            GetRequestedServices(item),
+            SelectedAgentSession?.WorkspaceId == item.WorkspaceId ? SelectedAgentSession.Id : null);
+        ApplyWorkspaceRuntimePlan(item, plan);
+        WorkspaceRuntimeStatusMessage = $"{item.WorkspaceDisplay}: {plan.Summary}";
+    }
+
+    [RelayCommand]
+    private async Task StartWorkspaceRuntimeAsync(WorkspaceRuntimeItem? item)
+    {
+        if (item is null || SelectedProfile is null)
+        {
+            MessageBox.Show("Select a Runtime Profile first.", "Workspace Runtime", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        if (workspaceRuntimeService.IsStarting(item.WorkspaceId))
+        {
+            MessageBox.Show(
+                $"{item.WorkspaceDisplay} startup already in progress.",
+                "Workspace Runtime",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return;
+        }
+
+        await serviceInstanceService.RefreshAsync();
+        var snapshot = FindWorkspaceSnapshot(item.WorkspaceId);
+        var plan = workspaceRuntimeService.Plan(
+            SelectedProfile,
+            item.WorkspaceId,
+            snapshot,
+            GetRequestedServices(item),
+            SelectedAgentSession?.WorkspaceId == item.WorkspaceId ? SelectedAgentSession.Id : null);
+        ApplyWorkspaceRuntimePlan(item, plan);
+        if (!plan.CanStart)
+        {
+            MessageBox.Show(
+                plan.Summary + Environment.NewLine + string.Join(Environment.NewLine, plan.Issues.Select(issue => "• " + issue.Message)),
+                $"{item.WorkspaceDisplay} blocked",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+            WorkspaceRuntimeStatusMessage = plan.Summary;
+            return;
+        }
+
+        var pressure = ResourceIntelligence.OverallPressure;
+        var resourceWarning = pressure is ResourcePressureLevel.High or ResourcePressureLevel.Critical or ResourcePressureLevel.Warning
+            ? $"\n\nRESOURCE WARNING\n{ResourceIntelligence.OverallPressureDisplay}: {ResourceIntelligence.MemoryDisplay}\n{ResourceIntelligence.PrimaryRecommendationTitle}\nD5 is advisory. Confirm to proceed. Studio will not switch profiles, reassign ports, or stop Shared Runtime."
+            : "\n\nResource Intelligence (advisory): OK.";
+
+        var startLines = plan.Entries
+            .Where(entry => entry.Action == WorkspaceRuntimeAction.StartWorkspace)
+            .Select(entry => $"• {entry.ServiceName} → START WORKSPACE :{entry.Port?.ToString() ?? "—"}");
+        var reuseLines = plan.Entries
+            .Where(entry => entry.Action == WorkspaceRuntimeAction.ReuseShared)
+            .Select(entry => $"• {entry.ServiceName} → REUSE SHARED :{entry.Port?.ToString() ?? "—"}");
+
+        var confirm = MessageBox.Show(
+            $"{item.WorkspaceDisplay} Workspace Runtime\n\nWorkspace: {plan.WorkspaceDisplay}\nBranch: {plan.Branch ?? "—"}\nProfile: {plan.ProfileName}\nSource:\n{plan.SourceRoot}\n\n{string.Join(Environment.NewLine, startLines.Concat(reuseLines))}\n\n{plan.Summary}{resourceWarning}\n\nNo processes start until you confirm. Shared Runtime will not be mutated.",
+            $"Start {item.WorkspaceDisplay} Runtime",
+            MessageBoxButton.OKCancel,
+            pressure is ResourcePressureLevel.High or ResourcePressureLevel.Critical
+                ? MessageBoxImage.Warning
+                : MessageBoxImage.Question);
+        if (confirm != MessageBoxResult.OK)
+        {
+            WorkspaceRuntimeStatusMessage = "Start cancelled — no mutation occurred.";
+            return;
+        }
+
+        try
+        {
+            var result = await workspaceRuntimeService.StartAsync(
+                SelectedProfile,
+                item.WorkspaceId,
+                snapshot,
+                GetRequestedServices(item),
+                SelectedAgentSession?.WorkspaceId == item.WorkspaceId ? SelectedAgentSession.Id : null);
+            ApplyWorkspaceRuntimePlan(item, result.Plan ?? plan);
+            WorkspaceRuntimeStatusMessage = result.Error ?? result.Status.ToString();
+            await serviceInstanceService.RefreshAsync();
+            SyncWorkspaceRuntimes();
+        }
+        catch (Exception ex)
+        {
+            WorkspaceRuntimeStatusMessage = ex.Message;
+        }
+    }
+
+    [RelayCommand]
+    private async Task StopWorkspaceRuntimeAsync(WorkspaceRuntimeItem? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        var owned = workspaceRuntimeService.GetSession(item.WorkspaceId).OwnedServiceNames.ToList();
+        var reused = item.PlanRows
+            .Where(row => row.ActionDisplay.Contains("REUSE SHARED", StringComparison.OrdinalIgnoreCase))
+            .Select(row => row.ServiceName)
+            .ToList();
+        var confirm = MessageBox.Show(
+            $"Stop {item.WorkspaceDisplay} Runtime?\n\nOwned (will stop):\n{(owned.Count == 0 ? "• (none)" : string.Join(Environment.NewLine, owned.Select(name => "• " + name)))}\n\nReused shared (will remain):\n{(reused.Count == 0 ? "• (none)" : string.Join(Environment.NewLine, reused.Select(name => "• " + name)))}\n\nShared Runtime and the other workspace will not be stopped.",
+            $"Stop {item.WorkspaceDisplay} Runtime",
+            MessageBoxButton.OKCancel,
+            MessageBoxImage.Question);
+        if (confirm != MessageBoxResult.OK)
+        {
+            return;
+        }
+
+        var result = await workspaceRuntimeService.StopAsync(item.WorkspaceId);
+        WorkspaceRuntimeStatusMessage = result.Error ?? $"Stopped owned {item.WorkspaceDisplay} services.";
+        await serviceInstanceService.RefreshAsync();
+        SyncWorkspaceRuntimes();
+    }
+
+    [RelayCommand]
+    private void CancelWorkspaceRuntimeStartup(WorkspaceRuntimeItem? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        workspaceRuntimeService.CancelStartup(item.WorkspaceId);
+        WorkspaceRuntimeStatusMessage = $"Cancel requested for {item.WorkspaceDisplay} — already-started owned services remain running.";
+    }
+
     private bool CanStartSharedRuntime()
         => SharedRuntimeCommandGate.CanStart(
             SelectedProfile is not null,
@@ -709,6 +901,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         {
             SyncSharedRuntime();
         }
+
+        SyncWorkspaceRuntimes();
     }
 
     private void NotifySharedRuntimeCommandsChanged()
@@ -823,6 +1017,159 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         SyncSharedRuntime();
     }
 
+    private void SyncWorkspaceRuntimes()
+    {
+        void Apply()
+        {
+            foreach (var item in WorkspaceRuntimes)
+            {
+                var snapshot = FindWorkspaceSnapshot(item.WorkspaceId);
+                item.Path = snapshot?.Path ?? item.Path;
+                item.Branch = snapshot?.Branch;
+                item.WorkspaceDisplay = snapshot?.DisplayName ?? item.WorkspaceDisplay;
+                item.AgentDisplay = snapshot?.AgentOwnerDisplay ?? item.AgentDisplay;
+                item.ProfileName = SelectedProfile?.Name ?? "—";
+                item.IsStarting = workspaceRuntimeService.IsStarting(item.WorkspaceId);
+                var session = workspaceRuntimeService.GetSession(item.WorkspaceId);
+                item.OwnedCount = session.OwnedServiceNames.Count;
+                var plan = workspaceRuntimeService.GetLastPlan(item.WorkspaceId);
+                item.CanStart = plan?.CanStart ?? false;
+                item.IssueCount = plan?.IssueCount ?? 0;
+                item.IsolatedCount = plan?.IsolatedCount ?? 0;
+                item.ReuseSharedCount = plan?.ReuseSharedCount ?? 0;
+                item.RequestedServicesText = string.Join(", ", GetRequestedServices(item));
+                item.SourceChangedDisplay =
+                    session.Status == SharedRuntimeStatus.Running
+                    && !string.IsNullOrWhiteSpace(session.StartedHead)
+                    && snapshot is not null
+                    && !string.IsNullOrWhiteSpace(snapshot.Head)
+                    && !string.Equals(session.StartedHead, snapshot.Head, StringComparison.OrdinalIgnoreCase)
+                        ? "Source changed"
+                        : null;
+                item.RuntimeCaption = session.OwnedServiceNames.Count == 0
+                    ? "Stopped"
+                    : string.Join(", ", session.OwnedServiceNames.Select(name =>
+                    {
+                        var row = item.PlanRows.FirstOrDefault(planRow =>
+                            string.Equals(planRow.ServiceName, name, StringComparison.OrdinalIgnoreCase));
+                        return $"{name} :{row?.PortDisplay ?? "—"}";
+                    }));
+                item.ApplyStatus(session.Status, plan?.Summary);
+                item.CanExecuteStart = WorkspaceRuntimeCommandGate.CanStart(
+                    snapshot is not null,
+                    item.CanStart,
+                    session.Status,
+                    item.IsStarting,
+                    IsProfileBusy);
+                item.CanExecuteStop = WorkspaceRuntimeCommandGate.CanStop(item.OwnedCount, IsProfileBusy, item.IsStarting);
+                item.CanExecuteCancel = WorkspaceRuntimeCommandGate.CanCancel(item.IsStarting);
+            }
+
+            NotifyOverviewSummariesChanged();
+            SyncAgentSessionsRuntimeCaptions();
+        }
+
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is not null && !dispatcher.CheckAccess())
+        {
+            dispatcher.Invoke(Apply);
+        }
+        else
+        {
+            Apply();
+        }
+    }
+
+    private void ApplyWorkspaceRuntimePlan(WorkspaceRuntimeItem item, WorkspaceRuntimePlan plan)
+    {
+        item.PlanRows.Clear();
+        item.ValidationLines.Clear();
+        foreach (var entry in plan.Entries)
+        {
+            item.PlanRows.Add(new WorkspaceRuntimePlanRow
+            {
+                ServiceName = entry.ServiceName,
+                ActionDisplay = entry.ActionDisplay,
+                ScopeDisplay = entry.ScopeDisplay,
+                PortDisplay = entry.Port?.ToString() ?? "—",
+                OwnerDisplay = entry.OwnerDisplay,
+                Reason = entry.Reason ?? string.Empty
+            });
+        }
+
+        if (plan.CanStart)
+        {
+            item.ValidationLines.Add("✓ Workspace valid");
+            item.ValidationLines.Add("✓ Branch valid");
+            item.ValidationLines.Add("✓ Dependencies valid");
+            item.ValidationLines.Add("✓ Ports valid");
+            item.ValidationLines.Add("✓ Source valid");
+            item.ValidationLines.Add("✓ Shared Runtime protected");
+        }
+        else
+        {
+            foreach (var issue in plan.Issues)
+            {
+                item.ValidationLines.Add($"BLOCKED · {issue.Message}");
+            }
+        }
+
+        foreach (var warning in plan.Warnings)
+        {
+            item.ValidationLines.Add($"WARN · {warning}");
+        }
+
+        SyncWorkspaceRuntimes();
+    }
+
+    private void RebuildIsolationChoices()
+    {
+        foreach (var item in WorkspaceRuntimes)
+        {
+            var previously = item.IsolationChoices
+                .Where(choice => choice.IsSelected)
+                .Select(choice => choice.ServiceName)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var hadPrevious = item.IsolationChoices.Count > 0;
+            item.IsolationChoices.Clear();
+            if (SelectedProfile is null)
+            {
+                continue;
+            }
+
+            foreach (var entry in SelectedProfile.Services.Where(service => service.Enabled))
+            {
+                var choice = new WorkspaceIsolationChoice { ServiceName = entry.ServiceName };
+                choice.IsSelected = hadPrevious
+                    ? previously.Contains(entry.ServiceName)
+                    : string.Equals(entry.ServiceName, "OrganizationService", StringComparison.OrdinalIgnoreCase);
+                item.IsolationChoices.Add(choice);
+            }
+        }
+    }
+
+    private static IReadOnlyList<string> GetRequestedServices(WorkspaceRuntimeItem item)
+        => item.IsolationChoices
+            .Where(choice => choice.IsSelected)
+            .Select(choice => choice.ServiceName)
+            .ToList();
+
+    private DevelopmentWorkspaceItem? FindWorkspaceSnapshot(string workspaceId)
+        => Workspaces.FirstOrDefault(item =>
+            string.Equals(item.Id, workspaceId, StringComparison.OrdinalIgnoreCase));
+
+    private void SyncAgentSessionsRuntimeCaptions()
+    {
+        foreach (var session in AgentSessions)
+        {
+            var runtime = WorkspaceRuntimes.FirstOrDefault(item =>
+                string.Equals(item.WorkspaceId, session.WorkspaceId, StringComparison.OrdinalIgnoreCase));
+            session.RuntimeDisplay = runtime is null || runtime.OwnedCount == 0
+                ? "—"
+                : runtime.RuntimeCaption;
+        }
+    }
+
     [RelayCommand]
     private void EditSelectedProfile()
     {
@@ -873,6 +1220,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
                                    string.Equals(profile.Id, selectedId, StringComparison.OrdinalIgnoreCase))
                                ?? RuntimeProfiles.FirstOrDefault();
             ProfileStatusMessage = $"{RuntimeProfiles.Count} runtime profile(s) loaded.";
+            RebuildIsolationChoices();
             NotifyOverviewSummariesChanged();
         }
 
@@ -1520,6 +1868,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
             SelectedAgentSession = AgentSessions.FirstOrDefault(item =>
                                        string.Equals(item.Id, selectedId, StringComparison.OrdinalIgnoreCase))
                                    ?? AgentSessions.FirstOrDefault();
+            SyncAgentSessionsRuntimeCaptions();
             NotifyOverviewSummariesChanged();
         }
 
@@ -1585,8 +1934,22 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
                 MemoryDisplay = process?.MemoryWorkingSetBytes is long bytes
                     ? LocalResourceFormatting.FormatBytes(bytes)
                     : "—",
-                Note = service.AssociationNote
+                Note = service.AssociationNote,
+                ScopeDisplay = "Shared",
+                WorkspaceDisplay = "MAIN",
+                AgentDisplay = "—",
+                PortDisplay = "—"
             });
+            var row = ServiceResourceRows[^1];
+            var match = workspaceRuntimeTruth.GetAll().FirstOrDefault(snapshot =>
+                snapshot.ProcessId is int pid && service.ProcessId == pid);
+            if (match.Launch is not null)
+            {
+                row.ScopeDisplay = ServiceInstanceItem.FormatWorkspaceLabel(match.WorkspaceId);
+                row.WorkspaceDisplay = ServiceInstanceItem.FormatWorkspaceLabel(match.WorkspaceId);
+                row.AgentDisplay = ServiceInstanceItem.FormatWorkspaceLabel(match.WorkspaceId);
+                row.PortDisplay = match.Port?.ToString() ?? "—";
+            }
         }
     }
 
