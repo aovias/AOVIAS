@@ -204,8 +204,7 @@ Studio UI (V2.0): Local Development is one navigation destination with five tabs
 Overview · Git & PR · Agent Sessions · Services · Monitoring.
 
 Service Instance Model (V2.1): distinguishes Service Definition (discovered service) from
-Service Instance (Shared vs Workspace-scoped execution context). Read-only awareness only —
-no isolated runtime execution.
+Service Instance (Shared vs Workspace-scoped execution context).
 
 Local Port Registry (V2.2): maps local TCP ports to ServiceInstance identity
 (`%LocalAppData%\AoviasStudio\port-registry.json`). Registry assignment is authoritative for
@@ -220,5 +219,13 @@ Validation and Shared Runtime issue counts use the same authoritative result. Pr
 are revalidated against the current discovered service collection after discovery changes
 (no extra discovery pass). Start is gated on a valid plan; Stop is gated on owned services;
 Cancel Startup is shown only while startup is in progress.
+
+Workspace Runtime (V2.4): selective isolation for Cursor and Claude workspaces. Reuses V2.1
+ServiceInstance, V2.2 Port Registry, D2 profiles, and V2.3 health/ownership. Isolated
+services execute from the agent worktree (`AOVIAS.Cursor` / `AOVIAS.Claude`) on dedicated
+workspace ports. Healthy shared dependencies are reused and never claimed. Stop affects only
+workspace-owned processes. Branch/path/ownership mismatches block. Does not launch Cursor or
+Claude, mutate Git/worktrees, duplicate infrastructure, auto-reassign ports, or auto-switch
+profiles. D5 resource pressure remains advisory and requires explicit start confirmation.
 
 Invariant: Studio must never silently modify Git, runtime, worktrees, or agents.

@@ -21,6 +21,7 @@ using ComplianceServiceManager.Services.RuntimeProfiles;
 using ComplianceServiceManager.Services.ServiceInstances;
 using ComplianceServiceManager.Services.PortRegistry;
 using ComplianceServiceManager.Services.SharedRuntime;
+using ComplianceServiceManager.Services.WorkspaceRuntime;
 using ComplianceServiceManager.Services.Workspaces;
 using ComplianceServiceManager.ViewModels;
 using ComplianceServiceManager.ViewModels.AiCopilot;
@@ -207,6 +208,9 @@ public partial class App : Application
         services.AddSingleton<IServiceRuntimeHost>(provider => provider.GetRequiredService<ServiceManagerService>());
         services.AddSingleton<IRuntimeProfileOrchestrator, RuntimeProfileOrchestrator>();
         services.AddSingleton<ISharedRuntimeService, SharedRuntimeService>();
+        services.AddSingleton<WorkspaceRuntimeProcessMap>();
+        services.AddSingleton<IWorkspaceRuntimeTruth>(provider => provider.GetRequiredService<WorkspaceRuntimeProcessMap>());
+        services.AddSingleton<IWorkspaceRuntimeService, WorkspaceRuntimeService>();
         services.AddSingleton<WorkspaceNavigator>();
         services.AddSingleton<IWorkspaceNavigator>(provider => provider.GetRequiredService<WorkspaceNavigator>());
         services.AddSingleton<IRuntimeCapabilitiesService, RuntimeCapabilitiesService>();

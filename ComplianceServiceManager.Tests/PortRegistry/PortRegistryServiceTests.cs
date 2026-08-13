@@ -141,7 +141,7 @@ public sealed class PortRegistryServiceTests : IDisposable
         var item = registry.GetByPort(5101);
         Assert.NotNull(item);
         Assert.Equal("Cursor", item!.InstanceDisplay);
-        Assert.Equal("Workspace", item.ScopeDisplay);
+        Assert.Equal("Cursor", item.ScopeDisplay);
         Assert.Equal("cursor", item.WorkspaceId);
     }
 

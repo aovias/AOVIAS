@@ -4,6 +4,7 @@
              xmlns:controls="clr-namespace:Aovias.DesignSystem.Controls;assembly=Aovias.DesignSystem"
              xmlns:helpers="clr-namespace:ComplianceServiceManager.Helpers"
              xmlns:models="clr-namespace:ComplianceServiceManager.Models.Workspaces"
+             xmlns:wr="clr-namespace:ComplianceServiceManager.Models.WorkspaceRuntime"
              xmlns:localResources="clr-namespace:ComplianceServiceManager.Models.LocalResources"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -219,6 +220,22 @@
                                             <Run Text=" owned · " />
                                             <Run Text="{Binding OverviewSharedRuntimePorts, Mode=OneWay}" />
                                         </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,8,12,0">
+                                        <TextBlock Text="Cursor Runtime" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding OverviewCursorRuntimeStatus}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource PrimaryBrush}" />
+                                        <TextBlock Text="{Binding OverviewCursorRuntimeDetail}"
+                                                   Style="{StaticResource CaptionTextStyle}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,8,0,0">
+                                        <TextBlock Text="Claude Runtime" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding OverviewClaudeRuntimeStatus}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource PrimaryBrush}" />
+                                        <TextBlock Text="{Binding OverviewClaudeRuntimeDetail}"
+                                                   Style="{StaticResource CaptionTextStyle}" />
                                     </StackPanel>
                                 </UniformGrid>
                             </StackPanel>
@@ -451,6 +468,47 @@
                                                         <TextBlock Grid.Column="0" Style="{StaticResource CaptionTextStyle}" Text="Agent" Width="56" />
                                                         <TextBlock Grid.Column="1" Text="{Binding AgentOwnerDisplay}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource PrimaryBrush}" />
                                                     </Grid>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
+                            <StackPanel>
+                                <TextBlock Text="Workspace Runtime vs Git" Style="{StaticResource HeadingTextStyle}" />
+                                <TextBlock Text="Runtime execution never mutates Git. If the workspace HEAD changes while a runtime is running, Studio shows Source changed — it does not restart automatically."
+                                           Style="{StaticResource CaptionTextStyle}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,4,0,10" />
+                                <ItemsControl ItemsSource="{Binding WorkspaceRuntimes}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type wr:WorkspaceRuntimeItem}">
+                                            <Border Background="{StaticResource SurfaceInsetBrush}"
+                                                    BorderBrush="{StaticResource BorderBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="6"
+                                                    Padding="10"
+                                                    Margin="0,0,0,8">
+                                                <StackPanel>
+                                                    <TextBlock>
+                                                        <Run Text="{Binding WorkspaceDisplay, Mode=OneWay}" FontWeight="SemiBold" />
+                                                        <Run Text=" · " />
+                                                        <Run Text="{Binding StatusDisplay, Mode=OneWay}" />
+                                                        <Run Text=" · " />
+                                                        <Run Text="{Binding Branch, Mode=OneWay, TargetNullValue=—}" />
+                                                    </TextBlock>
+                                                    <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0">
+                                                        <Run Text="Runtime: " />
+                                                        <Run Text="{Binding RuntimeCaption, Mode=OneWay, TargetNullValue=—}" />
+                                                    </TextBlock>
+                                                    <TextBlock Text="{Binding SourceChangedDisplay}"
+                                                               Foreground="{StaticResource WarningBrush}"
+                                                               FontWeight="SemiBold"
+                                                               Margin="0,4,0,0"
+                                                               Visibility="{Binding SourceChangedDisplay, Converter={StaticResource NotNullToVis}}" />
                                                 </StackPanel>
                                             </Border>
                                         </DataTemplate>
@@ -708,6 +766,10 @@
                                             <Run Text="{Binding SelectedAgentSession.RuntimeProfileDisplay, Mode=OneWay}" />
                                         </TextBlock>
                                         <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0" TextWrapping="Wrap">
+                                            <Run Text="Workspace Runtime: " />
+                                            <Run Text="{Binding SelectedAgentSession.RuntimeDisplay, Mode=OneWay, TargetNullValue=—}" />
+                                        </TextBlock>
+                                        <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0" TextWrapping="Wrap">
                                             <Run Text="PR: " />
                                             <Run Text="{Binding SelectedAgentSession.PullRequestDisplay, Mode=OneWay}" />
                                         </TextBlock>
@@ -835,6 +897,144 @@
                                         <DataGridTextColumn Header="Reason" Binding="{Binding Reason}" Width="2*" />
                                     </DataGrid.Columns>
                                 </DataGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Workspace Runtimes (V2.4) -->
+                        <Border Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock Text="Workspace Runtimes" Style="{StaticResource HeadingTextStyle}" />
+                                        <TextBlock Text="Selective isolation for Cursor and Claude. Reuses healthy Shared Runtime dependencies. Does not launch Cursor or Claude. Does not mutate Git."
+                                                   Style="{StaticResource CaptionTextStyle}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,4,0,0" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding WorkspaceRuntimeStatusMessage}"
+                                               Style="{StaticResource CaptionTextStyle}"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Top"
+                                               MaxWidth="340"
+                                               TextWrapping="Wrap"
+                                               TextAlignment="Right" />
+                                </Grid>
+                                <ItemsControl ItemsSource="{Binding WorkspaceRuntimes}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type wr:WorkspaceRuntimeItem}">
+                                            <Border Background="{StaticResource SurfaceInsetBrush}"
+                                                    BorderBrush="{StaticResource BorderBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="8"
+                                                    Padding="12"
+                                                    Margin="0,0,0,12">
+                                                <StackPanel>
+                                                    <Grid Margin="0,0,0,8">
+                                                        <TextBlock Text="{Binding WorkspaceDisplay}"
+                                                                   FontSize="16"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                                        <TextBlock Text="{Binding StatusDisplay}"
+                                                                   HorizontalAlignment="Right"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="{StaticResource PrimaryBrush}" />
+                                                    </Grid>
+                                                    <UniformGrid Columns="4" Margin="0,0,0,8">
+                                                        <StackPanel Margin="0,0,8,0">
+                                                            <TextBlock Text="Workspace" Style="{StaticResource CaptionTextStyle}" />
+                                                            <TextBlock Text="{Binding Path}" TextWrapping="Wrap" FontSize="12" />
+                                                        </StackPanel>
+                                                        <StackPanel Margin="0,0,8,0">
+                                                            <TextBlock Text="Branch" Style="{StaticResource CaptionTextStyle}" />
+                                                            <TextBlock Text="{Binding Branch, TargetNullValue=—}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                        </StackPanel>
+                                                        <StackPanel Margin="0,0,8,0">
+                                                            <TextBlock Text="Agent" Style="{StaticResource CaptionTextStyle}" />
+                                                            <TextBlock Text="{Binding AgentDisplay}" FontWeight="SemiBold" />
+                                                        </StackPanel>
+                                                        <StackPanel>
+                                                            <TextBlock Text="Runtime" Style="{StaticResource CaptionTextStyle}" />
+                                                            <TextBlock Text="{Binding ProfileName}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                        </StackPanel>
+                                                    </UniformGrid>
+                                                    <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,0,0,6">
+                                                        <Run Text="Services: " />
+                                                        <Run Text="{Binding IsolatedCount, Mode=OneWay}" />
+                                                        <Run Text=" isolated · " />
+                                                        <Run Text="{Binding ReuseSharedCount, Mode=OneWay}" />
+                                                        <Run Text=" shared dependencies" />
+                                                    </TextBlock>
+                                                    <TextBlock Text="{Binding SourceChangedDisplay}"
+                                                               Foreground="{StaticResource WarningBrush}"
+                                                               FontWeight="SemiBold"
+                                                               Margin="0,0,0,6"
+                                                               Visibility="{Binding SourceChangedDisplay, Converter={StaticResource NotNullToVis}}" />
+                                                    <TextBlock Text="Isolate" Style="{StaticResource CaptionTextStyle}" Margin="0,0,0,4" />
+                                                    <ItemsControl ItemsSource="{Binding IsolationChoices}" Margin="0,0,0,8">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <WrapPanel />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate DataType="{x:Type wr:WorkspaceIsolationChoice}">
+                                                                <CheckBox Content="{Binding ServiceName}"
+                                                                          IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                                          Margin="0,0,12,4" />
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                                        <Button Content="Plan"
+                                                                Command="{Binding DataContext.PlanWorkspaceRuntimeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                CommandParameter="{Binding}"
+                                                                Margin="0,0,8,0" />
+                                                        <Button Content="Start"
+                                                                Style="{StaticResource PrimaryButtonStyle}"
+                                                                Command="{Binding DataContext.StartWorkspaceRuntimeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                CommandParameter="{Binding}"
+                                                                IsEnabled="{Binding CanExecuteStart}"
+                                                                Margin="0,0,8,0" />
+                                                        <Button Content="Stop"
+                                                                Command="{Binding DataContext.StopWorkspaceRuntimeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                CommandParameter="{Binding}"
+                                                                IsEnabled="{Binding CanExecuteStop}"
+                                                                Margin="0,0,8,0" />
+                                                        <Button Content="Cancel Startup"
+                                                                Command="{Binding DataContext.CancelWorkspaceRuntimeStartupCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                CommandParameter="{Binding}"
+                                                                Visibility="{Binding CanExecuteCancel, Converter={StaticResource BoolToVis}}" />
+                                                    </StackPanel>
+                                                    <ItemsControl ItemsSource="{Binding ValidationLines}" Margin="0,0,0,8">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding}"
+                                                                           Style="{StaticResource CaptionTextStyle}"
+                                                                           TextWrapping="Wrap"
+                                                                           Margin="0,0,0,2" />
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                    <DataGrid ItemsSource="{Binding PlanRows}"
+                                                              AutoGenerateColumns="False"
+                                                              IsReadOnly="True"
+                                                              HeadersVisibility="Column"
+                                                              CanUserAddRows="False"
+                                                              MaxHeight="160">
+                                                        <DataGrid.Columns>
+                                                            <DataGridTextColumn Header="Service" Binding="{Binding ServiceName}" Width="*" />
+                                                            <DataGridTextColumn Header="Action" Binding="{Binding ActionDisplay}" Width="130" />
+                                                            <DataGridTextColumn Header="Scope" Binding="{Binding ScopeDisplay}" Width="90" />
+                                                            <DataGridTextColumn Header="Port" Binding="{Binding PortDisplay}" Width="70" />
+                                                            <DataGridTextColumn Header="Owner" Binding="{Binding OwnerDisplay}" Width="140" />
+                                                            <DataGridTextColumn Header="Reason" Binding="{Binding Reason}" Width="2*" />
+                                                        </DataGrid.Columns>
+                                                    </DataGrid>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </StackPanel>
                         </Border>
 
@@ -1353,7 +1553,11 @@
                                           MaxHeight="160">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Service" Binding="{Binding ServiceName}" Width="2*" />
+                                        <DataGridTextColumn Header="Scope" Binding="{Binding ScopeDisplay}" Width="80" />
+                                        <DataGridTextColumn Header="Workspace" Binding="{Binding WorkspaceDisplay}" Width="80" />
+                                        <DataGridTextColumn Header="Agent" Binding="{Binding AgentDisplay}" Width="70" />
                                         <DataGridTextColumn Header="PID" Binding="{Binding ProcessIdDisplay}" Width="70" />
+                                        <DataGridTextColumn Header="Port" Binding="{Binding PortDisplay}" Width="70" />
                                         <DataGridTextColumn Header="CPU" Binding="{Binding CpuDisplay}" Width="80" />
                                         <DataGridTextColumn Header="RAM" Binding="{Binding MemoryDisplay}" Width="100" />
                                         <DataGridTextColumn Header="Note" Binding="{Binding Note}" Width="3*" />

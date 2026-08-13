@@ -9,6 +9,18 @@ public sealed partial class LocalServiceResourceRow : ObservableObject
     private string serviceName = string.Empty;
 
     [ObservableProperty]
+    private string scopeDisplay = "Shared";
+
+    [ObservableProperty]
+    private string workspaceDisplay = "—";
+
+    [ObservableProperty]
+    private string agentDisplay = "—";
+
+    [ObservableProperty]
+    private string portDisplay = "—";
+
+    [ObservableProperty]
     private string processIdDisplay = "—";
 
     [ObservableProperty]

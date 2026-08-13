@@ -5,6 +5,7 @@ using ComplianceServiceManager.Models.ServiceInstances;
 using ComplianceServiceManager.Services.AgentSessions;
 using ComplianceServiceManager.Services.LocalResources;
 using ComplianceServiceManager.Services.RuntimeProfiles;
+using ComplianceServiceManager.Services.WorkspaceRuntime;
 using ComplianceServiceManager.Services.Workspaces;
 
 namespace ComplianceServiceManager.Services.ServiceInstances;
@@ -21,6 +22,7 @@ public sealed class ServiceInstanceService : IServiceInstanceService
     private readonly IRuntimeProfileOrchestrator? profiles;
     private readonly IAgentSessionService? sessions;
     private readonly ILocalResourceMonitoringService? resources;
+    private readonly IWorkspaceRuntimeTruth? workspaceTruth;
     private readonly ILoggingService logger;
     private readonly object gate = new();
     private List<ServiceInstanceItem> items = [];
@@ -33,7 +35,8 @@ public sealed class ServiceInstanceService : IServiceInstanceService
         ILoggingService logger,
         IRuntimeProfileOrchestrator? profiles = null,
         IAgentSessionService? sessions = null,
-        ILocalResourceMonitoringService? resources = null)
+        ILocalResourceMonitoringService? resources = null,
+        IWorkspaceRuntimeTruth? workspaceTruth = null)
     {
         this.registry = registry;
         this.workspaces = workspaces;
@@ -43,6 +46,7 @@ public sealed class ServiceInstanceService : IServiceInstanceService
         this.profiles = profiles;
         this.sessions = sessions;
         this.resources = resources;
+        this.workspaceTruth = workspaceTruth;
     }
 
     public event Action? InstancesChanged;
@@ -214,6 +218,8 @@ public sealed class ServiceInstanceService : IServiceInstanceService
             item.Branch = null;
             item.SourcePath = null;
             ApplySharedRuntimeTruth(item, definition.ServiceId);
+            item.ScopeDisplay = ServiceInstanceItem.FormatScopeDisplay(definition.ExecutionScope, definition.WorkspaceId);
+            item.OwnershipDisplay = ServiceInstanceItem.FormatOwnershipDisplay(definition.Ownership, definition.WorkspaceId);
             ApplyAssociations(item, definition);
             return item;
         }
@@ -250,10 +256,7 @@ public sealed class ServiceInstanceService : IServiceInstanceService
             {
                 var gitState = await git.GetWorkspaceStateAsync(workspaceConfig.Path, cancellationToken);
                 item.Branch = gitState.Branch;
-                // V2.1: workspace instances are not launched — do not map shared process truth onto them.
-                item.ApplyPort(null);
-                item.ApplyProcessId(null);
-                item.ApplyState(ServiceInstanceState.Defined, "Configured — isolated execution not implemented (V2.1).");
+                ApplyWorkspaceRuntimeTruth(item, definition, workspaceConfig.Path);
             }
         }
         catch (Exception ex)
@@ -265,7 +268,38 @@ public sealed class ServiceInstanceService : IServiceInstanceService
         }
 
         ApplyAssociations(item, definition);
+        item.ScopeDisplay = ServiceInstanceItem.FormatScopeDisplay(definition.ExecutionScope, definition.WorkspaceId);
         return item;
+    }
+
+    private void ApplyWorkspaceRuntimeTruth(
+        ServiceInstanceItem item,
+        ServiceInstanceDefinition definition,
+        string workspacePath)
+    {
+        item.ScopeDisplay = ServiceInstanceItem.FormatScopeDisplay(definition.ExecutionScope, definition.WorkspaceId);
+
+        if (workspaceTruth is not null && workspaceTruth.TryGetLaunch(definition.InstanceId, out var snapshot))
+        {
+            item.SourcePath = snapshot.SourcePath ?? workspacePath;
+            item.ApplyPort(snapshot.Port);
+            item.ApplyProcessId(snapshot.ProcessId);
+            item.OwnershipDisplay = ServiceInstanceItem.FormatOwnershipDisplay(
+                definition.Ownership,
+                definition.WorkspaceId,
+                snapshot.Owned);
+            var reason = snapshot.Owned
+                ? $"Owner: Workspace: {ServiceInstanceItem.FormatWorkspaceLabel(definition.WorkspaceId)}"
+                : "Already running — not claimed by Workspace Runtime.";
+            item.ApplyState(MapServiceStatus(snapshot.Launch.Status), reason);
+            return;
+        }
+
+        item.SourcePath = workspacePath;
+        item.ApplyPort(null);
+        item.ApplyProcessId(null);
+        item.OwnershipDisplay = ServiceInstanceItem.FormatOwnershipDisplay(definition.Ownership, definition.WorkspaceId);
+        item.ApplyState(ServiceInstanceState.Defined, "Configured — awaiting Workspace Runtime start.");
     }
 
     private void ApplySharedRuntimeTruth(ServiceInstanceItem item, string serviceId)
