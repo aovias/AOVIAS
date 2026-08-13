@@ -120,7 +120,51 @@ public sealed class SharedRuntimeServiceTests : IDisposable
         var profile = Profile(("Gateway", []));
         var plan = runtime.Plan(profile);
         Assert.False(plan.CanStart);
-        Assert.Contains(plan.Issues, i => i.Code is "unknown-service" or "missing-service");
+        Assert.Contains(plan.Issues, i => i.Code is "discovery-empty" or "unknown-service" or "missing-service");
+        Assert.Equal(plan.Issues.Count, plan.IssueCount);
+        Assert.Contains($"{plan.IssueCount} issue(s)", plan.Summary);
+        Assert.Equal(0, plan.BlockedCount);
+    }
+
+    [Fact]
+    public void Plan_FiveUnknownServices_IssueCountIsFive()
+    {
+        AddService("UnrelatedService");
+        var profile = orchestrator.GetProfiles()
+            .First(p => p.Name.Contains("Web", StringComparison.OrdinalIgnoreCase));
+        var plan = runtime.Plan(profile);
+        Assert.False(plan.CanStart);
+        Assert.Equal(5, plan.IssueCount);
+        Assert.Equal(5, plan.Issues.Count);
+        Assert.Equal(SharedRuntimeStatus.Blocked, runtime.Session.Status);
+        Assert.Contains("5 issue(s)", plan.Summary);
+        Assert.Equal(0, plan.BlockedCount);
+        Assert.All(plan.Issues, i => Assert.Equal("unknown-service", i.Code));
+        Assert.Empty(host.StartCalls);
+    }
+
+    [Fact]
+    public void Plan_EmptyDiscovery_DoesNotReportFiveUnknownServices()
+    {
+        var profile = orchestrator.GetProfiles()
+            .First(p => p.Name.Contains("Web", StringComparison.OrdinalIgnoreCase));
+        var plan = runtime.Plan(profile);
+        Assert.False(plan.CanStart);
+        Assert.Equal(1, plan.IssueCount);
+        Assert.Contains(plan.Issues, i => i.Code == "discovery-empty");
+        Assert.Contains("1 issue(s)", plan.Summary);
+        Assert.Equal(SharedRuntimeStatus.Blocked, runtime.Session.Status);
+    }
+
+    [Fact]
+    public void Plan_ValidProfile_CanStartRemainsTrue()
+    {
+        var profile = SeedWebStack();
+        var plan = runtime.Plan(profile);
+        Assert.True(plan.CanStart);
+        Assert.Equal(0, plan.IssueCount);
+        Assert.Equal(SharedRuntimeStatus.Planned, runtime.Session.Status);
+        Assert.StartsWith("VALID", plan.Summary, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -11,6 +11,7 @@
     <UserControl.Resources>
         <helpers:NotNullToVisibilityConverter x:Key="NotNullToVis" />
         <helpers:PercentageToGridLengthConverter x:Key="PercentageToGridLengthConverter" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </UserControl.Resources>
     <Grid Margin="0,0,0,8">
         <Grid.RowDefinitions>
@@ -805,7 +806,8 @@
                                             Command="{Binding StopSharedRuntimeCommand}"
                                             Margin="0,0,8,0" />
                                     <Button Content="Cancel Startup"
-                                            Command="{Binding CancelSharedRuntimeStartupCommand}" />
+                                            Command="{Binding CancelSharedRuntimeStartupCommand}"
+                                            Visibility="{Binding SharedRuntime.CanExecuteCancel, Converter={StaticResource BoolToVis}}" />
                                 </StackPanel>
                                 <ItemsControl ItemsSource="{Binding SharedRuntime.ValidationLines}" Margin="0,0,0,8">
                                     <ItemsControl.ItemTemplate>

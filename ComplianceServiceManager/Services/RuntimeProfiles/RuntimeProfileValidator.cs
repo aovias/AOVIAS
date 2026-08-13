@@ -76,15 +76,26 @@ public sealed class RuntimeProfileValidator
 
         if (discoveredNames is not null)
         {
-            foreach (var entry in enabled.Where(item => !string.IsNullOrWhiteSpace(item.ServiceName)))
+            if (discoveredNames.Count == 0)
             {
-                if (!discoveredNames.Contains(entry.ServiceName))
+                issues.Add(new ProfileValidationIssue
                 {
-                    issues.Add(new ProfileValidationIssue
+                    Code = "discovery-empty",
+                    Message = "No services are discovered yet. Confirm Local Development solution folders are configured, then refresh discovery before validating this profile."
+                });
+            }
+            else
+            {
+                foreach (var entry in enabled.Where(item => !string.IsNullOrWhiteSpace(item.ServiceName)))
+                {
+                    if (!discoveredNames.Contains(entry.ServiceName))
                     {
-                        Code = "unknown-service",
-                        Message = $"Unknown service '{entry.ServiceName}' (not in current discovery)."
-                    });
+                        issues.Add(new ProfileValidationIssue
+                        {
+                            Code = "unknown-service",
+                            Message = $"Unknown service '{entry.ServiceName}' (not in current discovery)."
+                        });
+                    }
                 }
             }
         }
