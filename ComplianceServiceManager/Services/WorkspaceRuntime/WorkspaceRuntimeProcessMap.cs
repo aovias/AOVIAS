@@ -7,11 +7,22 @@ public sealed class WorkspaceRuntimeProcessMap : IWorkspaceRuntimeTruth
     private readonly object gate = new();
     private readonly Dictionary<string, WorkspaceLaunchSnapshot> byInstance = new(StringComparer.OrdinalIgnoreCase);
 
-    public void Upsert(string instanceId, string workspaceId, string serviceName, ServiceInfoModel launch, bool owned)
+    public void Upsert(
+        string instanceId,
+        string workspaceId,
+        string serviceName,
+        ServiceInfoModel launch,
+        bool owned,
+        bool startedByRuntime = false)
     {
         lock (gate)
         {
-            byInstance[instanceId] = new WorkspaceLaunchSnapshot(workspaceId, serviceName, launch, owned);
+            byInstance[instanceId] = new WorkspaceLaunchSnapshot(
+                workspaceId,
+                serviceName,
+                launch,
+                owned,
+                startedByRuntime);
         }
     }
 
@@ -63,6 +74,14 @@ public sealed class WorkspaceRuntimeProcessMap : IWorkspaceRuntimeTruth
         lock (gate)
         {
             return byInstance.Values.ToList();
+        }
+    }
+
+    public IReadOnlyList<(string InstanceId, WorkspaceLaunchSnapshot Snapshot)> GetEntries()
+    {
+        lock (gate)
+        {
+            return byInstance.Select(pair => (pair.Key, pair.Value)).ToList();
         }
     }
 }

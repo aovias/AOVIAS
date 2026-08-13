@@ -40,6 +40,10 @@ public sealed class HealthCheckService : IHealthProbe, IDisposable
                     return HealthStatus.Healthy;
                 }
             }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                // HttpClient timeout — not caller cancellation. Treat as unreachable and try the next path.
+            }
             catch (OperationCanceledException)
             {
                 throw;

@@ -14,12 +14,18 @@ public interface IWorkspaceRuntimeTruth
 
 public readonly struct WorkspaceLaunchSnapshot
 {
-    public WorkspaceLaunchSnapshot(string workspaceId, string serviceName, ServiceInfoModel launch, bool owned)
+    public WorkspaceLaunchSnapshot(
+        string workspaceId,
+        string serviceName,
+        ServiceInfoModel launch,
+        bool owned,
+        bool startedByRuntime = false)
     {
         WorkspaceId = workspaceId;
         ServiceName = serviceName;
         Launch = launch;
         Owned = owned;
+        StartedByRuntime = startedByRuntime;
     }
 
     public string WorkspaceId { get; }
@@ -29,6 +35,12 @@ public readonly struct WorkspaceLaunchSnapshot
     public ServiceInfoModel Launch { get; }
 
     public bool Owned { get; }
+
+    /// <summary>
+    /// True when Workspace Runtime started this process in the current launch object.
+    /// Distinct from <see cref="Owned"/>: a failed start is started-by-runtime but not owned.
+    /// </summary>
+    public bool StartedByRuntime { get; }
 
     public int? ProcessId => Launch.ProcessId;
 
