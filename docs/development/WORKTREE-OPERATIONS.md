@@ -212,4 +212,9 @@ Local Port Registry (V2.2): maps local TCP ports to ServiceInstance identity
 configured ownership; OS listener state is a point-in-time availability check. Does not start,
 stop, or kill processes. Does not auto-allocate or auto-resolve conflicts.
 
+Shared Runtime (V2.3): explicit Plan → Validate → Confirm → Start → Health → Own → Stop
+over D2 Runtime Profiles. Executes only Shared ServiceInstances from the canonical AOVIAS
+source. Reuses healthy running services without claiming external ownership. Stops only
+profile-owned services. Does not execute Cursor/Claude workspace instances.
+
 Invariant: Studio must never silently modify Git, runtime, worktrees, or agents.
