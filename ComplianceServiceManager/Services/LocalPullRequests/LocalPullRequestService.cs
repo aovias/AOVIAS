@@ -124,6 +124,20 @@ public sealed class LocalPullRequestService : ILocalPullRequestService
 
         if (comparison.Ahead <= 0)
         {
+            var sourceAlreadyOnTarget =
+                !string.IsNullOrWhiteSpace(comparison.SourceTipSha)
+                && !string.IsNullOrWhiteSpace(comparison.MergeBaseSha)
+                && string.Equals(comparison.SourceTipSha, comparison.MergeBaseSha, StringComparison.OrdinalIgnoreCase);
+
+            if (sourceAlreadyOnTarget)
+            {
+                // Git is the source of truth: a CLI --no-ff merge into target leaves
+                // ahead=0. That is already integrated, not a blocked review.
+                pullRequest.ApplyStatus(LocalPullRequestStatus.Merged);
+                Persist(pullRequest);
+                return;
+            }
+
             pullRequest.ApplyStatus(LocalPullRequestStatus.Blocked, "Source has no commits not already in target.");
             Persist(pullRequest);
             return;

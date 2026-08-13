@@ -318,6 +318,27 @@ public sealed class LocalPullRequestLifecycleTests : IDisposable
         Assert.Empty(registry.GetAll());
     }
 
+    [Fact]
+    public async Task Refresh_WhenSourceAlreadyOnTarget_MarksMerged()
+    {
+        var pr = await service.CreateAsync(
+            "AlreadyOnMain",
+            "",
+            "agent/cursor/feature-test",
+            "main",
+            agentWorktree,
+            mainWorktree,
+            "Cursor");
+
+        Assert.Equal(LocalPullRequestStatus.ReadyForReview, pr.Status);
+
+        RunGit(mainWorktree, "merge --no-ff agent/cursor/feature-test -m integrate");
+        await service.RefreshAsync(pr);
+
+        Assert.Equal(LocalPullRequestStatus.Merged, pr.Status);
+        Assert.Null(pr.BlockReason);
+    }
+
     private static void RunGit(string cwd, string args)
     {
         var psi = new ProcessStartInfo
