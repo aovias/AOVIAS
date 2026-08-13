@@ -49,6 +49,35 @@ public sealed class RuntimeProfileDiscoveryValidationTests
         Assert.True(result.IsValid, string.Join("; ", result.Issues.Select(issue => issue.Message)));
         Assert.Equal(5, result.StartupOrder.Count);
         Assert.Equal("WebApp", result.StartupOrder[^1]);
+        Assert.Contains(services, s => s.Name == "WebApp" && s.Kind == ServiceKind.AngularWebApp);
+    }
+
+    [Fact]
+    public async Task SeedProfileMembers_MatchDiscoveredIdentity_WhenFoldersConfigured()
+    {
+        var logger = new NoopLoggingService();
+        var folderRegistry = new SolutionFolderRegistry();
+        if (folderRegistry.Folders.Count == 0)
+        {
+            return;
+        }
+
+        var discovery = new ServiceDiscoveryService(folderRegistry, logger);
+        var services = await discovery.DiscoverAsync(CancellationToken.None);
+        var seed = RuntimeProfileRegistry.BuildDefaults().Profiles[0];
+        var discoveredNames = services.Select(service => service.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var member in seed.Services)
+        {
+            var match = services.FirstOrDefault(s =>
+                string.Equals(s.Name, member.ServiceName, StringComparison.OrdinalIgnoreCase));
+            Assert.True(
+                match is not null,
+                $"{member.ServiceName} | NO | discovered=[{string.Join(", ", discoveredNames.OrderBy(n => n))}] | mismatch");
+        }
+
+        var webApp = services.Single(s => s.Name == "WebApp");
+        Assert.Equal(ServiceKind.AngularWebApp, webApp.Kind);
     }
 
     private sealed class NoopLoggingService : ILoggingService

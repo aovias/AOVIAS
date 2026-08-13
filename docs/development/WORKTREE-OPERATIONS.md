@@ -216,5 +216,9 @@ Shared Runtime (V2.3): explicit Plan → Validate → Confirm → Start → Heal
 over D2 Runtime Profiles. Executes only Shared ServiceInstances from the canonical AOVIAS
 source. Reuses healthy running services without claiming external ownership. Stops only
 profile-owned services. Does not execute Cursor/Claude workspace instances.
+Validation and Shared Runtime issue counts use the same authoritative result. Profiles
+are revalidated against the current discovered service collection after discovery changes
+(no extra discovery pass). Start is gated on a valid plan; Stop is gated on owned services;
+Cancel Startup is shown only while startup is in progress.
 
 Invariant: Studio must never silently modify Git, runtime, worktrees, or agents.

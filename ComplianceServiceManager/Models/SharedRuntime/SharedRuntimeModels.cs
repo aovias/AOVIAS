@@ -85,13 +85,16 @@ public sealed class SharedRuntimePlan
 
     public int BlockedCount => Entries.Count(e => e.Action == SharedRuntimeAction.Block);
 
+    /// <summary>Authoritative issue count — the same list shown to the user, not BLOCK-row count.</summary>
+    public int IssueCount => Issues.Count;
+
     public string Summary
     {
         get
         {
             if (!CanStart)
             {
-                return $"BLOCKED · {BlockedCount} issue(s) · no mutation occurred.";
+                return $"BLOCKED · {IssueCount} issue(s) · no mutation occurred.";
             }
 
             return $"VALID · {ServiceCount} services · start {ToStartCount} · reuse {ReuseCount}.";

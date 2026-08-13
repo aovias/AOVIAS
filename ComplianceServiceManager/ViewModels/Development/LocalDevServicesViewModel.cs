@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -217,6 +218,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         serviceInstanceService.InstancesChanged += SyncSelectedServiceInstances;
         portRegistryService.AllocationsChanged += SyncPortAllocations;
         sharedRuntimeService.StateChanged += SyncSharedRuntime;
+        serviceManager.Services.CollectionChanged += OnDiscoveredServicesChanged;
         resourceMonitoring.SnapshotUpdated += OnResourceSnapshotUpdated;
         resourceIntelligence.AssessmentUpdated += OnResourceAssessmentUpdated;
         resourceMonitoring.Start();
@@ -235,6 +237,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         _ = RefreshAgentSessionsAsync();
         _ = RefreshServiceInstancesAsync();
         _ = RefreshPortRegistryAsync();
+        ReconcileProfilesWithDiscovery();
     }
 
     partial void OnSelectedDiscoveredServiceChanged(ServiceInfoModel? value)
@@ -251,7 +254,19 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     partial void OnSelectedProfileChanged(RuntimeProfileItem? value)
     {
         NotifyOverviewSummariesChanged();
-        SyncSharedRuntime();
+        if (value is not null)
+        {
+            ApplySharedRuntimePlan(sharedRuntimeService.Plan(value));
+        }
+        else
+        {
+            SyncSharedRuntime();
+        }
+    }
+
+    partial void OnIsProfileBusyChanged(bool value)
+    {
+        NotifySharedRuntimeCommandsChanged();
     }
 
     private void NotifyOverviewSummariesChanged()
@@ -364,8 +379,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     {
         StatusMessage = "Rediscovering services…";
         await Services.RefreshServicesCommand.ExecuteAsync(null);
-        profileOrchestrator.ValidateAll();
-        SyncProfiles();
+        ReconcileProfilesWithDiscovery();
         await RefreshServiceInstancesAsync();
         StatusMessage = $"{Services.ServiceCount} service(s) discovered across {SolutionFolders.Count} folder(s).";
     }
@@ -425,9 +439,11 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         }
 
         var result = profileOrchestrator.Validate(SelectedProfile);
+        ApplySharedRuntimePlan(sharedRuntimeService.Plan(SelectedProfile));
         ProfileStatusMessage = result.IsValid
             ? $"{SelectedProfile.Name}: valid ({result.StartupOrder.Count} services in order)."
             : $"{SelectedProfile.Name}: {result.Issues.Count} issue(s).";
+        NotifySharedRuntimeCommandsChanged();
     }
 
     [RelayCommand]
@@ -435,22 +451,28 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     {
         profileOrchestrator.ValidateAll();
         SyncProfiles();
+        if (SelectedProfile is not null)
+        {
+            ApplySharedRuntimePlan(sharedRuntimeService.Plan(SelectedProfile));
+        }
+
         ProfileStatusMessage = "All profiles revalidated against current discovery.";
+        NotifySharedRuntimeCommandsChanged();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanStartSharedRuntime))]
     private async Task StartSelectedProfileAsync()
     {
         await StartSharedRuntimeAsync();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanStopSharedRuntime))]
     private async Task StopSelectedProfileAsync()
     {
         await StopSharedRuntimeAsync();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanRestartSharedRuntime))]
     private async Task RestartSelectedProfileAsync()
     {
         if (SelectedProfile is null || IsProfileBusy || sharedRuntimeService.IsStarting)
@@ -516,7 +538,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         ProfileStatusMessage = plan.Summary;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanStartSharedRuntime))]
     private async Task StartSharedRuntimeAsync()
     {
         if (SelectedProfile is null)
@@ -585,7 +607,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanStopSharedRuntime))]
     private async Task StopSharedRuntimeAsync()
     {
         if (SelectedProfile is null)
@@ -624,11 +646,79 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanCancelSharedRuntimeStartup))]
     private void CancelSharedRuntimeStartup()
     {
         sharedRuntimeService.CancelStartup();
         SharedRuntimeStatusMessage = "Cancel requested — already-started owned services remain running.";
+    }
+
+    private bool CanStartSharedRuntime()
+        => SharedRuntimeCommandGate.CanStart(
+            SelectedProfile is not null,
+            SelectedProfile?.IsValid == true,
+            sharedRuntimeService.LastPlan?.CanStart == true,
+            sharedRuntimeService.Session.Status,
+            sharedRuntimeService.IsStarting,
+            IsProfileBusy);
+
+    private bool CanStopSharedRuntime()
+        => SharedRuntimeCommandGate.CanStop(
+            SelectedProfile?.OwnedServiceNames.Count ?? 0,
+            IsProfileBusy,
+            sharedRuntimeService.IsStarting);
+
+    private bool CanCancelSharedRuntimeStartup()
+        => SharedRuntimeCommandGate.CanCancel(sharedRuntimeService.IsStarting);
+
+    private bool CanRestartSharedRuntime()
+        => SharedRuntimeCommandGate.CanRestart(
+            SelectedProfile is not null,
+            SelectedProfile?.IsValid == true,
+            sharedRuntimeService.LastPlan?.CanStart == true,
+            sharedRuntimeService.Session.Status,
+            SelectedProfile?.OwnedServiceNames.Count ?? 0,
+            sharedRuntimeService.IsStarting,
+            IsProfileBusy);
+
+    private void OnDiscoveredServicesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is not null && !dispatcher.CheckAccess())
+        {
+            dispatcher.Invoke(ReconcileProfilesWithDiscovery);
+        }
+        else
+        {
+            ReconcileProfilesWithDiscovery();
+        }
+    }
+
+    /// <summary>
+    /// Revalidates profiles against the current discovered collection (no extra discovery pass).
+    /// </summary>
+    private void ReconcileProfilesWithDiscovery()
+    {
+        profileOrchestrator.ValidateAll();
+        SyncProfiles();
+        if (SelectedProfile is not null)
+        {
+            ApplySharedRuntimePlan(sharedRuntimeService.Plan(SelectedProfile));
+        }
+        else
+        {
+            SyncSharedRuntime();
+        }
+    }
+
+    private void NotifySharedRuntimeCommandsChanged()
+    {
+        StartSharedRuntimeCommand.NotifyCanExecuteChanged();
+        StopSharedRuntimeCommand.NotifyCanExecuteChanged();
+        CancelSharedRuntimeStartupCommand.NotifyCanExecuteChanged();
+        RestartSelectedProfileCommand.NotifyCanExecuteChanged();
+        StartSelectedProfileCommand.NotifyCanExecuteChanged();
+        StopSelectedProfileCommand.NotifyCanExecuteChanged();
     }
 
     private void SyncSharedRuntime()
@@ -656,6 +746,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
             }
 
             var plan = sharedRuntimeService.LastPlan;
+            SharedRuntime.IssueCount = plan?.IssueCount ?? 0;
             if (plan is not null)
             {
                 SharedRuntime.ServiceCount = plan.ServiceCount;
@@ -666,6 +757,9 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
                 SharedRuntime.PortsDisplay = plan.ServiceCount == 0
                     ? "—"
                     : $"{portOk}/{plan.ServiceCount} valid";
+                SharedRuntimeStatusMessage = plan.CanStart
+                    ? plan.Summary
+                    : $"BLOCKED · {plan.IssueCount} validation issue(s)";
             }
             else if (profile is not null)
             {
@@ -674,6 +768,11 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
             var mapped = sharedRuntimeService.Session.Status;
             SharedRuntime.ApplyStatus(mapped, sharedRuntimeService.LastPlan?.Summary ?? profile?.ProgressMessage);
+            SharedRuntime.CanExecuteStart = CanStartSharedRuntime();
+            SharedRuntime.CanExecuteStop = CanStopSharedRuntime();
+            SharedRuntime.CanExecuteCancel = CanCancelSharedRuntimeStartup();
+            SharedRuntime.CanExecuteRestart = CanRestartSharedRuntime();
+            NotifySharedRuntimeCommandsChanged();
             NotifyOverviewSummariesChanged();
         }
 
@@ -718,10 +817,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         }
         else
         {
-            foreach (var issue in plan.Issues)
-            {
-                SharedRuntime.ValidationLines.Add($"✗ {issue.Message}");
-            }
+            SharedRuntime.ValidationLines.Add($"BLOCKED · {plan.IssueCount} validation issue(s). See Runtime Profile for details.");
         }
 
         SyncSharedRuntime();

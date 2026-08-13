@@ -57,6 +57,21 @@ public sealed partial class SharedRuntimeItem : ObservableObject
     [ObservableProperty]
     private bool isStarting;
 
+    [ObservableProperty]
+    private int issueCount;
+
+    [ObservableProperty]
+    private bool canExecuteStart;
+
+    [ObservableProperty]
+    private bool canExecuteStop;
+
+    [ObservableProperty]
+    private bool canExecuteCancel;
+
+    [ObservableProperty]
+    private bool canExecuteRestart;
+
     public ObservableCollection<SharedRuntimePlanRow> PlanRows { get; } = [];
 
     public ObservableCollection<string> ValidationLines { get; } = [];
@@ -73,7 +88,9 @@ public sealed partial class SharedRuntimeItem : ObservableObject
             SharedRuntimeStatus.Degraded => "Degraded",
             SharedRuntimeStatus.Stopping => "Stopping",
             SharedRuntimeStatus.Failed => "Failed",
-            SharedRuntimeStatus.Blocked => "Blocked",
+            SharedRuntimeStatus.Blocked => IssueCount > 0
+                ? $"BLOCKED · {IssueCount} issue(s)"
+                : "Blocked",
             _ => "Stopped"
         };
         if (message is not null)

@@ -35,6 +35,71 @@ public sealed class RuntimeProfileValidatorTests
     }
 
     [Fact]
+    public void Validate_UnknownService_ProducesExactlyOneIssue()
+    {
+        var profile = Profile("A", ("MissingService", []));
+        var result = validator.Validate(profile, CreateDiscovered("Gateway"));
+
+        Assert.False(result.IsValid);
+        Assert.Single(result.Issues);
+        Assert.Equal("unknown-service", result.Issues[0].Code);
+    }
+
+    [Fact]
+    public void Validate_EmptyDiscovery_ProducesSingleDiscoveryEmptyIssue()
+    {
+        var profile = RuntimeProfileRegistry.BuildDefaults().Profiles[0];
+        var result = validator.Validate(profile, []);
+
+        Assert.False(result.IsValid);
+        Assert.Single(result.Issues);
+        Assert.Equal("discovery-empty", result.Issues[0].Code);
+        Assert.DoesNotContain(result.Issues, issue => issue.Code == "unknown-service");
+    }
+
+    [Fact]
+    public void Validate_FiveUnknownServices_ProducesIssueCountFive()
+    {
+        var profile = RuntimeProfileRegistry.BuildDefaults().Profiles[0];
+        var result = validator.Validate(profile, CreateDiscovered("UnrelatedService"));
+
+        Assert.False(result.IsValid);
+        Assert.Equal(5, result.Issues.Count);
+        Assert.All(result.Issues, issue => Assert.Equal("unknown-service", issue.Code));
+    }
+
+    [Fact]
+    public void Validate_MatchesCanonicalServiceInfoModelName_NotPathOrKind()
+    {
+        var profile = RuntimeProfileRegistry.BuildDefaults().Profiles[0];
+        var discovered = new List<ServiceInfoModel>
+        {
+            new() { Name = "IdentityService", ProjectPath = @"C:\IdentityService\IdentityService.csproj", Kind = ServiceKind.WebApi },
+            new() { Name = "OrganizationService", ProjectPath = @"C:\OrganizationService\OrganizationService.csproj", Kind = ServiceKind.WebApi },
+            new() { Name = "ComplianceService", ProjectPath = @"C:\ComplianceService\ComplianceService.csproj", Kind = ServiceKind.WebApi },
+            new() { Name = "Gateway", ProjectPath = @"C:\Gateway\Gateway.csproj", Kind = ServiceKind.WebApi },
+            new() { Name = "WebApp", ProjectPath = @"C:\WebApp\package.json", Kind = ServiceKind.AngularWebApp }
+        };
+
+        var result = validator.Validate(profile, discovered);
+        Assert.True(result.IsValid, string.Join("; ", result.Issues.Select(i => i.Message)));
+    }
+
+    [Fact]
+    public void Validate_WrongDiscoveredName_DoesNotMatchEvenWhenPathLooksRight()
+    {
+        var profile = Profile("A", ("IdentityService", []));
+        var discovered = new List<ServiceInfoModel>
+        {
+            new() { Name = "Identity", ProjectPath = @"C:\IdentityService\IdentityService.csproj" }
+        };
+
+        var result = validator.Validate(profile, discovered);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Issues, issue => issue.Code == "unknown-service");
+    }
+
+    [Fact]
     public void Validate_UnknownService_IsInvalid()
     {
         var profile = Profile("A", ("MissingService", []));
