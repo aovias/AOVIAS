@@ -199,6 +199,26 @@
                                                    Foreground="{StaticResource TextPrimaryBrush}"
                                                    TextWrapping="Wrap" />
                                     </StackPanel>
+                                    <StackPanel Margin="0,8,12,0">
+                                        <TextBlock Text="Shared Runtime" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding OverviewSharedRuntimeStatus}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource PrimaryBrush}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,8,12,0">
+                                        <TextBlock Text="Healthy" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding OverviewSharedRuntimeHealthy}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,8,0,0">
+                                        <TextBlock Text="Owned / Ports" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}">
+                                            <Run Text="{Binding OverviewSharedRuntimeOwned, Mode=OneWay}" />
+                                            <Run Text=" owned · " />
+                                            <Run Text="{Binding OverviewSharedRuntimePorts, Mode=OneWay}" />
+                                        </TextBlock>
+                                    </StackPanel>
                                 </UniformGrid>
                             </StackPanel>
                         </Border>
@@ -727,6 +747,95 @@
                               HorizontalScrollBarVisibility="Disabled"
                               CanContentScroll="False">
                     <StackPanel Margin="8">
+                        <!-- Shared Runtime (V2.3) -->
+                        <Border Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock Text="Shared Runtime" Style="{StaticResource HeadingTextStyle}" />
+                                        <TextBlock Text="Canonical shared execution (AOVIAS). Plan and validate before start. Does not run Cursor or Claude workspace instances."
+                                                   Style="{StaticResource CaptionTextStyle}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,4,0,0" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding SharedRuntimeStatusMessage}"
+                                               Style="{StaticResource CaptionTextStyle}"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Top"
+                                               MaxWidth="340"
+                                               TextWrapping="Wrap"
+                                               TextAlignment="Right" />
+                                </Grid>
+                                <UniformGrid Columns="4" Margin="0,0,0,10">
+                                    <StackPanel Margin="0,0,8,0">
+                                        <TextBlock Text="Profile" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding SharedRuntime.ProfileName}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,8,0">
+                                        <TextBlock Text="Status" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding SharedRuntime.StatusDisplay}" FontWeight="SemiBold" Foreground="{StaticResource PrimaryBrush}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,8,0">
+                                        <TextBlock Text="Healthy / Owned" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock FontWeight="SemiBold">
+                                            <Run Text="{Binding SharedRuntime.HealthyDisplay, Mode=OneWay}" />
+                                            <Run Text=" · " />
+                                            <Run Text="{Binding SharedRuntime.OwnedCount, Mode=OneWay}" />
+                                            <Run Text=" owned" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Ports / Resources" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock FontWeight="SemiBold" TextWrapping="Wrap">
+                                            <Run Text="{Binding SharedRuntime.PortsDisplay, Mode=OneWay}" />
+                                            <Run Text=" · " />
+                                            <Run Text="{Binding SharedRuntime.ResourceDisplay, Mode=OneWay}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </UniformGrid>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <Button Content="Plan"
+                                            Command="{Binding PlanSharedRuntimeCommand}"
+                                            Margin="0,0,8,0" />
+                                    <Button Content="Start"
+                                            Style="{StaticResource PrimaryButtonStyle}"
+                                            Command="{Binding StartSharedRuntimeCommand}"
+                                            Margin="0,0,8,0" />
+                                    <Button Content="Stop"
+                                            Command="{Binding StopSharedRuntimeCommand}"
+                                            Margin="0,0,8,0" />
+                                    <Button Content="Cancel Startup"
+                                            Command="{Binding CancelSharedRuntimeStartupCommand}" />
+                                </StackPanel>
+                                <ItemsControl ItemsSource="{Binding SharedRuntime.ValidationLines}" Margin="0,0,0,8">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}"
+                                                       Style="{StaticResource CaptionTextStyle}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,0,0,2" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <DataGrid ItemsSource="{Binding SharedRuntime.PlanRows}"
+                                          AutoGenerateColumns="False"
+                                          IsReadOnly="True"
+                                          HeadersVisibility="Column"
+                                          CanUserAddRows="False"
+                                          MaxHeight="180">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="#" Binding="{Binding Order}" Width="40" />
+                                        <DataGridTextColumn Header="Service" Binding="{Binding ServiceName}" Width="*" />
+                                        <DataGridTextColumn Header="Instance" Binding="{Binding InstanceDisplay}" Width="80" />
+                                        <DataGridTextColumn Header="Port" Binding="{Binding PortDisplay}" Width="70" />
+                                        <DataGridTextColumn Header="Action" Binding="{Binding ActionDisplay}" Width="80" />
+                                        <DataGridTextColumn Header="Owner" Binding="{Binding OwnerDisplay}" Width="110" />
+                                        <DataGridTextColumn Header="Reason" Binding="{Binding Reason}" Width="2*" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+
                         <!-- Runtime Profiles (D2) -->
                         <Border Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
                             <Grid>
@@ -809,10 +918,11 @@
                                             Margin="0,0,8,0" />
                                     <Button Content="Start Profile"
                                             Style="{StaticResource PrimaryButtonStyle}"
-                                            Command="{Binding StartSelectedProfileCommand}"
-                                            Margin="0,0,8,0" />
+                                            Command="{Binding StartSharedRuntimeCommand}"
+                                            Margin="0,0,8,0"
+                                            ToolTip="Starts via Shared Runtime: Plan → validate → explicit confirm. Does not use legacy Start All." />
                                     <Button Content="Stop Owned"
-                                            Command="{Binding StopSelectedProfileCommand}"
+                                            Command="{Binding StopSharedRuntimeCommand}"
                                             Margin="0,0,8,0" />
                                     <Button Content="Restart"
                                             Command="{Binding RestartSelectedProfileCommand}"
@@ -1104,6 +1214,16 @@
                                                    Style="{StaticResource CaptionTextStyle}"
                                                    TextWrapping="Wrap"
                                                    Margin="0,4,0,0" />
+                                        <TextBlock Margin="0,8,0,0" Style="{StaticResource CaptionTextStyle}">
+                                            <Run Text="Shared Runtime: " />
+                                            <Run Text="{Binding SharedRuntime.StatusDisplay, Mode=OneWay}" FontWeight="SemiBold" />
+                                            <Run Text=" · Healthy " />
+                                            <Run Text="{Binding SharedRuntime.HealthyDisplay, Mode=OneWay}" />
+                                            <Run Text=" · CPU " />
+                                            <Run Text="{Binding LocalResources.CpuDisplay, Mode=OneWay}" />
+                                            <Run Text=" · Memory " />
+                                            <Run Text="{Binding LocalResources.MemoryDisplay, Mode=OneWay}" />
+                                        </TextBlock>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                                         <TextBlock Text="{Binding LocalResources.StatusMessage}"

@@ -11,6 +11,7 @@ using ComplianceServiceManager.Models.ServiceInstances;
 using ComplianceServiceManager.Models.Workspaces;
 using ComplianceServiceManager.Models;
 using ComplianceServiceManager.Models.PortRegistry;
+using ComplianceServiceManager.Models.SharedRuntime;
 using ComplianceServiceManager.Services;
 using ComplianceServiceManager.Services.AgentSessions;
 using ComplianceServiceManager.Services.LocalDev;
@@ -20,6 +21,7 @@ using ComplianceServiceManager.Services.ResourceIntelligence;
 using ComplianceServiceManager.Services.RuntimeProfiles;
 using ComplianceServiceManager.Services.ServiceInstances;
 using ComplianceServiceManager.Services.PortRegistry;
+using ComplianceServiceManager.Services.SharedRuntime;
 using ComplianceServiceManager.Services.Workspaces;
 using ComplianceServiceManager.Views.Development;
 
@@ -40,6 +42,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private readonly IResourceIntelligenceService resourceIntelligence;
     private readonly IServiceInstanceService serviceInstanceService;
     private readonly IPortRegistryService portRegistryService;
+    private readonly ISharedRuntimeService sharedRuntimeService;
 
     [ObservableProperty]
     private string statusMessage = string.Empty;
@@ -64,6 +67,9 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
     [ObservableProperty]
     private string portRegistryStatusMessage = string.Empty;
+
+    [ObservableProperty]
+    private string sharedRuntimeStatusMessage = string.Empty;
 
     [ObservableProperty]
     private string? selectedFolder;
@@ -142,11 +148,21 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         }
     }
 
+    public string OverviewSharedRuntimeStatus => SharedRuntime.StatusDisplay;
+
+    public string OverviewSharedRuntimeHealthy => SharedRuntime.HealthyDisplay;
+
+    public string OverviewSharedRuntimeOwned => SharedRuntime.OwnedCount.ToString();
+
+    public string OverviewSharedRuntimePorts => SharedRuntime.PortsDisplay;
+
     public MainViewModel Services { get; }
 
     public LocalResourceMonitorItem LocalResources { get; } = new();
 
     public ResourceIntelligenceItem ResourceIntelligence { get; } = new();
+
+    public SharedRuntimeItem SharedRuntime { get; } = new();
 
     public ObservableCollection<string> SolutionFolders { get; } = [];
 
@@ -175,7 +191,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         IAgentSessionService agentSessionService,
         IResourceIntelligenceService resourceIntelligence,
         IServiceInstanceService serviceInstanceService,
-        IPortRegistryService portRegistryService)
+        IPortRegistryService portRegistryService,
+        ISharedRuntimeService sharedRuntimeService)
     {
         this.folderRegistry = folderRegistry;
         this.workspaceService = workspaceService;
@@ -187,6 +204,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         this.resourceIntelligence = resourceIntelligence;
         this.serviceInstanceService = serviceInstanceService;
         this.portRegistryService = portRegistryService;
+        this.sharedRuntimeService = sharedRuntimeService;
         Services = servicesViewModel;
         SyncFolders();
         folderRegistry.FoldersChanged += SyncFolders;
@@ -198,6 +216,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         SyncAgentSessions();
         serviceInstanceService.InstancesChanged += SyncSelectedServiceInstances;
         portRegistryService.AllocationsChanged += SyncPortAllocations;
+        sharedRuntimeService.StateChanged += SyncSharedRuntime;
         resourceMonitoring.SnapshotUpdated += OnResourceSnapshotUpdated;
         resourceIntelligence.AssessmentUpdated += OnResourceAssessmentUpdated;
         resourceMonitoring.Start();
@@ -232,12 +251,17 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     partial void OnSelectedProfileChanged(RuntimeProfileItem? value)
     {
         NotifyOverviewSummariesChanged();
+        SyncSharedRuntime();
     }
 
     private void NotifyOverviewSummariesChanged()
     {
         OnPropertyChanged(nameof(OverviewActiveAgentCount));
         OnPropertyChanged(nameof(OverviewRuntimeProfileDisplay));
+        OnPropertyChanged(nameof(OverviewSharedRuntimeStatus));
+        OnPropertyChanged(nameof(OverviewSharedRuntimeHealthy));
+        OnPropertyChanged(nameof(OverviewSharedRuntimeOwned));
+        OnPropertyChanged(nameof(OverviewSharedRuntimePorts));
     }
 
     [RelayCommand]
@@ -417,33 +441,38 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     [RelayCommand]
     private async Task StartSelectedProfileAsync()
     {
-        if (SelectedProfile is null || IsProfileBusy)
-        {
-            return;
-        }
-
-        IsProfileBusy = true;
-        try
-        {
-            if (Services.ServiceCount == 0)
-            {
-                await Services.RefreshServicesCommand.ExecuteAsync(null);
-            }
-
-            profileOrchestrator.Validate(SelectedProfile);
-            await profileOrchestrator.StartAsync(SelectedProfile);
-            ProfileStatusMessage = SelectedProfile.ProgressMessage ?? SelectedProfile.StatusDisplay;
-        }
-        finally
-        {
-            IsProfileBusy = false;
-        }
+        await StartSharedRuntimeAsync();
     }
 
     [RelayCommand]
     private async Task StopSelectedProfileAsync()
     {
-        if (SelectedProfile is null || IsProfileBusy)
+        await StopSharedRuntimeAsync();
+    }
+
+    [RelayCommand]
+    private async Task RestartSelectedProfileAsync()
+    {
+        if (SelectedProfile is null || IsProfileBusy || sharedRuntimeService.IsStarting)
+        {
+            if (sharedRuntimeService.IsStarting)
+            {
+                MessageBox.Show(
+                    "Shared Runtime startup already in progress.",
+                    "Shared Runtime",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            $"Restart Shared Runtime '{SelectedProfile.Name}'?\n\nStop will affect only owned services, then Plan + Start run again.",
+            "Restart Shared Runtime",
+            MessageBoxButton.OKCancel,
+            MessageBoxImage.Question);
+        if (confirm != MessageBoxResult.OK)
         {
             return;
         }
@@ -451,8 +480,20 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         IsProfileBusy = true;
         try
         {
-            await profileOrchestrator.StopAsync(SelectedProfile);
-            ProfileStatusMessage = SelectedProfile.ProgressMessage ?? SelectedProfile.StatusDisplay;
+            await sharedRuntimeService.StopAsync(SelectedProfile);
+            var plan = sharedRuntimeService.Plan(SelectedProfile);
+            ApplySharedRuntimePlan(plan);
+            if (!plan.CanStart)
+            {
+                SharedRuntimeStatusMessage = plan.Summary;
+                return;
+            }
+
+            var result = await sharedRuntimeService.StartAsync(SelectedProfile);
+            ApplySharedRuntimePlan(result.Plan ?? plan);
+            SharedRuntimeStatusMessage = result.Error ?? SelectedProfile.ProgressMessage ?? result.Status.ToString();
+            ProfileStatusMessage = SharedRuntimeStatusMessage;
+            SyncSharedRuntime();
         }
         finally
         {
@@ -461,9 +502,110 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task RestartSelectedProfileAsync()
+    private void PlanSharedRuntime()
     {
-        if (SelectedProfile is null || IsProfileBusy)
+        if (SelectedProfile is null)
+        {
+            MessageBox.Show("Select a Runtime Profile first.", "Shared Runtime", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var plan = sharedRuntimeService.Plan(SelectedProfile);
+        ApplySharedRuntimePlan(plan);
+        SharedRuntimeStatusMessage = plan.Summary;
+        ProfileStatusMessage = plan.Summary;
+    }
+
+    [RelayCommand]
+    private async Task StartSharedRuntimeAsync()
+    {
+        if (SelectedProfile is null)
+        {
+            MessageBox.Show("Select a Runtime Profile first.", "Shared Runtime", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        if (IsProfileBusy || sharedRuntimeService.IsStarting)
+        {
+            MessageBox.Show(
+                "Shared Runtime startup already in progress.",
+                "Shared Runtime",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return;
+        }
+
+        if (Services.ServiceCount == 0)
+        {
+            await Services.RefreshServicesCommand.ExecuteAsync(null);
+        }
+
+        await serviceInstanceService.RefreshAsync();
+        var plan = sharedRuntimeService.Plan(SelectedProfile);
+        ApplySharedRuntimePlan(plan);
+        if (!plan.CanStart)
+        {
+            MessageBox.Show(
+                plan.Summary + Environment.NewLine + string.Join(Environment.NewLine, plan.Issues.Select(i => "• " + i.Message)),
+                "Shared Runtime blocked",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+            SharedRuntimeStatusMessage = plan.Summary;
+            return;
+        }
+
+        var pressure = ResourceIntelligence.OverallPressure;
+        var resourceNote = pressure is ResourcePressureLevel.High or ResourcePressureLevel.Critical or ResourcePressureLevel.Warning
+            ? $"\n\nResource Intelligence (advisory): {pressure}. D5 will not switch profiles automatically."
+            : "\n\nResource Intelligence (advisory): OK.";
+
+        var confirm = MessageBox.Show(
+            $"Start Shared Runtime\n\nProfile: {plan.ProfileName}\nScope: Shared\nServices: {plan.ServiceCount}\nAlready running (reuse): {plan.ReuseCount}\nTo start: {plan.ToStartCount}\nBlocked: {plan.BlockedCount}\n\nCanonical source:\n{plan.CanonicalSource}{resourceNote}\n\nNo processes start until you confirm.",
+            "Start Shared Runtime",
+            MessageBoxButton.OKCancel,
+            MessageBoxImage.Question);
+        if (confirm != MessageBoxResult.OK)
+        {
+            SharedRuntimeStatusMessage = "Start cancelled — no mutation occurred.";
+            return;
+        }
+
+        IsProfileBusy = true;
+        try
+        {
+            var result = await sharedRuntimeService.StartAsync(SelectedProfile);
+            ApplySharedRuntimePlan(result.Plan ?? plan);
+            SharedRuntimeStatusMessage = result.Error ?? SelectedProfile.ProgressMessage ?? result.Status.ToString();
+            ProfileStatusMessage = SharedRuntimeStatusMessage;
+            SyncSharedRuntime();
+        }
+        finally
+        {
+            IsProfileBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task StopSharedRuntimeAsync()
+    {
+        if (SelectedProfile is null)
+        {
+            return;
+        }
+
+        if (IsProfileBusy)
+        {
+            return;
+        }
+
+        var owned = SelectedProfile.OwnedServiceNames.Count;
+        var reused = SelectedProfile.Members.Count(m => m.Reused && !m.OwnedByProfile);
+        var confirm = MessageBox.Show(
+            $"Stop Shared Runtime '{SelectedProfile.Name}'?\n\nOwned services that will stop: {owned}\nReused/external services that will remain: {reused}\n\nUnowned and external processes will not be stopped.",
+            "Stop Shared Runtime",
+            MessageBoxButton.OKCancel,
+            MessageBoxImage.Question);
+        if (confirm != MessageBoxResult.OK)
         {
             return;
         }
@@ -471,13 +613,118 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         IsProfileBusy = true;
         try
         {
-            await profileOrchestrator.RestartAsync(SelectedProfile);
-            ProfileStatusMessage = SelectedProfile.ProgressMessage ?? SelectedProfile.StatusDisplay;
+            var result = await sharedRuntimeService.StopAsync(SelectedProfile);
+            SharedRuntimeStatusMessage = result.Error ?? SelectedProfile.ProgressMessage ?? "Stopped owned services.";
+            ProfileStatusMessage = SharedRuntimeStatusMessage;
+            SyncSharedRuntime();
         }
         finally
         {
             IsProfileBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private void CancelSharedRuntimeStartup()
+    {
+        sharedRuntimeService.CancelStartup();
+        SharedRuntimeStatusMessage = "Cancel requested — already-started owned services remain running.";
+    }
+
+    private void SyncSharedRuntime()
+    {
+        void Apply()
+        {
+            var profile = SelectedProfile;
+            SharedRuntime.ProfileName = profile?.Name ?? "—";
+            SharedRuntime.ProfileId = profile?.Id ?? string.Empty;
+            SharedRuntime.IsStarting = sharedRuntimeService.IsStarting;
+            SharedRuntime.OwnedCount = profile?.OwnedServiceNames.Count ?? 0;
+            SharedRuntime.StartedAtDisplay = sharedRuntimeService.Session.StartedAt?.ToLocalTime().ToString("HH:mm") ?? "—";
+            SharedRuntime.ResourceDisplay = ResourceIntelligence.OverallPressureDisplay;
+            SharedRuntime.CanStart = sharedRuntimeService.LastPlan?.CanStart ?? false;
+
+            if (profile is not null)
+            {
+                var members = profile.Members;
+                var ready = members.Count(m => m.Status is RuntimeProfileMemberStatus.Ready or RuntimeProfileMemberStatus.Reused);
+                SharedRuntime.HealthyDisplay = members.Count == 0 ? "—" : $"{ready} / {members.Count}";
+            }
+            else
+            {
+                SharedRuntime.HealthyDisplay = "—";
+            }
+
+            var plan = sharedRuntimeService.LastPlan;
+            if (plan is not null)
+            {
+                SharedRuntime.ServiceCount = plan.ServiceCount;
+                SharedRuntime.ToStartCount = plan.ToStartCount;
+                SharedRuntime.ReuseCount = plan.ReuseCount;
+                SharedRuntime.BlockedCount = plan.BlockedCount;
+                var portOk = plan.Entries.Count(e => e.Action != SharedRuntimeAction.Block);
+                SharedRuntime.PortsDisplay = plan.ServiceCount == 0
+                    ? "—"
+                    : $"{portOk}/{plan.ServiceCount} valid";
+            }
+            else if (profile is not null)
+            {
+                SharedRuntime.ServiceCount = profile.ServiceCount;
+            }
+
+            var mapped = sharedRuntimeService.Session.Status;
+            SharedRuntime.ApplyStatus(mapped, sharedRuntimeService.LastPlan?.Summary ?? profile?.ProgressMessage);
+            NotifyOverviewSummariesChanged();
+        }
+
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is not null && !dispatcher.CheckAccess())
+        {
+            dispatcher.Invoke(Apply);
+        }
+        else
+        {
+            Apply();
+        }
+    }
+
+    private void ApplySharedRuntimePlan(SharedRuntimePlan plan)
+    {
+        SharedRuntime.PlanRows.Clear();
+        SharedRuntime.ValidationLines.Clear();
+        var order = 1;
+        foreach (var entry in plan.Entries)
+        {
+            SharedRuntime.PlanRows.Add(new SharedRuntimePlanRow
+            {
+                Order = order++,
+                ServiceName = entry.ServiceName,
+                InstanceDisplay = entry.ScopeDisplay,
+                PortDisplay = entry.Port?.ToString() ?? "—",
+                ActionDisplay = entry.ActionDisplay,
+                OwnerDisplay = entry.OwnerDisplay,
+                Reason = entry.Reason ?? string.Empty
+            });
+        }
+
+        if (plan.CanStart)
+        {
+            SharedRuntime.ValidationLines.Add("✓ Profile valid");
+            SharedRuntime.ValidationLines.Add("✓ Dependencies valid");
+            SharedRuntime.ValidationLines.Add("✓ Ports valid");
+            SharedRuntime.ValidationLines.Add("✓ Source valid");
+            SharedRuntime.ValidationLines.Add("✓ Health configuration valid");
+            SharedRuntime.ValidationLines.Add("✓ Shared instances only");
+        }
+        else
+        {
+            foreach (var issue in plan.Issues)
+            {
+                SharedRuntime.ValidationLines.Add($"✗ {issue.Message}");
+            }
+        }
+
+        SyncSharedRuntime();
     }
 
     [RelayCommand]
