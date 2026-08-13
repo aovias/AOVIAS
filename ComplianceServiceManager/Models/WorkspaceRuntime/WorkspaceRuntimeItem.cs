@@ -127,5 +127,8 @@ public sealed partial class WorkspaceRuntimePlanRow : ObservableObject
     private string ownerDisplay = "—";
 
     [ObservableProperty]
+    private string sourcePath = "—";
+
+    [ObservableProperty]
     private string reason = string.Empty;
 }

@@ -174,6 +174,52 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     public string OverviewClaudeRuntimeDetail =>
         $"{ClaudeRuntime.IsolatedCount} isolated · {ClaudeRuntime.ReuseSharedCount} shared";
 
+    public int OverviewRunningServiceCount => Services.RunningServicesCount;
+
+    public int OverviewStoppedServiceCount =>
+        Math.Max(0, Services.ServiceCount - Services.RunningServicesCount);
+
+    public string OverviewRunningNames
+    {
+        get
+        {
+            var names = EnumerateDiscoveredServices()
+                .Where(service => service.Status == ServiceStatus.Running)
+                .Select(service => service.Name)
+                .Take(8)
+                .ToList();
+            return names.Count == 0 ? "None" : string.Join(", ", names);
+        }
+    }
+
+    public string OverviewStoppedNames
+    {
+        get
+        {
+            var names = EnumerateDiscoveredServices()
+                .Where(service => service.Status != ServiceStatus.Running)
+                .Select(service => service.Name)
+                .Take(8)
+                .ToList();
+            return names.Count == 0 ? "None" : string.Join(", ", names);
+        }
+    }
+
+    public string OverviewActiveAgentsDisplay
+    {
+        get
+        {
+            var names = AgentSessions
+                .Where(session => session.Status is AgentSessionStatus.Active or AgentSessionStatus.Paused)
+                .Select(session => session.AgentDisplay)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            return names.Count == 0 ? "None" : string.Join(", ", names);
+        }
+    }
+
+    public string OverviewResourcePressure => ResourceIntelligence.OverallPressureDisplay;
+
     public MainViewModel Services { get; }
 
     public LocalResourceMonitorItem LocalResources { get; } = new();
@@ -185,14 +231,14 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     public WorkspaceRuntimeItem CursorRuntime { get; } = new()
     {
         WorkspaceId = "cursor",
-        WorkspaceDisplay = "CURSOR",
+        WorkspaceDisplay = "Cursor",
         AgentDisplay = "Cursor"
     };
 
     public WorkspaceRuntimeItem ClaudeRuntime { get; } = new()
     {
         WorkspaceId = "claude",
-        WorkspaceDisplay = "CLAUDE",
+        WorkspaceDisplay = "Claude",
         AgentDisplay = "Claude"
     };
 
@@ -312,6 +358,9 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         NotifySharedRuntimeCommandsChanged();
     }
 
+    private IEnumerable<ServiceInfoModel> EnumerateDiscoveredServices()
+        => Services.ServicesView.SourceCollection?.Cast<ServiceInfoModel>() ?? [];
+
     private void NotifyOverviewSummariesChanged()
     {
         OnPropertyChanged(nameof(OverviewActiveAgentCount));
@@ -324,6 +373,12 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         OnPropertyChanged(nameof(OverviewCursorRuntimeDetail));
         OnPropertyChanged(nameof(OverviewClaudeRuntimeStatus));
         OnPropertyChanged(nameof(OverviewClaudeRuntimeDetail));
+        OnPropertyChanged(nameof(OverviewRunningServiceCount));
+        OnPropertyChanged(nameof(OverviewStoppedServiceCount));
+        OnPropertyChanged(nameof(OverviewRunningNames));
+        OnPropertyChanged(nameof(OverviewStoppedNames));
+        OnPropertyChanged(nameof(OverviewActiveAgentsDisplay));
+        OnPropertyChanged(nameof(OverviewResourcePressure));
     }
 
     [RelayCommand]
@@ -377,7 +432,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         else
         {
             var confirm = MessageBox.Show(
-                $"Start runtime profile '{profile.Name}'?\n\nThis invokes D2 explicitly. D5 itself does not mutate runtime.",
+                $"Start runtime profile '{profile.Name}'?\n\nThis starts Shared Runtime after you confirm. Resource Intelligence itself does not mutate runtime.",
                 "Use Suggested Profile",
                 MessageBoxButton.OKCancel,
                 MessageBoxImage.Question);
@@ -626,7 +681,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
         var pressure = ResourceIntelligence.OverallPressure;
         var resourceNote = pressure is ResourcePressureLevel.High or ResourcePressureLevel.Critical or ResourcePressureLevel.Warning
-            ? $"\n\nResource Intelligence (advisory): {pressure}. D5 will not switch profiles automatically."
+            ? $"\n\nResource Intelligence (advisory): {OperatorLabels.Pressure(pressure)}. Studio will not switch profiles automatically."
             : "\n\nResource Intelligence (advisory): OK.";
 
         var confirm = MessageBox.Show(
@@ -762,7 +817,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
 
         var pressure = ResourceIntelligence.OverallPressure;
         var resourceWarning = pressure is ResourcePressureLevel.High or ResourcePressureLevel.Critical or ResourcePressureLevel.Warning
-            ? $"\n\nRESOURCE WARNING\n{ResourceIntelligence.OverallPressureDisplay}: {ResourceIntelligence.MemoryDisplay}\n{ResourceIntelligence.PrimaryRecommendationTitle}\nD5 is advisory. Confirm to proceed. Studio will not switch profiles, reassign ports, or stop Shared Runtime."
+                ? $"\n\nResource warning\n{ResourceIntelligence.OverallPressureDisplay}: {ResourceIntelligence.MemoryDisplay}\n{ResourceIntelligence.PrimaryRecommendationTitle}\nThis is advisory. Confirm to proceed. Studio will not switch profiles, reassign ports, or stop Shared Runtime."
             : "\n\nResource Intelligence (advisory): OK.";
 
         var startLines = plan.Entries
@@ -1093,6 +1148,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
                 ScopeDisplay = entry.ScopeDisplay,
                 PortDisplay = entry.Port?.ToString() ?? "—",
                 OwnerDisplay = entry.OwnerDisplay,
+                SourcePath = string.IsNullOrWhiteSpace(entry.SourcePath) ? "—" : entry.SourcePath,
                 Reason = entry.Reason ?? string.Empty
             });
         }
@@ -1936,8 +1992,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
                     : "—",
                 Note = service.AssociationNote,
                 ScopeDisplay = "Shared",
-                WorkspaceDisplay = "MAIN",
-                AgentDisplay = "—",
+                WorkspaceDisplay = "Shared",
+                AgentDisplay = "Shared",
                 PortDisplay = "—"
             });
             var row = ServiceResourceRows[^1];
@@ -1969,19 +2025,19 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private void ApplyResourceAssessment(ResourceAssessment assessment)
     {
         ResourceIntelligence.OverallPressure = assessment.OverallPressure;
-        ResourceIntelligence.OverallPressureDisplay = assessment.OverallPressure.ToString().ToUpperInvariant();
+        ResourceIntelligence.OverallPressureDisplay = OperatorLabels.Pressure(assessment.OverallPressure);
         ResourceIntelligence.CpuDisplay = assessment.CpuWindowAveragePercent is double cpuAvg
             ? $"{cpuAvg:0.#}% avg"
             : assessment.CpuPercent is double cpu
                 ? $"{cpu:0.#}%"
                 : "—";
-        ResourceIntelligence.CpuPressureDisplay = assessment.CpuPressure.ToString().ToUpperInvariant();
+        ResourceIntelligence.CpuPressureDisplay = OperatorLabels.Pressure(assessment.CpuPressure);
         ResourceIntelligence.MemoryDisplay = assessment.MemoryTotalBytes <= 0
             ? "—"
             : $"{LocalResourceFormatting.FormatBytes(assessment.MemoryUsedBytes)} / {LocalResourceFormatting.FormatBytes(assessment.MemoryTotalBytes)} ({assessment.MemoryPercent:0.#}%)";
-        ResourceIntelligence.MemoryPressureDisplay = assessment.MemoryPressure.ToString().ToUpperInvariant();
+        ResourceIntelligence.MemoryPressureDisplay = OperatorLabels.Pressure(assessment.MemoryPressure);
         ResourceIntelligence.DiskDisplay = assessment.DiskPercent is double disk ? $"{disk:0.#}% used" : "—";
-        ResourceIntelligence.DiskPressureDisplay = assessment.DiskPressure.ToString().ToUpperInvariant();
+        ResourceIntelligence.DiskPressureDisplay = OperatorLabels.Pressure(assessment.DiskPressure);
         ResourceIntelligence.Summary = assessment.Summary;
 
         ResourceIntelligence.Recommendations.Clear();

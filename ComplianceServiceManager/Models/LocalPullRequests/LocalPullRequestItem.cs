@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using ComplianceServiceManager.Models;
 
 namespace ComplianceServiceManager.Models.LocalPullRequests;
 
@@ -44,6 +45,12 @@ public sealed partial class LocalPullRequestItem : ObservableObject
 
     [ObservableProperty]
     private string gitStateDisplay = string.Empty;
+
+    [ObservableProperty]
+    private string sourceShaDisplay = "—";
+
+    [ObservableProperty]
+    private string targetShaDisplay = "—";
 
     [ObservableProperty]
     private string validationDisplay = "UNKNOWN";
@@ -108,6 +115,8 @@ public sealed partial class LocalPullRequestItem : ObservableObject
         }
 
         SummaryDisplay = $"{comparison.Commits.Count} commit(s) · {comparison.ChangedFiles.Count} file(s) · +{comparison.LinesAdded}/-{comparison.LinesRemoved}";
+        SourceShaDisplay = OperatorLabels.ShortSha(comparison.SourceTipSha);
+        TargetShaDisplay = OperatorLabels.ShortSha(comparison.TargetTipSha);
         GitStateDisplay =
             $"Source {(comparison.SourceClean ? "CLEAN" : "DIRTY")} · Target {(comparison.TargetClean ? "CLEAN" : "DIRTY")} · " +
             $"ahead {comparison.Ahead} / behind {comparison.Behind}" +

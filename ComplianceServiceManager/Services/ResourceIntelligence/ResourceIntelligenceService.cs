@@ -1,3 +1,4 @@
+using ComplianceServiceManager.Models;
 using ComplianceServiceManager.Models.AgentSessions;
 using ComplianceServiceManager.Models.LocalResources;
 using ComplianceServiceManager.Models.ResourceIntelligence;
@@ -159,8 +160,9 @@ public sealed class ResourceIntelligenceService : IResourceIntelligenceService, 
             MemoryClass = memoryClass,
             CpuClass = cpuClass,
             Explanation =
-                $"{count} enabled service(s) → comparative memory class {memoryClass} / CPU class {cpuClass}. " +
-                "Classes are comparative heuristics, not absolute GB/CPU guarantees."
+                $"{count} enabled service(s). Estimated resource level: {OperatorLabels.ResourceLevel(memoryClass)} " +
+                $"(CPU {OperatorLabels.ResourceLevel(cpuClass)}). " +
+                "These are relative estimates for comparing profiles, not guaranteed memory or CPU amounts."
         };
     }
 
@@ -211,7 +213,7 @@ public sealed class ResourceIntelligenceService : IResourceIntelligenceService, 
                 Severity = memoryPressure == ResourcePressureLevel.Critical
                     ? ResourceRecommendationSeverity.Critical
                     : ResourceRecommendationSeverity.High,
-                Title = "HIGH MEMORY PRESSURE",
+                Title = "High memory pressure",
                 Explanation =
                     $"Memory usage is currently {host?.MemoryPercent:0.#}% with {available} available. " +
                     "Starting additional heavy runtime stacks may increase pressure. " +
@@ -230,7 +232,7 @@ public sealed class ResourceIntelligenceService : IResourceIntelligenceService, 
                 Id = "cpu-pressure",
                 Kind = ResourceRecommendationKind.CpuPressure,
                 Severity = ResourceRecommendationSeverity.Warning,
-                Title = "CPU PRESSURE",
+                Title = "CPU pressure",
                 Explanation =
                     $"CPU utilization {(cpuPercent is null ? "is elevated" : $"has averaged {cpuPercent:0.#}% over recent samples")}. " +
                     "A single noisy sample is not treated as definitive; short-window averages are preferred when available.",
@@ -246,7 +248,7 @@ public sealed class ResourceIntelligenceService : IResourceIntelligenceService, 
                 Id = "disk-pressure",
                 Kind = ResourceRecommendationKind.DiskPressure,
                 Severity = ResourceRecommendationSeverity.Warning,
-                Title = "DISK PRESSURE",
+                Title = "Disk pressure",
                 Explanation =
                     $"Development volume usage is {host?.DiskPercent:0.#}% on '{host?.DiskRootPath}'. " +
                     "Low free space can slow builds and service starts.",
@@ -262,7 +264,7 @@ public sealed class ResourceIntelligenceService : IResourceIntelligenceService, 
                 Id = "multi-agent",
                 Kind = ResourceRecommendationKind.MultipleAgentPressure,
                 Severity = ResourceRecommendationSeverity.Warning,
-                Title = "MULTIPLE AGENT PRESSURE",
+                Title = "Multiple agents active",
                 Explanation =
                     $"{activeSessions.Count} development sessions are active/paused. " +
                     string.Join("; ", activeSessions.Select(session => $"{session.AgentDisplay}: {session.Title} ({session.RuntimeProfileDisplay})")) +
@@ -297,12 +299,12 @@ public sealed class ResourceIntelligenceService : IResourceIntelligenceService, 
                         Id = "profile-too-heavy",
                         Kind = ResourceRecommendationKind.ProfileTooHeavy,
                         Severity = ResourceRecommendationSeverity.High,
-                        Title = "PROFILE MAY INCREASE PRESSURE",
+                        Title = "High resource demand",
                         Explanation =
-                            $"Requested profile '{requested.ProfileName}' is comparative class {requested.MemoryClass} " +
-                            $"with {requested.ExpectedProcessCount} services. Memory is currently {host?.MemoryPercent:0.#}% " +
+                            $"Requested profile '{requested.ProfileName}' has estimated resource level {OperatorLabels.ResourceLevel(requested.MemoryClass)} " +
+                            $"and starts {requested.ExpectedProcessCount} services. Memory is currently {host?.MemoryPercent:0.#}% " +
                             $"({LocalResourceFormatting.FormatBytes(host?.MemoryAvailableBytes ?? 0)} available). " +
-                            $"'{lighterThanRequested.ProfileName}' requires fewer services ({lighterThanRequested.ExpectedProcessCount}) " +
+                            $"'{lighterThanRequested.ProfileName}' starts fewer services ({lighterThanRequested.ExpectedProcessCount}) " +
                             "and is less likely to increase memory pressure.",
                         SuggestedAction = $"Use Suggested Profile: {lighterThanRequested.ProfileName}",
                         RelatedProfileId = lighterThanRequested.ProfileId,
@@ -319,11 +321,11 @@ public sealed class ResourceIntelligenceService : IResourceIntelligenceService, 
                 Id = "prefer-lighter",
                 Kind = ResourceRecommendationKind.PreferLighterProfile,
                 Severity = ResourceRecommendationSeverity.High,
-                Title = "PREFER LIGHTER PROFILE",
+                Title = "Consider a lighter profile",
                 Explanation =
-                    $"Overall pressure is {overall}. If you need to start a runtime, " +
-                    $"'{lighter.ProfileName}' is currently the lightest comparative option " +
-                    $"({lighter.ExpectedProcessCount} services, class {lighter.MemoryClass}).",
+                    $"Overall pressure is {OperatorLabels.Pressure(overall)}. If you need to start a runtime, " +
+                    $"'{lighter.ProfileName}' is currently the lightest option " +
+                    $"({lighter.ExpectedProcessCount} services, estimated resource level {OperatorLabels.ResourceLevel(lighter.MemoryClass)}).",
                 SuggestedAction = $"Use Suggested Profile: {lighter.ProfileName}",
                 RelatedProfileId = lighter.ProfileId,
                 RelatedProfileName = lighter.ProfileName,
@@ -338,9 +340,9 @@ public sealed class ResourceIntelligenceService : IResourceIntelligenceService, 
                 Id = "capacity-ok",
                 Kind = ResourceRecommendationKind.CapacityOk,
                 Severity = ResourceRecommendationSeverity.Info,
-                Title = "CAPACITY LOOKS ACCEPTABLE",
+                Title = "Capacity looks acceptable",
                 Explanation =
-                    $"Overall pressure is {overall}. Memory {host?.MemoryPercent:0.#}%, " +
+                    $"Overall pressure is {OperatorLabels.Pressure(overall)}. Memory {host?.MemoryPercent:0.#}%, " +
                     $"CPU {(cpuPercent is null ? "n/a" : $"{cpuPercent:0.#}%")}, " +
                     $"Disk {host?.DiskPercent:0.#}%. No advisory restriction is suggested.",
                 SuggestedAction = null,

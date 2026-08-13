@@ -526,7 +526,7 @@ public sealed class WorkspaceRuntimeService : IWorkspaceRuntimeService
                 {
                     ServiceName = serviceName,
                     InstanceId = instance.InstanceId,
-                    ScopeDisplay = workspace.DisplayName,
+                    ScopeDisplay = ServiceInstanceItem.FormatWorkspaceLabel(workspace.Id),
                     Port = port,
                     Action = WorkspaceRuntimeAction.ReuseWorkspace,
                     ActionDisplay = "REUSE WORKSPACE",
@@ -534,7 +534,9 @@ public sealed class WorkspaceRuntimeService : IWorkspaceRuntimeService
                         ? "Already running in this workspace — ownership retained."
                         : "Already running in this workspace — not claimed.",
                     OwnedAfterStart = existing.Owned,
-                    OwnerDisplay = existing.Owned ? $"Workspace: {workspace.DisplayName}" : "External",
+                    OwnerDisplay = existing.Owned
+                        ? ServiceInstanceItem.FormatOwnershipDisplay(ServiceInstanceOwnership.Workspace, workspace.Id)
+                        : "External",
                     SourcePath = existing.Launch.ProjectPath
                 };
             }
@@ -561,13 +563,15 @@ public sealed class WorkspaceRuntimeService : IWorkspaceRuntimeService
                     {
                         ServiceName = serviceName,
                         InstanceId = instance.InstanceId,
-                        ScopeDisplay = workspace.DisplayName,
+                        ScopeDisplay = ServiceInstanceItem.FormatWorkspaceLabel(workspace.Id),
                         Port = assignedPort,
                         Action = WorkspaceRuntimeAction.ReuseWorkspace,
                         ActionDisplay = "REUSE WORKSPACE",
                         Reason = "Port occupied by expected workspace process.",
                         OwnedAfterStart = existing.Owned,
-                        OwnerDisplay = existing.Owned ? $"Workspace: {workspace.DisplayName}" : "External",
+                        OwnerDisplay = existing.Owned
+                            ? ServiceInstanceItem.FormatOwnershipDisplay(ServiceInstanceOwnership.Workspace, workspace.Id)
+                            : "External",
                         SourcePath = clone.ProjectPath
                     };
                 }
@@ -591,13 +595,13 @@ public sealed class WorkspaceRuntimeService : IWorkspaceRuntimeService
         {
             ServiceName = serviceName,
             InstanceId = instance.InstanceId,
-            ScopeDisplay = workspace.DisplayName,
+            ScopeDisplay = ServiceInstanceItem.FormatWorkspaceLabel(workspace.Id),
             Port = port,
             Action = WorkspaceRuntimeAction.StartWorkspace,
             ActionDisplay = "START WORKSPACE",
             Reason = $"Will start from {workspace.Path}.",
             OwnedAfterStart = true,
-            OwnerDisplay = $"Workspace: {workspace.DisplayName}",
+            OwnerDisplay = ServiceInstanceItem.FormatOwnershipDisplay(ServiceInstanceOwnership.Workspace, workspace.Id),
             SourcePath = clone.ProjectPath
         };
     }

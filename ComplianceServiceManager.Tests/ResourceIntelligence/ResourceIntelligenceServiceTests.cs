@@ -46,7 +46,7 @@ public sealed class ResourceIntelligenceServiceTests
         var assessment = service.Assess();
         var recommendation = Assert.Single(assessment.Recommendations, item => item.Kind == ResourceRecommendationKind.LowMemory);
         Assert.Contains("Memory usage is currently 92", recommendation.Explanation, StringComparison.OrdinalIgnoreCase);
-        Assert.False(string.IsNullOrWhiteSpace(recommendation.Title));
+        Assert.Equal("High memory pressure", recommendation.Title);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public sealed class ResourceIntelligenceServiceTests
 
         Assert.Equal(RuntimeProfileResourceClass.Light, light.MemoryClass);
         Assert.Equal(RuntimeProfileResourceClass.Heavy, heavy.MemoryClass);
-        Assert.Contains("comparative", light.Explanation, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Estimated resource level", light.Explanation, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

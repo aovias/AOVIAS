@@ -215,8 +215,8 @@ public sealed class PortRegistryService : IPortRegistryService
             item.ServiceName = definition.ServiceId;
             item.InstanceDisplay = "—";
             item.WorkspaceId = definition.WorkspaceId;
-            item.WorkspaceDisplay = definition.WorkspaceId ?? "—";
-            item.ScopeDisplay = string.IsNullOrWhiteSpace(definition.WorkspaceId) ? "Shared" : "Workspace";
+            item.WorkspaceDisplay = OperatorLabels.Workspace(definition.WorkspaceId);
+            item.ScopeDisplay = string.IsNullOrWhiteSpace(definition.WorkspaceId) ? "Shared" : OperatorLabels.Workspace(definition.WorkspaceId);
             item.ApplyEffectiveStatus(PortEffectiveStatus.AssignedUnavailable, "Service instance is missing.");
             ApplyOccupancy(item, definition.Port, expectedProcessId: null);
             return item;

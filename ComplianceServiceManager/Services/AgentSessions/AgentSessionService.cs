@@ -1,5 +1,6 @@
 using System.IO;
 using ComplianceServiceManager.Logging;
+using ComplianceServiceManager.Models;
 using ComplianceServiceManager.Models.AgentSessions;
 using ComplianceServiceManager.Models.LocalPullRequests;
 using ComplianceServiceManager.Models.LocalResources;
@@ -60,7 +61,7 @@ public sealed class AgentSessionService : IAgentSessionService
             .Where(workspace => !workspace.IsMain)
             .Select(workspace => (
                 workspace.Id,
-                workspace.DisplayName,
+                OperatorLabels.Workspace(workspace.Id, workspace.AgentOwner),
                 workspace.Path,
                 MapPreferredAgent(workspace.AgentOwner)))
             .ToList();
@@ -101,7 +102,7 @@ public sealed class AgentSessionService : IAgentSessionService
             return;
         }
 
-        session.WorkspaceDisplay = workspace.DisplayName;
+        session.WorkspaceDisplay = OperatorLabels.Workspace(workspace.Id, workspace.AgentOwner);
         session.WorkspacePath = workspace.Path;
 
         if (!Directory.Exists(workspace.Path) || !git.LooksLikeGitWorktree(workspace.Path))
@@ -240,7 +241,7 @@ public sealed class AgentSessionService : IAgentSessionService
             Description = description?.Trim() ?? string.Empty,
             TaskId = string.IsNullOrWhiteSpace(taskId) ? null : taskId.Trim(),
             WorkspaceId = workspace.Id,
-            WorkspaceDisplay = workspace.DisplayName,
+            WorkspaceDisplay = OperatorLabels.Workspace(workspace.Id, workspace.AgentOwner),
             WorkspacePath = workspace.Path,
             ExpectedBranch = expectedBranch.Trim(),
             RuntimeProfileId = string.IsNullOrWhiteSpace(runtimeProfileId) ? null : runtimeProfileId.Trim(),

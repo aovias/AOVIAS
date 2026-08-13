@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using ComplianceServiceManager.Models;
 
 namespace ComplianceServiceManager.Models.ServiceInstances;
 
@@ -69,7 +70,10 @@ public sealed partial class ServiceInstanceItem : ObservableObject
     private string scopeDisplay = "Shared";
 
     [ObservableProperty]
-    private string ownershipDisplay = "Shared";
+    private string ownershipDisplay = "Shared Runtime";
+
+    [ObservableProperty]
+    private string agentDisplay = "Shared";
 
     [ObservableProperty]
     private string? statusReason;
@@ -96,6 +100,9 @@ public sealed partial class ServiceInstanceItem : ObservableObject
             RuntimeProfileId = definition.RuntimeProfileId,
             ScopeDisplay = FormatScopeDisplay(definition.ExecutionScope, definition.WorkspaceId),
             OwnershipDisplay = FormatOwnershipDisplay(definition.Ownership, definition.WorkspaceId),
+            AgentDisplay = definition.ExecutionScope == ServiceExecutionScope.Shared
+                ? "Shared"
+                : FormatWorkspaceLabel(definition.WorkspaceId),
             IsConfigured = true,
             ConfigurationDisplay = "Configured"
         };
@@ -116,6 +123,7 @@ public sealed partial class ServiceInstanceItem : ObservableObject
             WorkspaceDisplay = workspaceDisplay,
             ScopeDisplay = FormatWorkspaceLabel(workspaceId),
             OwnershipDisplay = FormatOwnershipDisplay(ServiceInstanceOwnership.Workspace, workspaceId),
+            AgentDisplay = FormatWorkspaceLabel(workspaceId),
             State = ServiceInstanceState.Defined,
             StateDisplay = "Not Configured",
             PortDisplay = "Unassigned",
@@ -125,19 +133,7 @@ public sealed partial class ServiceInstanceItem : ObservableObject
         };
 
     public static string FormatWorkspaceLabel(string? workspaceId)
-    {
-        if (string.Equals(workspaceId, "cursor", StringComparison.OrdinalIgnoreCase))
-        {
-            return "Cursor";
-        }
-
-        if (string.Equals(workspaceId, "claude", StringComparison.OrdinalIgnoreCase))
-        {
-            return "Claude";
-        }
-
-        return string.IsNullOrWhiteSpace(workspaceId) ? "Workspace" : workspaceId.Trim();
-    }
+        => OperatorLabels.Workspace(workspaceId);
 
     public static string FormatScopeDisplay(ServiceExecutionScope scope, string? workspaceId)
         => scope == ServiceExecutionScope.Shared ? "Shared" : FormatWorkspaceLabel(workspaceId);
@@ -152,7 +148,7 @@ public sealed partial class ServiceInstanceItem : ObservableObject
             return "Shared Runtime";
         }
 
-        return owned ? $"Workspace: {FormatWorkspaceLabel(workspaceId)}" : "External";
+        return OperatorLabels.Owner(ownership, workspaceId, owned);
     }
 
     public void ApplyPort(int? value)

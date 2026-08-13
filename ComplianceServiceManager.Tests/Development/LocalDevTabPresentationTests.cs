@@ -36,6 +36,69 @@ public sealed class LocalDevTabPresentationTests
         Assert.DoesNotContain("selectedLocalDevTabIndex =", source.Replace("private int selectedLocalDevTabIndex;", string.Empty));
     }
 
+    [Fact]
+    public void LocalDevView_UsesCanonicalOperatorVocabulary()
+    {
+        var xaml = File.ReadAllText(FindViewSource());
+        Assert.Contains("Source branch:", xaml);
+        Assert.Contains("Target branch:", xaml);
+        Assert.Contains("Source SHA:", xaml);
+        Assert.Contains("Target SHA:", xaml);
+        Assert.Contains("This records what an agent is working on", xaml);
+        Assert.Contains("Does not launch Cursor or Claude", xaml);
+        Assert.Contains("Mark Active", xaml);
+        Assert.Contains("Pause Record", xaml);
+        Assert.Contains("Header=\"Source\" Binding=\"{Binding SourcePath}\"", xaml);
+        Assert.Contains("Header=\"Owner\" Binding=\"{Binding OwnershipDisplay}\"", xaml);
+        Assert.Contains("Start All (legacy)", xaml);
+        Assert.DoesNotContain("COMPARATIVE CLASS", xaml);
+        Assert.DoesNotContain("HIGH MEMORY PRESSURE", xaml);
+        Assert.DoesNotContain("Definition vs execution context", xaml);
+        Assert.Contains("Estimated resource level", File.ReadAllText(FindResourceIntelligenceSource()));
+    }
+
+    private static string FindViewSource()
+    {
+        var candidates = new[]
+        {
+            Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..",
+                "ComplianceServiceManager", "Views", "Development", "LocalDevServicesView.xaml")),
+            Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..",
+                "ComplianceServiceManager", "Views", "Development", "LocalDevServicesView.xaml"))
+        };
+
+        foreach (var path in candidates)
+        {
+            if (File.Exists(path))
+            {
+                return path;
+            }
+        }
+
+        throw new FileNotFoundException("LocalDevServicesView.xaml not found relative to test output.");
+    }
+
+    private static string FindResourceIntelligenceSource()
+    {
+        var candidates = new[]
+        {
+            Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..",
+                "ComplianceServiceManager", "Services", "ResourceIntelligence", "ResourceIntelligenceService.cs")),
+            Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..",
+                "ComplianceServiceManager", "Services", "ResourceIntelligence", "ResourceIntelligenceService.cs"))
+        };
+
+        foreach (var path in candidates)
+        {
+            if (File.Exists(path))
+            {
+                return path;
+            }
+        }
+
+        throw new FileNotFoundException("ResourceIntelligenceService.cs not found relative to test output.");
+    }
+
     private static string FindViewModelSource()
     {
         var candidates = new[]
