@@ -1,3 +1,5 @@
+using ComplianceServiceManager.Models;
+
 namespace ComplianceServiceManager.Models.ResourceIntelligence;
 
 public sealed class RuntimeProfileResourceEstimate
@@ -11,6 +13,8 @@ public sealed class RuntimeProfileResourceEstimate
     public RuntimeProfileResourceClass MemoryClass { get; init; } = RuntimeProfileResourceClass.Unknown;
 
     public RuntimeProfileResourceClass CpuClass { get; init; } = RuntimeProfileResourceClass.Unknown;
+
+    public string MemoryClassDisplay => OperatorLabels.ResourceLevel(MemoryClass);
 
     public string Explanation { get; init; } = string.Empty;
 }

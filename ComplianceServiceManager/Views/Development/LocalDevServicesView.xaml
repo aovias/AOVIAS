@@ -85,6 +85,7 @@
                                                                FontWeight="SemiBold"
                                                                Foreground="{StaticResource TextPrimaryBrush}"
                                                                Margin="0,0,0,4" />
+                                                    <TextBlock Style="{StaticResource CaptionTextStyle}" Text="Source" />
                                                     <TextBlock Text="{Binding Path}"
                                                                TextTrimming="CharacterEllipsis"
                                                                FontSize="11"
@@ -151,6 +152,10 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
+                                <TextBlock Text="Runtime execution never mutates Git. If a workspace HEAD changes while a runtime is running, Studio shows Source changed — it does not restart automatically."
+                                           Style="{StaticResource CaptionTextStyle}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,10,0,0" />
                             </StackPanel>
                         </Border>
 
@@ -160,26 +165,71 @@
                                 <TextBlock Text="Development Status" Style="{StaticResource HeadingTextStyle}" Margin="0,0,0,10" />
                                 <UniformGrid Columns="3">
                                     <StackPanel Margin="0,0,12,8">
-                                        <TextBlock Text="Active Agents" Style="{StaticResource CaptionTextStyle}" />
-                                        <TextBlock Text="{Binding OverviewActiveAgentCount}"
-                                                   FontSize="20"
+                                        <TextBlock Text="Shared" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding OverviewSharedRuntimeStatus}"
+                                                   FontSize="16"
                                                    FontWeight="SemiBold"
-                                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                                   Foreground="{StaticResource PrimaryBrush}" />
+                                        <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,2,0,0">
+                                            <Run Text="{Binding OverviewSharedRuntimeHealthy, Mode=OneWay}" />
+                                            <Run Text=" healthy · " />
+                                            <Run Text="{Binding OverviewSharedRuntimeOwned, Mode=OneWay}" />
+                                            <Run Text=" owned" />
+                                        </TextBlock>
                                     </StackPanel>
                                     <StackPanel Margin="0,0,12,8">
-                                        <TextBlock Text="Running Services" Style="{StaticResource CaptionTextStyle}" />
-                                        <TextBlock Text="{Binding Services.RunningServicesCount}"
+                                        <TextBlock Text="Cursor" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding OverviewCursorRuntimeStatus}"
+                                                   FontSize="16"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource PrimaryBrush}" />
+                                        <TextBlock Text="{Binding OverviewCursorRuntimeDetail}"
+                                                   Style="{StaticResource CaptionTextStyle}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,0,8">
+                                        <TextBlock Text="Claude" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding OverviewClaudeRuntimeStatus}"
+                                                   FontSize="16"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource PrimaryBrush}" />
+                                        <TextBlock Text="{Binding OverviewClaudeRuntimeDetail}"
+                                                   Style="{StaticResource CaptionTextStyle}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,12,8">
+                                        <TextBlock Text="Services running" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding OverviewRunningServiceCount}"
                                                    FontSize="20"
                                                    FontWeight="SemiBold"
                                                    Foreground="{StaticResource SuccessBrush}" />
+                                        <TextBlock Text="{Binding OverviewRunningNames}"
+                                                   Style="{StaticResource CaptionTextStyle}"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,12,8">
+                                        <TextBlock Text="Services stopped" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding OverviewStoppedServiceCount}"
+                                                   FontSize="20"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                        <TextBlock Text="{Binding OverviewStoppedNames}"
+                                                   Style="{StaticResource CaptionTextStyle}"
+                                                   TextWrapping="Wrap" />
                                     </StackPanel>
                                     <StackPanel Margin="0,0,0,8">
-                                        <TextBlock Text="Runtime Profile" Style="{StaticResource CaptionTextStyle}" />
-                                        <TextBlock Text="{Binding OverviewRuntimeProfileDisplay, TargetNullValue=—}"
-                                                   FontSize="14"
+                                        <TextBlock Text="Resource" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding OverviewResourcePressure}"
+                                                   FontSize="16"
                                                    FontWeight="SemiBold"
-                                                   Foreground="{StaticResource PrimaryBrush}"
+                                                   Foreground="{StaticResource PrimaryBrush}" />
+                                        <TextBlock Text="{Binding LocalResources.MemoryDisplay}"
+                                                   Style="{StaticResource CaptionTextStyle}"
                                                    TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,12,0">
+                                        <TextBlock Text="Active agents" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding OverviewActiveAgentsDisplay}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextPrimaryBrush}" />
                                     </StackPanel>
                                     <StackPanel Margin="0,0,12,0">
                                         <TextBlock Text="CPU" Style="{StaticResource CaptionTextStyle}" />
@@ -187,55 +237,12 @@
                                                    FontWeight="SemiBold"
                                                    Foreground="{StaticResource TextPrimaryBrush}" />
                                     </StackPanel>
-                                    <StackPanel Margin="0,0,12,0">
-                                        <TextBlock Text="Memory" Style="{StaticResource CaptionTextStyle}" />
-                                        <TextBlock Text="{Binding LocalResources.MemoryDisplay}"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="{StaticResource TextPrimaryBrush}"
-                                                   TextWrapping="Wrap" />
-                                    </StackPanel>
                                     <StackPanel>
-                                        <TextBlock Text="Disk" Style="{StaticResource CaptionTextStyle}" />
-                                        <TextBlock Text="{Binding LocalResources.DiskDisplay}"
+                                        <TextBlock Text="Profile" Style="{StaticResource CaptionTextStyle}" />
+                                        <TextBlock Text="{Binding OverviewRuntimeProfileDisplay, TargetNullValue=—}"
                                                    FontWeight="SemiBold"
-                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   Foreground="{StaticResource PrimaryBrush}"
                                                    TextWrapping="Wrap" />
-                                    </StackPanel>
-                                    <StackPanel Margin="0,8,12,0">
-                                        <TextBlock Text="Shared Runtime" Style="{StaticResource CaptionTextStyle}" />
-                                        <TextBlock Text="{Binding OverviewSharedRuntimeStatus}"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="{StaticResource PrimaryBrush}" />
-                                    </StackPanel>
-                                    <StackPanel Margin="0,8,12,0">
-                                        <TextBlock Text="Healthy" Style="{StaticResource CaptionTextStyle}" />
-                                        <TextBlock Text="{Binding OverviewSharedRuntimeHealthy}"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="{StaticResource TextPrimaryBrush}" />
-                                    </StackPanel>
-                                    <StackPanel Margin="0,8,0,0">
-                                        <TextBlock Text="Owned / Ports" Style="{StaticResource CaptionTextStyle}" />
-                                        <TextBlock FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}">
-                                            <Run Text="{Binding OverviewSharedRuntimeOwned, Mode=OneWay}" />
-                                            <Run Text=" owned · " />
-                                            <Run Text="{Binding OverviewSharedRuntimePorts, Mode=OneWay}" />
-                                        </TextBlock>
-                                    </StackPanel>
-                                    <StackPanel Margin="0,8,12,0">
-                                        <TextBlock Text="Cursor Runtime" Style="{StaticResource CaptionTextStyle}" />
-                                        <TextBlock Text="{Binding OverviewCursorRuntimeStatus}"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="{StaticResource PrimaryBrush}" />
-                                        <TextBlock Text="{Binding OverviewCursorRuntimeDetail}"
-                                                   Style="{StaticResource CaptionTextStyle}" />
-                                    </StackPanel>
-                                    <StackPanel Margin="0,8,0,0">
-                                        <TextBlock Text="Claude Runtime" Style="{StaticResource CaptionTextStyle}" />
-                                        <TextBlock Text="{Binding OverviewClaudeRuntimeStatus}"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="{StaticResource PrimaryBrush}" />
-                                        <TextBlock Text="{Binding OverviewClaudeRuntimeDetail}"
-                                                   Style="{StaticResource CaptionTextStyle}" />
                                     </StackPanel>
                                 </UniformGrid>
                             </StackPanel>
@@ -251,7 +258,7 @@
                                             Command="{Binding UseSuggestedProfileCommand}"
                                             IsEnabled="{Binding ResourceIntelligence.HasSuggestedProfile}"
                                             HorizontalAlignment="Right"
-                                            ToolTip="Explicit confirmation required. Invokes D2 start only after you confirm." />
+                                            ToolTip="Explicit confirmation required. Starts the selected runtime profile only after you confirm." />
                                 </Grid>
                                 <UniformGrid Columns="2" Margin="0,0,0,8">
                                     <StackPanel Margin="0,0,12,8">
@@ -305,9 +312,16 @@
                                                                    FontWeight="SemiBold"
                                                                    Foreground="{StaticResource TextPrimaryBrush}" />
                                                         <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,2,0,0">
+                                                            <Run Text="Source: " />
                                                             <Run Text="{Binding SourceBranch, Mode=OneWay}" />
-                                                            <Run Text=" → " />
+                                                            <Run Text="  →  Target: " />
                                                             <Run Text="{Binding TargetBranch, Mode=OneWay}" />
+                                                        </TextBlock>
+                                                        <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,2,0,0" FontFamily="Consolas">
+                                                            <Run Text="Source SHA: " />
+                                                            <Run Text="{Binding SourceShaDisplay, Mode=OneWay}" />
+                                                            <Run Text="  ·  Target SHA: " />
+                                                            <Run Text="{Binding TargetShaDisplay, Mode=OneWay}" />
                                                         </TextBlock>
                                                     </StackPanel>
                                                     <TextBlock Grid.Column="1"
@@ -378,7 +392,7 @@
                                                                Foreground="{StaticResource TextPrimaryBrush}"
                                                                Margin="0,0,0,8" />
 
-                                                    <TextBlock Style="{StaticResource CaptionTextStyle}" Text="Path" />
+                                                    <TextBlock Style="{StaticResource CaptionTextStyle}" Text="Source" />
                                                     <TextBlock Text="{Binding Path}"
                                                                TextWrapping="Wrap"
                                                                FontSize="12"
@@ -531,7 +545,7 @@
                                 <Grid Grid.Row="0" Margin="0,0,0,10">
                                     <StackPanel>
                                         <TextBlock Text="Local Pull Requests" Style="{StaticResource HeadingTextStyle}" />
-                                        <TextBlock Text="Local Git review lifecycle (no remote). Discover → compare → validate → review → approve → explicit merge."
+                                        <TextBlock Text="Local Git review lifecycle (no remote): DRAFT → READY FOR REVIEW → APPROVED → CHANGES REQUESTED → MERGED. Also: CONFLICTED · BLOCKED. Approvals are tied to Source SHA."
                                                    Style="{StaticResource CaptionTextStyle}"
                                                    TextWrapping="Wrap"
                                                    Margin="0,4,0,0" />
@@ -585,6 +599,22 @@
                                                    FontWeight="SemiBold"
                                                    Foreground="{StaticResource PrimaryBrush}"
                                                    Margin="0,8,0,0" />
+                                        <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,6,0,0">
+                                            <Run Text="Source branch: " />
+                                            <Run Text="{Binding SelectedPullRequest.SourceBranch, Mode=OneWay}" FontWeight="SemiBold" />
+                                        </TextBlock>
+                                        <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,2,0,0">
+                                            <Run Text="Target branch: " />
+                                            <Run Text="{Binding SelectedPullRequest.TargetBranch, Mode=OneWay}" FontWeight="SemiBold" />
+                                        </TextBlock>
+                                        <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,2,0,0" FontFamily="Consolas">
+                                            <Run Text="Source SHA: " />
+                                            <Run Text="{Binding SelectedPullRequest.SourceShaDisplay, Mode=OneWay}" FontWeight="SemiBold" />
+                                        </TextBlock>
+                                        <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,2,0,0" FontFamily="Consolas">
+                                            <Run Text="Target SHA: " />
+                                            <Run Text="{Binding SelectedPullRequest.TargetShaDisplay, Mode=OneWay}" FontWeight="SemiBold" />
+                                        </TextBlock>
                                         <TextBlock Text="{Binding SelectedPullRequest.SummaryDisplay}"
                                                    Style="{StaticResource CaptionTextStyle}"
                                                    Margin="0,4,0,0" />
@@ -701,7 +731,7 @@
                                 <Grid Grid.Row="0" Margin="0,0,0,10">
                                     <StackPanel>
                                         <TextBlock Text="Agent Sessions" Style="{StaticResource HeadingTextStyle}" />
-                                        <TextBlock Text="Development-agent context (Cursor/Claude): task → workspace → branch → runtime → resources → local PR. Metadata only — no Git/runtime auto-actions."
+                                        <TextBlock Text="This records what an agent is working on (agent → session → workspace → branch → runtime → PR). Studio does not start, stop, or control the Cursor or Claude IDE."
                                                    Style="{StaticResource CaptionTextStyle}"
                                                    TextWrapping="Wrap"
                                                    Margin="0,4,0,0" />
@@ -727,27 +757,32 @@
                                         <ColumnDefinition Width="240" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <ListBox Grid.Column="0"
-                                             ItemsSource="{Binding AgentSessions}"
-                                             SelectedItem="{Binding SelectedAgentSession, Mode=TwoWay}"
-                                             DisplayMemberPath="Title"
-                                             MinHeight="120"
-                                             MaxHeight="200"
-                                             Margin="0,0,12,0" />
+                                    <StackPanel Grid.Column="0">
+                                        <ListBox ItemsSource="{Binding AgentSessions}"
+                                                 SelectedItem="{Binding SelectedAgentSession, Mode=TwoWay}"
+                                                 DisplayMemberPath="Title"
+                                                 MinHeight="120"
+                                                 MaxHeight="200"
+                                                 Margin="0,0,12,0" />
+                                        <TextBlock Text="Empty list means no session metadata yet — not that Cursor or Claude is stopped."
+                                                   Style="{StaticResource CaptionTextStyle}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,6,12,0" />
+                                    </StackPanel>
                                     <StackPanel Grid.Column="1">
                                         <TextBlock>
+                                            <Run Text="Agent: " />
                                             <Run Text="{Binding SelectedAgentSession.AgentDisplay, Mode=OneWay}" FontWeight="SemiBold" />
-                                            <Run Text=" · " />
+                                            <Run Text="  ·  " />
                                             <Run Text="{Binding SelectedAgentSession.StatusDisplay, Mode=OneWay}" FontWeight="SemiBold" />
-                                            <Run Text=" · " />
+                                            <Run Text="  ·  " />
                                             <Run Text="{Binding SelectedAgentSession.HealthDisplay, Mode=OneWay}" />
                                         </TextBlock>
-                                        <TextBlock Text="{Binding SelectedAgentSession.Title}"
-                                                   FontSize="16"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="{StaticResource TextPrimaryBrush}"
-                                                   Margin="0,6,0,0" />
                                         <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,6,0,0">
+                                            <Run Text="Session: " />
+                                            <Run Text="{Binding SelectedAgentSession.Title, Mode=OneWay}" FontWeight="SemiBold" />
+                                        </TextBlock>
+                                        <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0">
                                             <Run Text="Task: " />
                                             <Run Text="{Binding SelectedAgentSession.TaskId, Mode=OneWay, TargetNullValue=—}" />
                                         </TextBlock>
@@ -756,7 +791,7 @@
                                             <Run Text="{Binding SelectedAgentSession.WorkspaceDisplay, Mode=OneWay}" />
                                         </TextBlock>
                                         <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,4,0,0" TextWrapping="Wrap">
-                                            <Run Text="Branch expected: " />
+                                            <Run Text="Branch: " />
                                             <Run Text="{Binding SelectedAgentSession.ExpectedBranch, Mode=OneWay}" />
                                             <Run Text="  · actual: " />
                                             <Run Text="{Binding SelectedAgentSession.ActualBranch, Mode=OneWay, TargetNullValue=—}" />
@@ -792,11 +827,16 @@
                                 </Grid>
 
                                 <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
-                                    <Button Content="Start" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding StartSelectedAgentSessionCommand}" Margin="0,0,8,0" />
-                                    <Button Content="Pause" Command="{Binding PauseSelectedAgentSessionCommand}" Margin="0,0,8,0" />
-                                    <Button Content="Resume" Command="{Binding ResumeSelectedAgentSessionCommand}" Margin="0,0,8,0" />
-                                    <Button Content="Complete" Command="{Binding CompleteSelectedAgentSessionCommand}" Margin="0,0,8,0" />
-                                    <Button Content="Cancel" Command="{Binding CancelSelectedAgentSessionCommand}" />
+                                    <Button Content="Mark Active" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding StartSelectedAgentSessionCommand}" Margin="0,0,8,0"
+                                            ToolTip="Updates session metadata only. Does not launch Cursor or Claude." />
+                                    <Button Content="Pause Record" Command="{Binding PauseSelectedAgentSessionCommand}" Margin="0,0,8,0"
+                                            ToolTip="Updates session metadata only. Does not pause the IDE." />
+                                    <Button Content="Resume Record" Command="{Binding ResumeSelectedAgentSessionCommand}" Margin="0,0,8,0"
+                                            ToolTip="Updates session metadata only. Does not resume the IDE." />
+                                    <Button Content="Complete Session" Command="{Binding CompleteSelectedAgentSessionCommand}" Margin="0,0,8,0"
+                                            ToolTip="Marks the session complete. Does not close Cursor or Claude." />
+                                    <Button Content="Cancel Session" Command="{Binding CancelSelectedAgentSessionCommand}"
+                                            ToolTip="Cancels the session record. Does not terminate Cursor or Claude." />
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -816,7 +856,7 @@
                                 <Grid Margin="0,0,0,10">
                                     <StackPanel>
                                         <TextBlock Text="Shared Runtime" Style="{StaticResource HeadingTextStyle}" />
-                                        <TextBlock Text="Canonical shared execution (AOVIAS). Plan and validate before start. Does not run Cursor or Claude workspace instances."
+                                        <TextBlock Text="Canonical shared execution (AOVIAS). Plan → Confirm → Start → Health → Ownership → Stop. Does not run Cursor or Claude workspace instances."
                                                    Style="{StaticResource CaptionTextStyle}"
                                                    TextWrapping="Wrap"
                                                    Margin="0,4,0,0" />
@@ -906,7 +946,7 @@
                                 <Grid Margin="0,0,0,10">
                                     <StackPanel>
                                         <TextBlock Text="Workspace Runtimes" Style="{StaticResource HeadingTextStyle}" />
-                                        <TextBlock Text="Selective isolation for Cursor and Claude. Reuses healthy Shared Runtime dependencies. Does not launch Cursor or Claude. Does not mutate Git."
+                                        <TextBlock Text="Workspace → Plan → Confirm → Start → Health → Ownership → Stop. Reuses healthy Shared Runtime. Does not launch Cursor or Claude. Does not mutate Git."
                                                    Style="{StaticResource CaptionTextStyle}"
                                                    TextWrapping="Wrap"
                                                    Margin="0,4,0,0" />
@@ -941,7 +981,7 @@
                                                     </Grid>
                                                     <UniformGrid Columns="4" Margin="0,0,0,8">
                                                         <StackPanel Margin="0,0,8,0">
-                                                            <TextBlock Text="Workspace" Style="{StaticResource CaptionTextStyle}" />
+                                                            <TextBlock Text="Source" Style="{StaticResource CaptionTextStyle}" />
                                                             <TextBlock Text="{Binding Path}" TextWrapping="Wrap" FontSize="12" />
                                                         </StackPanel>
                                                         <StackPanel Margin="0,0,8,0">
@@ -1027,6 +1067,7 @@
                                                             <DataGridTextColumn Header="Scope" Binding="{Binding ScopeDisplay}" Width="90" />
                                                             <DataGridTextColumn Header="Port" Binding="{Binding PortDisplay}" Width="70" />
                                                             <DataGridTextColumn Header="Owner" Binding="{Binding OwnerDisplay}" Width="140" />
+                                                            <DataGridTextColumn Header="Source" Binding="{Binding SourcePath}" Width="2*" />
                                                             <DataGridTextColumn Header="Reason" Binding="{Binding Reason}" Width="2*" />
                                                         </DataGrid.Columns>
                                                     </DataGrid>
@@ -1051,7 +1092,7 @@
                                 <Grid Grid.Row="0" Margin="0,0,0,10">
                                     <StackPanel>
                                         <TextBlock Text="Runtime Profiles" Style="{StaticResource HeadingTextStyle}" />
-                                        <TextBlock Text="Preferred way to start local stacks with dependency order. Start All below remains available as a legacy parallel start."
+                                        <TextBlock Text="Preferred way to start local stacks: Plan → Confirm → Start → Health → Ownership → Stop. Legacy direct start remains below and bypasses this plan."
                                                    Style="{StaticResource CaptionTextStyle}"
                                                    TextWrapping="Wrap"
                                                    Margin="0,4,0,0" />
@@ -1226,27 +1267,29 @@
                                 </Grid.RowDefinitions>
 
                                 <Grid Grid.Row="0" Margin="0,0,0,10">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Discovered Services" Style="{StaticResource HeadingTextStyle}" VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Services.ServiceCount, StringFormat={}{0} services}"
+                                    <StackPanel>
+                                        <TextBlock Text="Discovered Services" Style="{StaticResource HeadingTextStyle}" />
+                                        <TextBlock Text="Legacy direct start — bypasses Runtime Plan. Prefer Plan → Confirm → Start above."
                                                    Style="{StaticResource CaptionTextStyle}"
-                                                   Margin="12,0,0,0"
-                                                   VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Services.RunningServicesCount, StringFormat={}{0} running}"
-                                                   Style="{StaticResource CaptionTextStyle}"
-                                                   Foreground="{StaticResource SuccessBrush}"
-                                                   Margin="12,0,0,0"
-                                                   VerticalAlignment="Center" />
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,2,0,0" />
+                                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                            <TextBlock Text="{Binding Services.ServiceCount, StringFormat={}{0} services}"
+                                                       Style="{StaticResource CaptionTextStyle}" />
+                                            <TextBlock Text="{Binding Services.RunningServicesCount, StringFormat={}{0} running}"
+                                                       Style="{StaticResource CaptionTextStyle}"
+                                                       Foreground="{StaticResource SuccessBrush}"
+                                                       Margin="12,0,0,0" />
+                                        </StackPanel>
                                     </StackPanel>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                                         <TextBox Text="{Binding Services.SearchText, UpdateSourceTrigger=PropertyChanged}"
                                                  MinWidth="180"
                                                  Margin="0,0,8,0"
                                                  ToolTip="Filter services" />
                                         <Button Content="Start All (legacy)"
-                                                Style="{StaticResource PrimaryButtonStyle}"
                                                 Command="{Binding Services.StartAllCommand}"
-                                                ToolTip="Legacy parallel start of all discovered services. Prefer Runtime Profiles for dependency-aware startup."
+                                                ToolTip="Legacy parallel start of all discovered services. Bypasses Runtime Plan. Prefer Plan above."
                                                 Margin="0,0,8,0" />
                                         <Button Content="Stop All"
                                                 Command="{Binding Services.StopAllCommand}"
@@ -1270,7 +1313,7 @@
                                             <DataGridTextColumn Header="URL" Binding="{Binding DisplayHttpsUrl}" Width="2*" />
                                             <DataGridTextColumn Header="PID" Binding="{Binding DisplayProcessId}" Width="70" />
                                             <DataGridTextColumn Header="Since" Binding="{Binding DisplayRunningSince}" Width="90" />
-                                            <DataGridTemplateColumn Header="Actions" Width="230">
+                                            <DataGridTemplateColumn Header="Legacy" Width="230">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal">
@@ -1307,7 +1350,7 @@
                                             <Grid Margin="0,0,0,8">
                                                 <StackPanel>
                                                     <TextBlock Text="Service Instances" Style="{StaticResource HeadingTextStyle}" />
-                                                    <TextBlock Text="Definition vs execution context. Port numbers come from the Local Port Registry when assigned."
+                                                    <TextBlock Text="Each row is one running context: Shared, Cursor, or Claude. Port comes from the Local Port Registry when assigned."
                                                                Style="{StaticResource CaptionTextStyle}"
                                                                TextWrapping="Wrap"
                                                                Margin="0,4,0,0" />
@@ -1325,7 +1368,7 @@
                                                 </StackPanel>
                                             </Grid>
                                             <TextBlock Style="{StaticResource CaptionTextStyle}" Margin="0,0,0,8">
-                                                <Run Text="Definition: " />
+                                                <Run Text="Service: " />
                                                 <Run Text="{Binding SelectedDiscoveredService.Name, Mode=OneWay}" FontWeight="SemiBold" />
                                                 <Run Text=" · " />
                                                 <Run Text="{Binding SelectedDiscoveredService.DisplayKind, Mode=OneWay}" />
@@ -1338,13 +1381,16 @@
                                                       CanUserAddRows="False"
                                                       MaxHeight="180">
                                                 <DataGrid.Columns>
-                                                    <DataGridTextColumn Header="Scope" Binding="{Binding ScopeDisplay}" Width="90" />
-                                                    <DataGridTextColumn Header="Workspace" Binding="{Binding WorkspaceDisplay}" Width="*" />
+                                                    <DataGridTextColumn Header="Service" Binding="{Binding ServiceName}" Width="*" />
+                                                    <DataGridTextColumn Header="Scope" Binding="{Binding ScopeDisplay}" Width="80" />
+                                                    <DataGridTextColumn Header="Workspace" Binding="{Binding WorkspaceDisplay}" Width="90" />
+                                                    <DataGridTextColumn Header="Agent" Binding="{Binding AgentDisplay}" Width="80" />
+                                                    <DataGridTextColumn Header="Source" Binding="{Binding SourcePath, TargetNullValue=—}" Width="2*" />
                                                     <DataGridTextColumn Header="Branch" Binding="{Binding Branch, TargetNullValue=—}" Width="*" />
-                                                    <DataGridTextColumn Header="Status" Binding="{Binding StateDisplay}" Width="110" />
-                                                    <DataGridTextColumn Header="Port" Binding="{Binding PortDisplay}" Width="90" />
+                                                    <DataGridTextColumn Header="Port" Binding="{Binding PortDisplay}" Width="80" />
                                                     <DataGridTextColumn Header="PID" Binding="{Binding ProcessIdDisplay}" Width="70" />
-                                                    <DataGridTextColumn Header="Config" Binding="{Binding ConfigurationDisplay}" Width="110" />
+                                                    <DataGridTextColumn Header="Owner" Binding="{Binding OwnershipDisplay}" Width="140" />
+                                                    <DataGridTextColumn Header="State" Binding="{Binding StateDisplay}" Width="110" />
                                                 </DataGrid.Columns>
                                             </DataGrid>
                                         </StackPanel>
@@ -1358,7 +1404,7 @@
                                             <Grid Margin="0,0,0,8">
                                                 <StackPanel>
                                                     <TextBlock Text="Local Port Registry" Style="{StaticResource HeadingTextStyle}" />
-                                                    <TextBlock Text="Configured port ownership for Service Instances. OS occupancy is point-in-time only — never kills or starts processes."
+                                                    <TextBlock Text="Configured port ownership for Service Instances. If this list is empty, assign a workspace port before Workspace Runtime start. Studio does not auto-allocate ports. OS occupancy is point-in-time only — never kills or starts processes."
                                                                Style="{StaticResource CaptionTextStyle}"
                                                                TextWrapping="Wrap"
                                                                Margin="0,4,0,0" />
@@ -1406,13 +1452,13 @@
                               HorizontalScrollBarVisibility="Disabled"
                               CanContentScroll="False">
                     <StackPanel Margin="8">
-                        <!-- Local Resources (S3 — observation only) -->
+                        <!-- Local Resources -->
                         <Border Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
                             <StackPanel>
                                 <Grid Margin="0,0,0,10">
                                     <StackPanel>
                                         <TextBlock Text="Local Resources" Style="{StaticResource HeadingTextStyle}" />
-                                        <TextBlock Text="Developer machine telemetry (CPU / RAM / disk). Distinct from Runtime Agent metrics. Observation only — no automatic profile decisions."
+                                        <TextBlock Text="Why is this development machine slow? CPU, memory, disk, process CPU/RAM, port, PID, workspace, scope, and agent. Observation only — no automatic profile decisions."
                                                    Style="{StaticResource CaptionTextStyle}"
                                                    TextWrapping="Wrap"
                                                    Margin="0,4,0,0" />
@@ -1566,13 +1612,13 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- Resource Intelligence (D5 — recommend only, no auto mutation) -->
+                        <!-- Resource Intelligence -->
                         <Border Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
                             <StackPanel>
                                 <Grid Margin="0,0,0,10">
                                     <StackPanel>
                                         <TextBlock Text="Resource Intelligence" Style="{StaticResource HeadingTextStyle}" />
-                                        <TextBlock Text="Advisory assessment over S3 telemetry. Observe → analyze → recommend → ask. No automatic profile/process/Git changes."
+                                        <TextBlock Text="Advisory only. Observe → recommend → ask. Studio does not start or stop services from these recommendations."
                                                    Style="{StaticResource CaptionTextStyle}"
                                                    TextWrapping="Wrap"
                                                    Margin="0,4,0,0" />
@@ -1591,7 +1637,7 @@
                                                 Style="{StaticResource PrimaryButtonStyle}"
                                                 Command="{Binding UseSuggestedProfileCommand}"
                                                 IsEnabled="{Binding ResourceIntelligence.HasSuggestedProfile}"
-                                                ToolTip="Explicit confirmation required. Invokes D2 start only after you confirm." />
+                                                ToolTip="Explicit confirmation required. Starts the selected runtime profile only after you confirm." />
                                     </StackPanel>
                                 </Grid>
 
@@ -1664,7 +1710,7 @@
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Profile" Binding="{Binding ProfileName}" Width="*" />
                                             <DataGridTextColumn Header="Svc" Binding="{Binding ExpectedProcessCount}" Width="40" />
-                                            <DataGridTextColumn Header="Mem" Binding="{Binding MemoryClass}" Width="70" />
+                                            <DataGridTextColumn Header="Resource" Binding="{Binding MemoryClassDisplay}" Width="90" />
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Grid>

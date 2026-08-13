@@ -103,9 +103,20 @@ public sealed class ServiceInstanceModelTests : IDisposable
 
         var forService = service.GetInstancesForService("OrganizationService");
         Assert.Equal(3, forService.Count);
-        Assert.Contains(forService, i => i.ExecutionScope == ServiceExecutionScope.Shared);
-        Assert.Contains(forService, i => i.WorkspaceId == "cursor");
-        Assert.Contains(forService, i => i.WorkspaceId == "claude");
+        var shared = Assert.Single(forService, i => i.ExecutionScope == ServiceExecutionScope.Shared);
+        var cursor = Assert.Single(forService, i => i.WorkspaceId == "cursor");
+        var claude = Assert.Single(forService, i => i.WorkspaceId == "claude");
+        Assert.Equal("Shared", shared.WorkspaceDisplay);
+        Assert.Equal("Shared", shared.AgentDisplay);
+        Assert.Equal("Shared Runtime", shared.OwnershipDisplay);
+        Assert.Equal("Cursor", cursor.WorkspaceDisplay);
+        Assert.Equal("Cursor", cursor.AgentDisplay);
+        Assert.Equal("Cursor Workspace", cursor.OwnershipDisplay);
+        Assert.Equal("Claude", claude.WorkspaceDisplay);
+        Assert.Equal("Claude Workspace", claude.OwnershipDisplay);
+        Assert.False(string.IsNullOrWhiteSpace(shared.SourcePath));
+        Assert.False(string.IsNullOrWhiteSpace(cursor.SourcePath));
+        Assert.Contains("AOVIAS.Cursor", cursor.SourcePath, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

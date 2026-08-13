@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using ComplianceServiceManager.Models;
 
 namespace ComplianceServiceManager.Models.Workspaces;
 
@@ -117,13 +118,8 @@ public sealed partial class DevelopmentWorkspaceItem : ObservableObject
 
     public void ApplyConfigurationDisplays()
     {
-        AgentOwnerDisplay = AgentOwner switch
-        {
-            WorkspaceAgentOwner.Integration => "Main / Integration",
-            WorkspaceAgentOwner.Cursor => "Cursor",
-            WorkspaceAgentOwner.Claude => "Claude",
-            _ => "Unknown"
-        };
+        DisplayName = OperatorLabels.Workspace(Id, AgentOwner);
+        AgentOwnerDisplay = OperatorLabels.Agent(AgentOwner);
 
         RoleDisplay = Role switch
         {

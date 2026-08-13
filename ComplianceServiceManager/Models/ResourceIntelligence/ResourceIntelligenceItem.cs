@@ -6,7 +6,7 @@ namespace ComplianceServiceManager.Models.ResourceIntelligence;
 public sealed partial class ResourceIntelligenceItem : ObservableObject
 {
     [ObservableProperty]
-    private string overallPressureDisplay = "UNKNOWN";
+    private string overallPressureDisplay = "Unknown";
 
     [ObservableProperty]
     private ResourcePressureLevel overallPressure = ResourcePressureLevel.Unknown;
@@ -15,19 +15,19 @@ public sealed partial class ResourceIntelligenceItem : ObservableObject
     private string cpuDisplay = "—";
 
     [ObservableProperty]
-    private string cpuPressureDisplay = "UNKNOWN";
+    private string cpuPressureDisplay = "Unknown";
 
     [ObservableProperty]
     private string memoryDisplay = "—";
 
     [ObservableProperty]
-    private string memoryPressureDisplay = "UNKNOWN";
+    private string memoryPressureDisplay = "Unknown";
 
     [ObservableProperty]
     private string diskDisplay = "—";
 
     [ObservableProperty]
-    private string diskPressureDisplay = "UNKNOWN";
+    private string diskPressureDisplay = "Unknown";
 
     [ObservableProperty]
     private string summary = "Waiting for telemetry…";

@@ -95,7 +95,12 @@ public sealed class LocalPullRequestLifecycleTests : IDisposable
             "Cursor");
 
         Assert.Equal(LocalPullRequestStatus.ReadyForReview, pr.Status);
+        Assert.Equal("READY FOR REVIEW", pr.StatusDisplay);
         Assert.True(pr.Comparison!.Ahead >= 1);
+        Assert.NotEqual("—", pr.SourceShaDisplay);
+        Assert.NotEqual("—", pr.TargetShaDisplay);
+        Assert.Equal(OperatorLabels.ShortSha(pr.Comparison.SourceTipSha), pr.SourceShaDisplay);
+        Assert.Equal(OperatorLabels.ShortSha(pr.Comparison.TargetTipSha), pr.TargetShaDisplay);
         Assert.Contains(pr.ChangedFiles, file => file.Path.Contains("feature.txt", StringComparison.OrdinalIgnoreCase));
         Assert.NotEmpty(pr.Commits);
     }

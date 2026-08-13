@@ -144,7 +144,7 @@ public sealed class DevelopmentWorkspaceRegistry
                         new ConfiguredWorkspace
                         {
                             Id = "main",
-                            DisplayName = "MAIN",
+                            DisplayName = "Shared",
                             Path = mainPath,
                             AgentOwner = WorkspaceAgentOwner.Integration,
                             Role = WorkspaceRole.Integration,
@@ -154,7 +154,7 @@ public sealed class DevelopmentWorkspaceRegistry
                         new ConfiguredWorkspace
                         {
                             Id = "cursor",
-                            DisplayName = "CURSOR",
+                            DisplayName = "Cursor",
                             Path = cursorPath,
                             AgentOwner = WorkspaceAgentOwner.Cursor,
                             Role = WorkspaceRole.Agent,
@@ -164,7 +164,7 @@ public sealed class DevelopmentWorkspaceRegistry
                         new ConfiguredWorkspace
                         {
                             Id = "claude",
-                            DisplayName = "CLAUDE",
+                            DisplayName = "Claude",
                             Path = claudePath,
                             AgentOwner = WorkspaceAgentOwner.Claude,
                             Role = WorkspaceRole.Agent,

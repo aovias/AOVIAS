@@ -199,7 +199,7 @@ public sealed class ServiceInstanceService : IServiceInstanceService
                 serviceId,
                 serviceName,
                 workspace.Id,
-                workspace.DisplayName));
+                OperatorLabels.Workspace(workspace.Id)));
         }
 
         return placeholders;
@@ -214,9 +214,12 @@ public sealed class ServiceInstanceService : IServiceInstanceService
 
         if (definition.ExecutionScope == ServiceExecutionScope.Shared)
         {
-            item.WorkspaceDisplay = "None";
+            item.WorkspaceDisplay = "Shared";
+            item.AgentDisplay = "Shared";
             item.Branch = null;
-            item.SourcePath = null;
+            item.SourcePath = workspaces.GetDocument().Repositories
+                .SelectMany(repo => repo.Workspaces)
+                .FirstOrDefault(ws => ws.IsMain)?.Path;
             ApplySharedRuntimeTruth(item, definition.ServiceId);
             item.ScopeDisplay = ServiceInstanceItem.FormatScopeDisplay(definition.ExecutionScope, definition.WorkspaceId);
             item.OwnershipDisplay = ServiceInstanceItem.FormatOwnershipDisplay(definition.Ownership, definition.WorkspaceId);
@@ -240,7 +243,8 @@ public sealed class ServiceInstanceService : IServiceInstanceService
             return item;
         }
 
-        item.WorkspaceDisplay = workspaceConfig.DisplayName;
+        item.WorkspaceDisplay = OperatorLabels.Workspace(workspaceConfig.Id);
+        item.AgentDisplay = OperatorLabels.Agent(workspaceConfig.Id);
         item.SourcePath = workspaceConfig.Path;
 
         try
@@ -289,7 +293,7 @@ public sealed class ServiceInstanceService : IServiceInstanceService
                 definition.WorkspaceId,
                 snapshot.Owned);
             var reason = snapshot.Owned
-                ? $"Owner: Workspace: {ServiceInstanceItem.FormatWorkspaceLabel(definition.WorkspaceId)}"
+                ? $"Owner: {ServiceInstanceItem.FormatOwnershipDisplay(definition.Ownership, definition.WorkspaceId)}"
                 : "Already running — not claimed by Workspace Runtime.";
             item.ApplyState(MapServiceStatus(snapshot.Launch.Status), reason);
             return;
