@@ -110,6 +110,15 @@
   width: 100%;
 }
 
+.login-brand__kicker {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(191, 219, 254, 0.95);
+}
+
 .login-brand__headline {
   margin: 0;
   font-family: 'Poppins', sans-serif;
