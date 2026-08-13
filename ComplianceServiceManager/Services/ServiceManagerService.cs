@@ -119,8 +119,8 @@ public sealed class ServiceManagerService : IServiceRuntimeHost, IDisposable
             }
 
             service.LastAction = "Starting";
-            var (fileName, arguments) = BuildStartCommand(service);
-            var environmentVariables = BuildEnvironmentVariables(service);
+            var (fileName, arguments) = ServiceLaunchCommand.BuildStartCommand(service);
+            var environmentVariables = ServiceLaunchCommand.BuildEnvironmentVariables(service);
             logger.Info(service.Name, $"Starting {service.Name} using profile {service.DisplayLaunchProfileName}.");
             logger.Info(service.Name, $"URL: {service.LaunchUrl ?? service.HttpsUrl ?? service.HttpUrl ?? "Not configured"}");
             logger.Info(service.Name, $"Environment: {service.EnvironmentName}");
@@ -377,43 +377,6 @@ public sealed class ServiceManagerService : IServiceRuntimeHost, IDisposable
                 developerCertificateCheckTask = null;
             }
         }
-    }
-
-    private static (string FileName, string Arguments) BuildStartCommand(ServiceInfoModel service)
-    {
-        if (service.Kind == ServiceKind.AngularWebApp)
-        {
-            var port = service.Port ?? service.HttpPort ?? 4200;
-            return ("cmd.exe", $"/c ng serve --host 0.0.0.0 --port {port}");
-        }
-
-        return ("dotnet", BuildRunArguments(service));
-    }
-    private static string BuildRunArguments(ServiceInfoModel service)
-    {
-        return !string.IsNullOrWhiteSpace(service.LaunchProfileName)
-            ? $"run --project \"{service.ProjectPath}\" --no-build --launch-profile \"{service.LaunchProfileName}\""
-            : $"run --project \"{service.ProjectPath}\" --no-build";
-    }
-
-    private static Dictionary<string, string> BuildEnvironmentVariables(ServiceInfoModel service)
-    {
-        var variables = new Dictionary<string, string>(service.LaunchEnvironmentVariables, StringComparer.OrdinalIgnoreCase);
-        if (!string.IsNullOrWhiteSpace(service.EnvironmentName))
-        {
-            variables["ASPNETCORE_ENVIRONMENT"] = service.EnvironmentName;
-        }
-
-        if (string.IsNullOrWhiteSpace(service.LaunchProfileName))
-        {
-            var urls = string.Join(';', new[] { service.HttpsUrl, service.HttpUrl }.Where(url => !string.IsNullOrWhiteSpace(url)));
-            if (!string.IsNullOrWhiteSpace(urls))
-            {
-                variables["ASPNETCORE_URLS"] = urls;
-            }
-        }
-
-        return variables;
     }
 
     private static void MarkError(ServiceInfoModel service, string reason)
