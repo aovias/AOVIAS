@@ -707,13 +707,28 @@ public sealed class WorkspaceRuntimeService : IWorkspaceRuntimeService
             clone.Port = assigned;
             clone.LaunchUrl = $"http://localhost:{assigned}";
             clone.HttpUrl = $"http://localhost:{assigned}";
+        }
+        else
+        {
+            clone.HttpsPort = assigned;
+            clone.Port = assigned;
+            clone.HttpsUrl = $"https://localhost:{assigned}";
+            clone.LaunchUrl = clone.HttpsUrl;
+        }
+
+        // LaunchSettings.json in the workspace still carries the discovered/shared applicationUrl.
+        // ASPNETCORE_URLS must be set on the process so the workspace port actually binds.
+        var urls = string.Join(';', new[] { clone.HttpsUrl, clone.HttpUrl }.Where(url => !string.IsNullOrWhiteSpace(url)));
+        if (string.IsNullOrWhiteSpace(urls))
+        {
             return;
         }
 
-        clone.HttpsPort = assigned;
-        clone.Port = assigned;
-        clone.HttpsUrl = $"https://localhost:{assigned}";
-        clone.LaunchUrl = clone.HttpsUrl;
+        var environment = clone.LaunchEnvironmentVariables is Dictionary<string, string> existing
+            ? existing
+            : new Dictionary<string, string>(clone.LaunchEnvironmentVariables, StringComparer.OrdinalIgnoreCase);
+        environment["ASPNETCORE_URLS"] = urls;
+        clone.LaunchEnvironmentVariables = environment;
     }
 
     private static ServiceInfoModel CloneForWorkspace(ServiceInfoModel template, string mappedProjectPath)
@@ -726,7 +741,7 @@ public sealed class WorkspaceRuntimeService : IWorkspaceRuntimeService
             Kind = template.Kind,
             ProjectPath = mappedProjectPath,
             WorkingDirectory = mappedWorking ?? mappedProjectPath,
-            LaunchProfileName = template.LaunchProfileName,
+            LaunchProfileName = null,
             EnvironmentName = template.EnvironmentName,
             Environment = template.Environment,
             LaunchEnvironmentVariables = template.LaunchEnvironmentVariables.Count == 0

@@ -355,6 +355,50 @@ public sealed class WorkspaceRuntimeServiceTests : IDisposable
         var org = plan.Entries.Single(entry => entry.ServiceName == "OrganizationService");
         Assert.True(WorkspaceSourceMapper.IsUnder(org.SourcePath!, cursorPath));
         Assert.False(WorkspaceSourceMapper.IsUnder(org.SourcePath!, mainPath));
+        Assert.False(WorkspaceSourceMapper.IsUnder(org.SourcePath!, claudePath));
+        var instance = instances.GetInstancesForService("OrganizationService").Single(item => item.WorkspaceId == "cursor");
+        Assert.True(launches.TryGetLaunch(instance.InstanceId, out var snapshot));
+        Assert.True(WorkspaceSourceMapper.IsUnder(snapshot.Launch.WorkingDirectory, cursorPath));
+        Assert.False(WorkspaceSourceMapper.IsUnder(snapshot.Launch.WorkingDirectory, mainPath));
+    }
+
+    [Fact]
+    public void ClaudeProcessSourcePath_IsClaude()
+    {
+        SeedIdentityAndOrg();
+        SetSharedRunning("IdentityService", 7216);
+        PrepareWorkspace("OrganizationService", "claude", 5102);
+        var plan = runtime.Plan(OrgProfile(), "claude", ClaudeSnapshot(), ["OrganizationService"]);
+        var org = plan.Entries.Single(entry => entry.ServiceName == "OrganizationService");
+        Assert.True(plan.CanStart);
+        Assert.True(WorkspaceSourceMapper.IsUnder(org.SourcePath!, claudePath));
+        Assert.False(WorkspaceSourceMapper.IsUnder(org.SourcePath!, mainPath));
+        Assert.False(WorkspaceSourceMapper.IsUnder(org.SourcePath!, cursorPath));
+        var instance = instances.GetInstancesForService("OrganizationService").Single(item => item.WorkspaceId == "claude");
+        Assert.True(launches.TryGetLaunch(instance.InstanceId, out var snapshot));
+        Assert.True(WorkspaceSourceMapper.IsUnder(snapshot.Launch.WorkingDirectory, claudePath));
+        Assert.False(WorkspaceSourceMapper.IsUnder(snapshot.Launch.WorkingDirectory, mainPath));
+    }
+
+    [Fact]
+    public void WorkspacePort_IsInjectedIntoProcessEnvironment()
+    {
+        SeedIdentityAndOrg();
+        SetSharedRunning("IdentityService", 7216);
+        host.Services.Single(item => item.Name == "OrganizationService").LaunchProfileName = "https";
+        PrepareWorkspace("OrganizationService", "cursor", 5101);
+        var plan = runtime.Plan(OrgProfile(), "cursor", CursorSnapshot(), ["OrganizationService"]);
+        Assert.True(plan.CanStart);
+        var instance = instances.GetInstancesForService("OrganizationService").Single(item => item.WorkspaceId == "cursor");
+        Assert.True(launches.TryGetLaunch(instance.InstanceId, out var snapshot));
+        Assert.Equal(5101, snapshot.Launch.HttpsPort);
+        Assert.Equal("https://localhost:5101", snapshot.Launch.HttpsUrl);
+        Assert.Null(snapshot.Launch.LaunchProfileName);
+        Assert.True(snapshot.Launch.LaunchEnvironmentVariables.TryGetValue("ASPNETCORE_URLS", out var urls));
+        Assert.Contains("5101", urls);
+        Assert.DoesNotContain("7217", urls);
+        Assert.DoesNotContain("7181", urls);
+        Assert.Equal(7217, host.Services.Single(item => item.Name == "OrganizationService").HttpsPort);
     }
 
     [Fact]
