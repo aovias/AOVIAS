@@ -292,6 +292,34 @@ public sealed class ServiceInstanceService : IServiceInstanceService
                 definition.Ownership,
                 definition.WorkspaceId,
                 snapshot.Owned);
+
+            if (snapshot.Launch.ProcessId is int pid)
+            {
+                if (snapshot.Launch.Status is ServiceStatus.Stopped)
+                {
+                    item.ApplyState(
+                        ServiceInstanceState.Failed,
+                        $"Process PID {pid} is still recorded; runtime is not Stopped.");
+                    item.AttentionReasons.Add($"Unexpected process PID {pid} remains after a stop or failed start.");
+                    if (snapshot.Port is int recordedPort)
+                    {
+                        item.AttentionReasons.Add($"Workspace port {recordedPort}.");
+                    }
+
+                    return;
+                }
+
+                if (!snapshot.Owned
+                    && snapshot.StartedByRuntime
+                    && snapshot.Launch.Status is ServiceStatus.Error or ServiceStatus.FailedRepair)
+                {
+                    item.ApplyState(ServiceInstanceState.Failed, snapshot.Launch.LastAction);
+                    item.AttentionReasons.Add($"Orphaned workspace process PID {pid} needs attention.");
+                    item.AttentionReasons.Add($"Workspace: {definition.WorkspaceId}. Scope: Workspace.");
+                    return;
+                }
+            }
+
             var reason = snapshot.Owned
                 ? $"Owner: {ServiceInstanceItem.FormatOwnershipDisplay(definition.Ownership, definition.WorkspaceId)}"
                 : "Already running — not claimed by Workspace Runtime.";

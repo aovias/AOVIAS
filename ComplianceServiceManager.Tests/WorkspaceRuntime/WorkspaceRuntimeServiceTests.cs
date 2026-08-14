@@ -88,6 +88,7 @@ public sealed class WorkspaceRuntimeServiceTests : IDisposable
             logger,
             sessions);
         runtime.ConfigureHealthWaitForTests(TimeSpan.FromMilliseconds(250), TimeSpan.FromMilliseconds(20));
+        host.Availability = availability;
     }
 
     public void Dispose()
@@ -398,7 +399,38 @@ public sealed class WorkspaceRuntimeServiceTests : IDisposable
         Assert.Contains("5101", urls);
         Assert.DoesNotContain("7217", urls);
         Assert.DoesNotContain("7181", urls);
+        Assert.True(snapshot.Launch.SuppressLaunchSettings);
+        var (_, arguments) = ServiceLaunchCommand.BuildStartCommand(snapshot.Launch);
+        var environment = ServiceLaunchCommand.BuildEnvironmentVariables(snapshot.Launch);
+        Assert.Contains("--no-launch-profile", arguments, StringComparison.Ordinal);
+        Assert.DoesNotContain("--launch-profile", arguments, StringComparison.Ordinal);
+        Assert.Equal("https://localhost:5101", environment["ASPNETCORE_URLS"]);
+        Assert.DoesNotContain("5085", environment["ASPNETCORE_URLS"]);
         Assert.Equal(7217, host.Services.Single(item => item.Name == "OrganizationService").HttpsPort);
+    }
+
+    [Fact]
+    public async Task WorkspaceStart_BindsRegisteredPort_NotLaunchSettings()
+    {
+        SeedIdentityAndOrg();
+        SetSharedRunning("IdentityService", 7216);
+        host.Services.Single(item => item.Name == "OrganizationService").LaunchProfileName = "http";
+        PrepareWorkspace("OrganizationService", "cursor", 5101);
+        var result = await runtime.StartAsync(OrgProfile(), "cursor", CursorSnapshot(), ["OrganizationService"]);
+        Assert.True(result.Succeeded);
+        Assert.NotNull(host.LastStartCommand);
+        Assert.Contains("--no-launch-profile", host.LastStartCommand!.Value.Arguments, StringComparison.Ordinal);
+        Assert.DoesNotContain("--launch-profile", host.LastStartCommand.Value.Arguments, StringComparison.Ordinal);
+        Assert.Equal("https://localhost:5101", host.LastStartEnvironment!["ASPNETCORE_URLS"]);
+        Assert.DoesNotContain("5085", host.LastStartEnvironment["ASPNETCORE_URLS"]);
+        Assert.True(availability.Observe(5101).IsListening);
+        Assert.False(availability.Observe(5085).IsListening);
+        var instance = instances.GetInstancesForService("OrganizationService").Single(item => item.WorkspaceId == "cursor");
+        Assert.True(launches.TryGetLaunch(instance.InstanceId, out var snapshot));
+        Assert.Equal(5101, snapshot.Port);
+        Assert.Equal(snapshot.Port, snapshot.Launch.HttpsPort);
+        Assert.Equal(availability.Observe(5101).ProcessId, snapshot.ProcessId);
+        Assert.Contains(5101, health.ProbedPorts);
     }
 
     [Fact]
@@ -479,6 +511,212 @@ public sealed class WorkspaceRuntimeServiceTests : IDisposable
         Assert.Equal(SharedRuntimeStatus.Running, runtime.GetSession("claude").Status);
         Assert.Contains("OrganizationService", runtime.GetSession("claude").OwnedServiceNames);
         Assert.Empty(runtime.GetSession("cursor").OwnedServiceNames);
+    }
+
+    [Fact]
+    public async Task SuccessfulStart_EstablishesOwnership()
+    {
+        SeedIdentityAndOrg();
+        SetSharedRunning("IdentityService", 7216);
+        PrepareWorkspace("OrganizationService", "cursor", 5101);
+        var result = await runtime.StartAsync(OrgProfile(), "cursor", CursorSnapshot(), ["OrganizationService"]);
+        Assert.True(result.Succeeded);
+        Assert.Equal(SharedRuntimeStatus.Running, result.Status);
+        Assert.Equal(SharedRuntimeStatus.Running, runtime.GetSession("cursor").Status);
+        Assert.Contains("OrganizationService", runtime.GetSession("cursor").OwnedServiceNames);
+        var instance = instances.GetInstancesForService("OrganizationService").Single(item => item.WorkspaceId == "cursor");
+        Assert.True(launches.TryGetLaunch(instance.InstanceId, out var snapshot));
+        Assert.True(snapshot.Owned);
+        Assert.True(snapshot.StartedByRuntime);
+        Assert.NotNull(snapshot.ProcessId);
+        Assert.Equal(ServiceStatus.Running, snapshot.Launch.Status);
+        Assert.Equal(HealthStatus.Healthy, snapshot.Launch.Health);
+    }
+
+    [Fact]
+    public async Task HealthFailure_TerminatesExactProcess_NoOrphan_NoOwnership()
+    {
+        SeedIdentityAndOrg();
+        SetSharedRunning("IdentityService", 7216);
+        PrepareWorkspace("OrganizationService", "cursor", 5101);
+        health.ForcedStatus = HealthStatus.Unreachable;
+        var result = await runtime.StartAsync(OrgProfile(), "cursor", CursorSnapshot(), ["OrganizationService"]);
+        Assert.False(result.Succeeded);
+        Assert.Equal(SharedRuntimeStatus.Failed, result.Status);
+        Assert.Equal(SharedRuntimeStatus.Failed, runtime.GetSession("cursor").Status);
+        Assert.Empty(runtime.GetSession("cursor").OwnedServiceNames);
+        Assert.Equal(["OrganizationService"], host.StopCalls);
+        Assert.NotEmpty(host.StoppedProcessIds);
+        Assert.False(availability.Observe(5101).IsListening);
+        Assert.Equal(ServiceStatus.Running, host.Services.Single(item => item.Name == "IdentityService").Status);
+        Assert.Equal(4242, host.Services.Single(item => item.Name == "IdentityService").ProcessId);
+        Assert.Contains("terminated", result.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Ownership was not claimed", result.Error, StringComparison.OrdinalIgnoreCase);
+        var instance = instances.GetInstancesForService("OrganizationService").Single(item => item.WorkspaceId == "cursor");
+        Assert.False(launches.TryGetLaunch(instance.InstanceId, out var leftover) && leftover.Owned);
+    }
+
+    [Fact]
+    public async Task HealthTimeout_TerminatesExactProcess_NoOrphan()
+    {
+        SeedIdentityAndOrg();
+        SetSharedRunning("IdentityService", 7216);
+        PrepareWorkspace("OrganizationService", "cursor", 5101);
+        health.ForcedStatus = HealthStatus.Unreachable;
+        health.Stall = TimeSpan.FromMilliseconds(80);
+        var result = await runtime.StartAsync(OrgProfile(), "cursor", CursorSnapshot(), ["OrganizationService"]);
+        Assert.False(result.Succeeded);
+        Assert.Equal(SharedRuntimeStatus.Failed, runtime.GetSession("cursor").Status);
+        Assert.Empty(runtime.GetSession("cursor").OwnedServiceNames);
+        Assert.Equal(["OrganizationService"], host.StopCalls);
+        Assert.False(availability.Observe(5101).IsListening);
+        Assert.DoesNotContain("IdentityService", host.StopCalls);
+    }
+
+    [Fact]
+    public async Task Cancellation_TerminatesExactProcess_NotRunning()
+    {
+        SeedIdentityAndOrg();
+        SetSharedRunning("IdentityService", 7216);
+        PrepareWorkspace("OrganizationService", "cursor", 5101);
+        health.Stall = TimeSpan.FromSeconds(5);
+        using var cts = new CancellationTokenSource();
+        var start = runtime.StartAsync(OrgProfile(), "cursor", CursorSnapshot(), ["OrganizationService"], cancellationToken: cts.Token);
+        await Task.Delay(40);
+        cts.Cancel();
+        var result = await start;
+        Assert.False(result.Succeeded);
+        Assert.Contains("cancelled", result.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.NotEqual(SharedRuntimeStatus.Running, result.Status);
+        Assert.Equal(SharedRuntimeStatus.Failed, runtime.GetSession("cursor").Status);
+        Assert.Empty(runtime.GetSession("cursor").OwnedServiceNames);
+        Assert.Equal(["OrganizationService"], host.StopCalls);
+        Assert.False(availability.Observe(5101).IsListening);
+        Assert.Equal(ServiceStatus.Running, host.Services.Single(item => item.Name == "IdentityService").Status);
+    }
+
+    [Fact]
+    public async Task FailedStart_DoesNotTerminateSharedOrClaude()
+    {
+        SeedIdentityAndOrg();
+        SetSharedRunning("IdentityService", 7216);
+        SetSharedRunning("OrganizationService", 7217);
+        PrepareWorkspace("OrganizationService", "cursor", 5101);
+        PrepareWorkspace("OrganizationService", "claude", 5102);
+        await runtime.StartAsync(OrgProfile(), "claude", ClaudeSnapshot(), ["OrganizationService"]);
+        var claudeInstance = instances.GetInstancesForService("OrganizationService")
+            .Single(item => item.WorkspaceId == "claude");
+        Assert.True(launches.TryGetLaunch(claudeInstance.InstanceId, out var claudeLaunch));
+        var claudeProcessId = claudeLaunch.ProcessId;
+        host.StopCalls.Clear();
+        health.ForcedStatus = HealthStatus.Unreachable;
+        var result = await runtime.StartAsync(OrgProfile(), "cursor", CursorSnapshot(), ["OrganizationService"]);
+        Assert.False(result.Succeeded);
+        Assert.Equal(["OrganizationService"], host.StopCalls);
+        Assert.Equal(SharedRuntimeStatus.Running, runtime.GetSession("claude").Status);
+        Assert.Contains("OrganizationService", runtime.GetSession("claude").OwnedServiceNames);
+        Assert.True(launches.TryGetLaunch(claudeInstance.InstanceId, out var claudeAfter));
+        Assert.Equal(claudeProcessId, claudeAfter.ProcessId);
+        Assert.Equal(ServiceStatus.Running, host.Services.Single(item => item.Name == "IdentityService").Status);
+        Assert.Equal(4242, host.Services.Single(item => item.Name == "IdentityService").ProcessId);
+        Assert.Equal(ServiceStatus.Running, host.Services.Single(item => item.Name == "OrganizationService").Status);
+    }
+
+    [Fact]
+    public async Task Restart_DoesNotDuplicateProcess()
+    {
+        SeedIdentityAndOrg();
+        SetSharedRunning("IdentityService", 7216);
+        PrepareWorkspace("OrganizationService", "cursor", 5101);
+        var first = await runtime.StartAsync(OrgProfile(), "cursor", CursorSnapshot(), ["OrganizationService"]);
+        Assert.True(first.Succeeded);
+        var instance = instances.GetInstancesForService("OrganizationService").Single(item => item.WorkspaceId == "cursor");
+        Assert.True(launches.TryGetLaunch(instance.InstanceId, out var firstLaunch));
+        var firstPid = firstLaunch.ProcessId;
+        host.StartCalls.Clear();
+        var stopped = await runtime.StopAsync("cursor");
+        Assert.True(stopped.Succeeded);
+        Assert.Empty(runtime.GetSession("cursor").OwnedServiceNames);
+        Assert.False(availability.Observe(5101).IsListening);
+        var second = await runtime.StartAsync(OrgProfile(), "cursor", CursorSnapshot(), ["OrganizationService"]);
+        Assert.True(second.Succeeded);
+        Assert.Equal(["OrganizationService"], host.StartCalls);
+        Assert.True(launches.TryGetLaunch(instance.InstanceId, out var secondLaunch));
+        Assert.NotEqual(firstPid, secondLaunch.ProcessId);
+        Assert.Single(runtime.GetSession("cursor").OwnedServiceNames);
+        Assert.True(availability.Observe(5101).IsListening);
+        Assert.Equal(secondLaunch.ProcessId, availability.Observe(5101).ProcessId);
+    }
+
+    [Fact]
+    public async Task WrongPort_IsRejected_AndProcessTerminated()
+    {
+        SeedIdentityAndOrg();
+        SetSharedRunning("IdentityService", 7216);
+        PrepareWorkspace("OrganizationService", "cursor", 5101);
+        host.BindPortOverride = 5085;
+        var result = await runtime.StartAsync(OrgProfile(), "cursor", CursorSnapshot(), ["OrganizationService"]);
+        Assert.False(result.Succeeded);
+        Assert.Contains("5101", result.Error);
+        Assert.Contains("different port", result.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(["OrganizationService"], host.StopCalls);
+        Assert.Empty(runtime.GetSession("cursor").OwnedServiceNames);
+        Assert.False(availability.Observe(5101).IsListening);
+        Assert.False(availability.Observe(5085).IsListening);
+        Assert.Equal(SharedRuntimeStatus.Failed, runtime.GetSession("cursor").Status);
+    }
+
+    [Fact]
+    public async Task CleanupFailure_SurfacesNeedsAttention_WithPid()
+    {
+        SeedIdentityAndOrg();
+        SetSharedRunning("IdentityService", 7216);
+        PrepareWorkspace("OrganizationService", "cursor", 5101);
+        health.ForcedStatus = HealthStatus.Unreachable;
+        host.StopLeavesProcessAlive = true;
+        var result = await runtime.StartAsync(OrgProfile(), "cursor", CursorSnapshot(), ["OrganizationService"]);
+        Assert.False(result.Succeeded);
+        Assert.Contains("Needs attention", result.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("PID", result.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("terminated", result.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(SharedRuntimeStatus.Failed, runtime.GetSession("cursor").Status);
+        Assert.NotEqual(SharedRuntimeStatus.Stopped, runtime.GetSession("cursor").Status);
+        Assert.Empty(runtime.GetSession("cursor").OwnedServiceNames);
+        var instance = instances.GetInstancesForService("OrganizationService").Single(item => item.WorkspaceId == "cursor");
+        Assert.True(launches.TryGetLaunch(instance.InstanceId, out var leftover));
+        Assert.False(leftover.Owned);
+        Assert.True(leftover.StartedByRuntime);
+        Assert.NotNull(leftover.ProcessId);
+        Assert.Equal(ServiceStatus.Error, leftover.Launch.Status);
+        Assert.Contains("Needs attention", leftover.Launch.LastAction, StringComparison.OrdinalIgnoreCase);
+        Assert.True(availability.Observe(5101).IsListening);
+        Assert.Equal(leftover.ProcessId, availability.Observe(5101).ProcessId);
+        Assert.Equal(["OrganizationService"], host.StopCalls);
+        Assert.Equal(ServiceStatus.Running, host.Services.Single(item => item.Name == "IdentityService").Status);
+    }
+
+    [Fact]
+    public async Task StartupException_AfterProcessCreation_TerminatesExactProcess()
+    {
+        SeedIdentityAndOrg();
+        SetSharedRunning("IdentityService", 7216);
+        PrepareWorkspace("OrganizationService", "cursor", 5101);
+        host.ThrowAfterProcessStart = true;
+        var result = await runtime.StartAsync(OrgProfile(), "cursor", CursorSnapshot(), ["OrganizationService"]);
+        Assert.False(result.Succeeded);
+        Assert.Contains("Simulated startup failure after process creation", result.Error, StringComparison.Ordinal);
+        Assert.Contains("terminated", result.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Ownership was not claimed", result.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(SharedRuntimeStatus.Failed, result.Status);
+        Assert.Equal(SharedRuntimeStatus.Failed, runtime.GetSession("cursor").Status);
+        Assert.Empty(runtime.GetSession("cursor").OwnedServiceNames);
+        Assert.Equal(["OrganizationService"], host.StopCalls);
+        Assert.NotEmpty(host.StoppedProcessIds);
+        Assert.False(availability.Observe(5101).IsListening);
+        Assert.Equal(ServiceStatus.Running, host.Services.Single(item => item.Name == "IdentityService").Status);
+        Assert.Equal(4242, host.Services.Single(item => item.Name == "IdentityService").ProcessId);
+        var instance = instances.GetInstancesForService("OrganizationService").Single(item => item.WorkspaceId == "cursor");
+        Assert.False(launches.TryGetLaunch(instance.InstanceId, out var leftover) && leftover.Owned);
     }
 
     [Fact]
@@ -900,24 +1138,71 @@ public sealed class WorkspaceRuntimeServiceTests : IDisposable
 
     private sealed class FakeServiceRuntimeHost : IServiceRuntimeHost
     {
+        private readonly Dictionary<string, int> boundPorts = new(StringComparer.OrdinalIgnoreCase);
+        private int nextProcessId = 10_000;
+
         public ObservableCollection<ServiceInfoModel> Services { get; } = [];
         public List<string> StartCalls { get; } = [];
         public List<string> StopCalls { get; } = [];
+        public List<int> StoppedProcessIds { get; } = [];
+        public FakeAvailability? Availability { get; set; }
+        public int? BindPortOverride { get; set; }
+        public bool StopLeavesProcessAlive { get; set; }
+        public bool ThrowAfterProcessStart { get; set; }
+        public (string FileName, string Arguments)? LastStartCommand { get; private set; }
+        public IReadOnlyDictionary<string, string>? LastStartEnvironment { get; private set; }
 
         public Task StartAsync(ServiceInfoModel service, CancellationToken cancellationToken)
         {
+            LastStartCommand = ServiceLaunchCommand.BuildStartCommand(service);
+            LastStartEnvironment = ServiceLaunchCommand.BuildEnvironmentVariables(service);
             StartCalls.Add(service.Name);
             service.Status = ServiceStatus.Running;
             service.Health = HealthStatus.Healthy;
-            service.ProcessId = 10_000 + StartCalls.Count;
+            service.ProcessId = ++nextProcessId;
             service.LastAction = "Started";
+
+            var registered = service.HttpsPort ?? service.HttpPort ?? service.Port;
+            var bindPort = BindPortOverride ?? registered;
+            if (bindPort is int bound)
+            {
+                boundPorts[service.Name] = bound;
+                Availability?.Set(bound, true, service.ProcessId, service.Name);
+                if (registered is int expected && expected != bound)
+                {
+                    Availability?.Set(expected, false);
+                }
+            }
+
+            if (ThrowAfterProcessStart)
+            {
+                throw new InvalidOperationException("Simulated startup failure after process creation.");
+            }
+
             return Task.CompletedTask;
         }
 
         public Task StopAsync(ServiceInfoModel service, CancellationToken cancellationToken)
         {
             StopCalls.Add(service.Name);
+            if (service.ProcessId is int pid)
+            {
+                StoppedProcessIds.Add(pid);
+            }
+
+            if (StopLeavesProcessAlive)
+            {
+                return Task.CompletedTask;
+            }
+
+            if (boundPorts.TryGetValue(service.Name, out var bound))
+            {
+                Availability?.Set(bound, false);
+                boundPorts.Remove(service.Name);
+            }
+
             service.Status = ServiceStatus.Stopped;
+            service.ProcessId = null;
             service.LastAction = "Stopped";
             return Task.CompletedTask;
         }
@@ -926,11 +1211,23 @@ public sealed class WorkspaceRuntimeServiceTests : IDisposable
     private sealed class FakeHealthProbe : IHealthProbe
     {
         public List<int?> ProbedPorts { get; } = [];
+        public HealthStatus? ForcedStatus { get; set; }
+        public TimeSpan? Stall { get; set; }
 
-        public Task<HealthStatus> CheckAsync(ServiceInfoModel service, CancellationToken cancellationToken)
+        public async Task<HealthStatus> CheckAsync(ServiceInfoModel service, CancellationToken cancellationToken)
         {
             ProbedPorts.Add(service.HttpsPort ?? service.HttpPort ?? service.Port);
-            return Task.FromResult(service.Status == ServiceStatus.Running ? HealthStatus.Healthy : HealthStatus.Unknown);
+            if (Stall is TimeSpan delay)
+            {
+                await Task.Delay(delay, cancellationToken);
+            }
+
+            if (ForcedStatus is HealthStatus forced)
+            {
+                return forced;
+            }
+
+            return service.Status == ServiceStatus.Running ? HealthStatus.Healthy : HealthStatus.Unknown;
         }
     }
 

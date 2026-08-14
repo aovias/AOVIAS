@@ -1,3 +1,4 @@
+using System.Reflection;
 using OrganizationService.Infrastructure.Extensions;
 using OrganizationService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +47,16 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+app.Use(async (context, next) =>
+{
+    context.Response.OnStarting(() =>
+    {
+        context.Response.Headers[OrganizationService.OrganizationRuntimeIdentity.HeaderName] = OrganizationService.OrganizationRuntimeIdentity.Value;
+        return Task.CompletedTask;
+    });
+    await next();
+});
+
 // Correlation + request logging + global exception handling (early).
 app.UsePramanLogging();
 app.UsePramanLifecycleLogging("OrganizationService");
@@ -93,5 +104,13 @@ app.UseAuthorization();
 app.MapControllers();
 app.UsePramanObservability();
 app.MapPramanAoviasPlatform();
+app.MapGet("/platform/runtime-identity", (IHostEnvironment environment) =>
+{
+    var assembly = typeof(Program).Assembly;
+    var informationalVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+        ?? assembly.GetName().Version?.ToString()
+        ?? "unknown";
+    return Results.Json(OrganizationService.OrganizationRuntimeIdentity.CreatePayload(environment.EnvironmentName, informationalVersion));
+});
 
 app.Run();

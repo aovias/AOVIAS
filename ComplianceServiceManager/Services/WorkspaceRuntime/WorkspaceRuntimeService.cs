@@ -308,56 +308,133 @@ public sealed class WorkspaceRuntimeService : IWorkspaceRuntimeService
 
             StateChanged?.Invoke();
 
+            var startedThisAttempt = new List<StartedWorkspaceLaunch>();
             try
             {
-                foreach (var entry in plan.Entries.Where(item => item.Action == WorkspaceRuntimeAction.StartWorkspace))
-                {
-                    linked.Token.ThrowIfCancellationRequested();
-                    if (string.IsNullOrWhiteSpace(entry.InstanceId))
+                    foreach (var entry in plan.Entries.Where(item => item.Action == WorkspaceRuntimeAction.StartWorkspace))
                     {
-                        continue;
-                    }
-
-                    if (!launches.TryGetLaunch(entry.InstanceId, out var snapshotLaunch))
-                    {
-                        return WorkspaceRuntimeExecutionResult.Fail($"Launch context missing for '{entry.ServiceName}'.", plan);
-                    }
-
-                    await runtimeHost.StartAsync(snapshotLaunch.Launch, linked.Token).ConfigureAwait(false);
-                    var healthy = await WaitForHealthyAsync(snapshotLaunch.Launch, linked.Token).ConfigureAwait(false);
-                    launches.Upsert(entry.InstanceId, workspaceId, entry.ServiceName, snapshotLaunch.Launch, owned: true);
-                    lock (gate)
-                    {
-                        GetOrCreateSession(workspaceId).OwnedServiceNames.Add(entry.ServiceName);
-                    }
-
-                    if (!healthy)
-                    {
-                        lock (gate)
+                        linked.Token.ThrowIfCancellationRequested();
+                        if (string.IsNullOrWhiteSpace(entry.InstanceId))
                         {
-                            GetOrCreateSession(workspaceId).Status = SharedRuntimeStatus.Failed;
+                            continue;
                         }
 
-                        StateChanged?.Invoke();
-                        return WorkspaceRuntimeExecutionResult.Fail(
-                            $"'{entry.ServiceName}' started but did not become healthy on the workspace port.",
-                            plan);
-                    }
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                lock (gate)
-                {
-                    GetOrCreateSession(workspaceId).Status = SharedRuntimeStatus.Failed;
-                }
+                        if (!launches.TryGetLaunch(entry.InstanceId, out var snapshotLaunch))
+                        {
+                            var leftover = await AbortStartedLaunchesAsync(startedThisAttempt, workspaceId).ConfigureAwait(false);
+                            lock (gate)
+                            {
+                                GetOrCreateSession(workspaceId).Status = SharedRuntimeStatus.Failed;
+                            }
 
-                StateChanged?.Invoke();
-                return WorkspaceRuntimeExecutionResult.Fail(
-                    "Workspace Runtime startup cancelled. Already-started owned services remain running.",
-                    plan,
-                    SharedRuntimeStatus.Failed);
+                            StateChanged?.Invoke();
+                            return WorkspaceRuntimeExecutionResult.Fail(
+                                FormatStartFailure($"Launch context missing for '{entry.ServiceName}'.", leftover, startedThisAttempt),
+                                plan);
+                        }
+
+                        try
+                        {
+                            await runtimeHost.StartAsync(snapshotLaunch.Launch, linked.Token).ConfigureAwait(false);
+                        }
+                        finally
+                        {
+                            TrackStartedLaunch(startedThisAttempt, entry, snapshotLaunch.Launch, workspaceId);
+                        }
+
+                        if (snapshotLaunch.Launch.ProcessId is null)
+                        {
+                            var leftover = await AbortStartedLaunchesAsync(startedThisAttempt, workspaceId).ConfigureAwait(false);
+                            lock (gate)
+                            {
+                                GetOrCreateSession(workspaceId).Status = SharedRuntimeStatus.Failed;
+                            }
+
+                            StateChanged?.Invoke();
+                            return WorkspaceRuntimeExecutionResult.Fail(
+                                FormatStartFailure(
+                                    $"'{entry.ServiceName}' did not start a process on the registered workspace port.",
+                                    leftover,
+                                    startedThisAttempt),
+                                plan);
+                        }
+
+                        var healthy = await WaitForHealthyAsync(snapshotLaunch.Launch, linked.Token).ConfigureAwait(false);
+                        if (!healthy)
+                        {
+                            var leftover = await AbortStartedLaunchesAsync(startedThisAttempt, workspaceId).ConfigureAwait(false);
+                            lock (gate)
+                            {
+                                GetOrCreateSession(workspaceId).Status = SharedRuntimeStatus.Failed;
+                            }
+
+                            StateChanged?.Invoke();
+                            return WorkspaceRuntimeExecutionResult.Fail(
+                                FormatStartFailure(
+                                    $"'{entry.ServiceName}' started but did not become healthy on the workspace port.",
+                                    leftover,
+                                    startedThisAttempt),
+                                plan);
+                        }
+
+                        if (!TryConfirmRegisteredPort(entry, snapshotLaunch.Launch, out var portMismatch))
+                        {
+                            var leftover = await AbortStartedLaunchesAsync(startedThisAttempt, workspaceId).ConfigureAwait(false);
+                            lock (gate)
+                            {
+                                GetOrCreateSession(workspaceId).Status = SharedRuntimeStatus.Failed;
+                            }
+
+                            StateChanged?.Invoke();
+                            return WorkspaceRuntimeExecutionResult.Fail(
+                                FormatStartFailure(portMismatch ?? "Registered workspace port was not bound.", leftover, startedThisAttempt),
+                                plan);
+                        }
+
+                        launches.Upsert(
+                            entry.InstanceId,
+                            workspaceId,
+                            entry.ServiceName,
+                            snapshotLaunch.Launch,
+                            owned: true,
+                            startedByRuntime: true);
+                        lock (gate)
+                        {
+                            GetOrCreateSession(workspaceId).OwnedServiceNames.Add(entry.ServiceName);
+                        }
+                    }
             }
+                catch (OperationCanceledException)
+                {
+                    var leftover = await AbortStartedLaunchesAsync(startedThisAttempt, workspaceId).ConfigureAwait(false);
+                    lock (gate)
+                    {
+                        GetOrCreateSession(workspaceId).Status = SharedRuntimeStatus.Failed;
+                    }
+
+                    StateChanged?.Invoke();
+                    return WorkspaceRuntimeExecutionResult.Fail(
+                        FormatStartFailure(
+                            "Workspace Runtime startup cancelled.",
+                            leftover,
+                            startedThisAttempt),
+                        plan,
+                        SharedRuntimeStatus.Failed);
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    var leftover = await AbortStartedLaunchesAsync(startedThisAttempt, workspaceId).ConfigureAwait(false);
+                    lock (gate)
+                    {
+                        GetOrCreateSession(workspaceId).Status = SharedRuntimeStatus.Failed;
+                    }
+
+                    StateChanged?.Invoke();
+                    logger.Error("WorkspaceRuntime", $"Start failed for {workspaceId}: {ex.Message}");
+                    return WorkspaceRuntimeExecutionResult.Fail(
+                        FormatStartFailure($"Workspace Runtime start failed: {ex.Message}", leftover, startedThisAttempt),
+                        plan);
+                }
 
             lock (gate)
             {
@@ -394,13 +471,38 @@ public sealed class WorkspaceRuntimeService : IWorkspaceRuntimeService
         }
 
         StateChanged?.Invoke();
-        var owned = launches.GetAll()
-            .Where(item => item.Owned && string.Equals(item.WorkspaceId, workspaceId, StringComparison.OrdinalIgnoreCase))
+        var targets = launches.GetEntries()
+            .Where(item =>
+                string.Equals(item.Snapshot.WorkspaceId, workspaceId, StringComparison.OrdinalIgnoreCase)
+                && (item.Snapshot.Owned || item.Snapshot.StartedByRuntime))
             .ToList();
 
-        foreach (var item in owned)
+        var leftover = false;
+        foreach (var (instanceId, snapshot) in targets)
         {
-            await runtimeHost.StopAsync(item.Launch, cancellationToken).ConfigureAwait(false);
+            leftover |= await StopTrackedLaunchAsync(
+                instanceId,
+                workspaceId,
+                snapshot.ServiceName,
+                snapshot.Launch,
+                snapshot.Port).ConfigureAwait(false);
+        }
+
+        if (leftover)
+        {
+            lock (gate)
+            {
+                var session = GetOrCreateSession(workspaceId);
+                session.OwnedServiceNames.Clear();
+                session.Status = SharedRuntimeStatus.Failed;
+            }
+
+            StateChanged?.Invoke();
+            logger.Error("WorkspaceRuntime", $"Stop for '{workspaceId}' left a process running. Needs attention.");
+            return WorkspaceRuntimeExecutionResult.Fail(
+                "Stop did not terminate the workspace process. Needs attention — PID remains. Ownership was not claimed as healthy.",
+                GetLastPlan(workspaceId),
+                SharedRuntimeStatus.Failed);
         }
 
         launches.ClearWorkspace(workspaceId);
@@ -521,7 +623,13 @@ public sealed class WorkspaceRuntimeService : IWorkspaceRuntimeService
         {
             if (existing.Launch.Health is HealthStatus.Healthy or HealthStatus.Starting or HealthStatus.Unknown)
             {
-                launches.Upsert(instance.InstanceId, workspace.Id, serviceName, existing.Launch, owned: existing.Owned);
+                launches.Upsert(
+                    instance.InstanceId,
+                    workspace.Id,
+                    serviceName,
+                    existing.Launch,
+                    owned: existing.Owned,
+                    startedByRuntime: existing.StartedByRuntime);
                 return new WorkspaceRuntimePlanEntry
                 {
                     ServiceName = serviceName,
@@ -746,6 +854,7 @@ public sealed class WorkspaceRuntimeService : IWorkspaceRuntimeService
             ProjectPath = mappedProjectPath,
             WorkingDirectory = mappedWorking ?? mappedProjectPath,
             LaunchProfileName = null,
+            SuppressLaunchSettings = true,
             EnvironmentName = template.EnvironmentName,
             Environment = template.Environment,
             LaunchEnvironmentVariables = template.LaunchEnvironmentVariables.Count == 0
@@ -763,7 +872,16 @@ public sealed class WorkspaceRuntimeService : IWorkspaceRuntimeService
         while (DateTime.UtcNow < deadline)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var status = await health.CheckAsync(service, cancellationToken).ConfigureAwait(false);
+            HealthStatus status;
+            try
+            {
+                status = await health.CheckAsync(service, cancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                status = HealthStatus.Unreachable;
+            }
+
             service.Health = status;
             if (status == HealthStatus.Healthy)
             {
@@ -775,6 +893,170 @@ public sealed class WorkspaceRuntimeService : IWorkspaceRuntimeService
 
         return false;
     }
+
+    private void TrackStartedLaunch(
+        List<StartedWorkspaceLaunch> started,
+        WorkspaceRuntimePlanEntry entry,
+        ServiceInfoModel launch,
+        string workspaceId)
+    {
+        if (string.IsNullOrWhiteSpace(entry.InstanceId) || launch.ProcessId is null)
+        {
+            return;
+        }
+
+        if (started.Exists(item => string.Equals(item.InstanceId, entry.InstanceId, StringComparison.OrdinalIgnoreCase)))
+        {
+            return;
+        }
+
+        launches.Upsert(
+            entry.InstanceId,
+            workspaceId,
+            entry.ServiceName,
+            launch,
+            owned: false,
+            startedByRuntime: true);
+        started.Add(new StartedWorkspaceLaunch(entry.InstanceId, entry.ServiceName, launch, entry.Port));
+    }
+
+    private async Task<bool> AbortStartedLaunchesAsync(
+        IReadOnlyList<StartedWorkspaceLaunch> started,
+        string workspaceId)
+    {
+        var leftover = false;
+        foreach (var item in started)
+        {
+            leftover |= await StopTrackedLaunchAsync(
+                item.InstanceId,
+                workspaceId,
+                item.ServiceName,
+                item.Launch,
+                item.RegisteredPort).ConfigureAwait(false);
+            lock (gate)
+            {
+                GetOrCreateSession(workspaceId).OwnedServiceNames.Remove(item.ServiceName);
+            }
+        }
+
+        return leftover;
+    }
+
+    private async Task<bool> StopTrackedLaunchAsync(
+        string instanceId,
+        string workspaceId,
+        string serviceName,
+        ServiceInfoModel launch,
+        int? registeredPort)
+    {
+        var pid = launch.ProcessId;
+        try
+        {
+            await runtimeHost.StopAsync(launch, CancellationToken.None).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.Warning("WorkspaceRuntime", $"Cleanup stop failed for '{serviceName}' PID {pid}: {ex.Message}");
+        }
+
+        if (!LaunchRemains(launch, pid, registeredPort))
+        {
+            launches.Remove(instanceId);
+            return false;
+        }
+
+        launch.Status = ServiceStatus.Error;
+        launch.Health = HealthStatus.Unreachable;
+        launch.ProcessId = pid ?? launch.ProcessId;
+        launch.LastAction =
+            $"Needs attention — process PID {launch.ProcessId} remains running after Workspace Runtime cleanup. Ownership was not claimed.";
+        launches.Upsert(instanceId, workspaceId, serviceName, launch, owned: false, startedByRuntime: true);
+        logger.Error("WorkspaceRuntime", launch.LastAction);
+        return true;
+    }
+
+    private bool LaunchRemains(ServiceInfoModel launch, int? startedPid, int? registeredPort)
+    {
+        if (launch.Process is { HasExited: false })
+        {
+            return true;
+        }
+
+        if (launch.Status is ServiceStatus.Running or ServiceStatus.Starting)
+        {
+            return true;
+        }
+
+        if (registeredPort is int port && startedPid is int pid)
+        {
+            var occupancy = availability.Observe(port);
+            if (occupancy.IsListening && occupancy.ProcessId == pid)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool TryConfirmRegisteredPort(
+        WorkspaceRuntimePlanEntry entry,
+        ServiceInfoModel launch,
+        out string? mismatch)
+    {
+        var instancePort = entry.Port;
+        var launchPort = launch.HttpsPort ?? launch.HttpPort ?? launch.Port;
+        if (instancePort != launchPort)
+        {
+            mismatch = $"ServiceInstance port {instancePort} does not match launch/health port {launchPort}.";
+            return false;
+        }
+
+        if (instancePort is not int registered)
+        {
+            mismatch = $"'{entry.ServiceName}' has no registered workspace port.";
+            return false;
+        }
+
+        var occupancy = availability.Observe(registered);
+        if (!occupancy.IsListening)
+        {
+            mismatch =
+                $"Registered workspace port {registered} is not listening after start (process bound a different port).";
+            return false;
+        }
+
+        if (occupancy.ProcessId is int observed
+            && launch.ProcessId is int startedPid
+            && observed != startedPid)
+        {
+            mismatch = $"Port {registered} is owned by PID {observed}, not the started process PID {startedPid}.";
+            return false;
+        }
+
+        mismatch = null;
+        return true;
+    }
+
+    private static string FormatStartFailure(
+        string reason,
+        bool leftover,
+        IReadOnlyList<StartedWorkspaceLaunch> started)
+    {
+        if (!leftover)
+        {
+            return $"{reason} Process was terminated. No orphan remains. Ownership was not claimed.";
+        }
+
+        var pid = started.Select(item => item.Launch.ProcessId).FirstOrDefault(id => id is not null);
+        return $"{reason} Needs attention — process PID {pid} remains running. Ownership was not claimed.";
+    }
+
+    private sealed record StartedWorkspaceLaunch(
+        string InstanceId,
+        string ServiceName,
+        ServiceInfoModel Launch,
+        int? RegisteredPort);
 
     private WorkspaceRuntimePlan FinishPlan(
         RuntimeProfileItem profile,

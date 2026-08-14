@@ -79,6 +79,12 @@ public sealed partial class ServiceInfoModel : ObservableObject
 
     public IReadOnlyDictionary<string, string> LaunchEnvironmentVariables { get; set; } = new Dictionary<string, string>();
 
+    /// <summary>
+    /// When true, <c>dotnet run</c> must pass <c>--no-launch-profile</c> so
+    /// ASPNETCORE_URLS is authoritative. Workspace Runtime sets this; Shared Runtime does not.
+    /// </summary>
+    public bool SuppressLaunchSettings { get; set; }
+
     internal Process? Process { get; set; }
 
     internal CancellationTokenSource? OutputCancellation { get; set; }

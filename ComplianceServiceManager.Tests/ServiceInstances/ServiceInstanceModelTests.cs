@@ -6,6 +6,7 @@ using ComplianceServiceManager.Models.ServiceInstances;
 using ComplianceServiceManager.Models.Workspaces;
 using ComplianceServiceManager.Services;
 using ComplianceServiceManager.Services.ServiceInstances;
+using ComplianceServiceManager.Services.WorkspaceRuntime;
 using ComplianceServiceManager.Services.Workspaces;
 
 namespace ComplianceServiceManager.Tests.ServiceInstances;
@@ -213,6 +214,46 @@ public sealed class ServiceInstanceModelTests : IDisposable
             runtimeProfileId: "profile-1");
         Assert.Equal("sess-1", item.AgentSessionId);
         Assert.Equal("profile-1", item.RuntimeProfileId);
+    }
+
+    [Fact]
+    public async Task WorkspaceLeftoverPid_IsFailedNotStopped()
+    {
+        var launches = new WorkspaceRuntimeProcessMap();
+        var truth = new ServiceInstanceService(
+            new ServiceInstanceRegistry(storePath),
+            new DevelopmentWorkspaceRegistry(workspaceStore),
+            new GitWorkspaceService(gitRunner),
+            host,
+            new NoopLogger(),
+            workspaceTruth: launches);
+
+        var cursor = truth.EnsureWorkspaceInstance("OrganizationService", "OrganizationService", "cursor");
+        var launch = new ServiceInfoModel
+        {
+            Name = "OrganizationService",
+            Status = ServiceStatus.Stopped,
+            ProcessId = 27300,
+            HttpsPort = 5101,
+            Port = 5101,
+            LastAction = "Stopped"
+        };
+        launches.Upsert(
+            cursor.InstanceId,
+            "cursor",
+            "OrganizationService",
+            launch,
+            owned: false,
+            startedByRuntime: true);
+
+        await truth.RefreshAsync();
+        var item = truth.GetInstancesForService("OrganizationService").Single(i => i.WorkspaceId == "cursor");
+        Assert.Equal(ServiceInstanceState.Failed, item.State);
+        Assert.NotEqual(ServiceInstanceState.Stopped, item.State);
+        Assert.Equal(27300, item.ProcessId);
+        Assert.Equal("5101", item.PortDisplay);
+        Assert.Contains(item.AttentionReasons, reason => reason.Contains("27300", StringComparison.Ordinal));
+        Assert.Contains("27300", item.StatusReason);
     }
 
     private static void InitGit(string path, string branch)
