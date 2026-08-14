@@ -696,6 +696,30 @@ public sealed class WorkspaceRuntimeServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task StartupException_AfterProcessCreation_TerminatesExactProcess()
+    {
+        SeedIdentityAndOrg();
+        SetSharedRunning("IdentityService", 7216);
+        PrepareWorkspace("OrganizationService", "cursor", 5101);
+        host.ThrowAfterProcessStart = true;
+        var result = await runtime.StartAsync(OrgProfile(), "cursor", CursorSnapshot(), ["OrganizationService"]);
+        Assert.False(result.Succeeded);
+        Assert.Contains("Simulated startup failure after process creation", result.Error, StringComparison.Ordinal);
+        Assert.Contains("terminated", result.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Ownership was not claimed", result.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(SharedRuntimeStatus.Failed, result.Status);
+        Assert.Equal(SharedRuntimeStatus.Failed, runtime.GetSession("cursor").Status);
+        Assert.Empty(runtime.GetSession("cursor").OwnedServiceNames);
+        Assert.Equal(["OrganizationService"], host.StopCalls);
+        Assert.NotEmpty(host.StoppedProcessIds);
+        Assert.False(availability.Observe(5101).IsListening);
+        Assert.Equal(ServiceStatus.Running, host.Services.Single(item => item.Name == "IdentityService").Status);
+        Assert.Equal(4242, host.Services.Single(item => item.Name == "IdentityService").ProcessId);
+        var instance = instances.GetInstancesForService("OrganizationService").Single(item => item.WorkspaceId == "cursor");
+        Assert.False(launches.TryGetLaunch(instance.InstanceId, out var leftover) && leftover.Owned);
+    }
+
+    [Fact]
     public async Task DuplicateStart_ReusesHealthyWorkspaceInstance()
     {
         SeedIdentityAndOrg();
@@ -1124,6 +1148,7 @@ public sealed class WorkspaceRuntimeServiceTests : IDisposable
         public FakeAvailability? Availability { get; set; }
         public int? BindPortOverride { get; set; }
         public bool StopLeavesProcessAlive { get; set; }
+        public bool ThrowAfterProcessStart { get; set; }
         public (string FileName, string Arguments)? LastStartCommand { get; private set; }
         public IReadOnlyDictionary<string, string>? LastStartEnvironment { get; private set; }
 
@@ -1147,6 +1172,11 @@ public sealed class WorkspaceRuntimeServiceTests : IDisposable
                 {
                     Availability?.Set(expected, false);
                 }
+            }
+
+            if (ThrowAfterProcessStart)
+            {
+                throw new InvalidOperationException("Simulated startup failure after process creation.");
             }
 
             return Task.CompletedTask;
