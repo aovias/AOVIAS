@@ -12,6 +12,7 @@ using ComplianceServiceManager.Models.ServiceInstances;
 using ComplianceServiceManager.Models.Workspaces;
 using ComplianceServiceManager.Models;
 using ComplianceServiceManager.Models.PortRegistry;
+using ComplianceServiceManager.Models.SourceContext;
 using ComplianceServiceManager.Models.SharedRuntime;
 using ComplianceServiceManager.Models.WorkspaceRuntime;
 using ComplianceServiceManager.Services;
@@ -24,6 +25,7 @@ using ComplianceServiceManager.Services.RuntimeProfiles;
 using ComplianceServiceManager.Services.ServiceInstances;
 using ComplianceServiceManager.Services.PortRegistry;
 using ComplianceServiceManager.Services.SharedRuntime;
+using ComplianceServiceManager.Services.SourceContexts;
 using ComplianceServiceManager.Services.WorkspaceRuntime;
 using ComplianceServiceManager.Services.Workspaces;
 using ComplianceServiceManager.Views.Development;
@@ -48,6 +50,16 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
     private readonly ISharedRuntimeService sharedRuntimeService;
     private readonly IWorkspaceRuntimeService workspaceRuntimeService;
     private readonly IWorkspaceRuntimeTruth workspaceRuntimeTruth;
+    private readonly ISourceContextService sourceContextService;
+
+    [ObservableProperty]
+    private string sharedSourcePath = "—";
+
+    [ObservableProperty]
+    private string cursorSourcePath = "—";
+
+    [ObservableProperty]
+    private string claudeSourcePath = "—";
 
     [ObservableProperty]
     private string statusMessage = string.Empty;
@@ -274,7 +286,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         IPortRegistryService portRegistryService,
         ISharedRuntimeService sharedRuntimeService,
         IWorkspaceRuntimeService workspaceRuntimeService,
-        IWorkspaceRuntimeTruth workspaceRuntimeTruth)
+        IWorkspaceRuntimeTruth workspaceRuntimeTruth,
+        ISourceContextService sourceContextService)
     {
         this.folderRegistry = folderRegistry;
         this.workspaceService = workspaceService;
@@ -289,6 +302,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         this.sharedRuntimeService = sharedRuntimeService;
         this.workspaceRuntimeService = workspaceRuntimeService;
         this.workspaceRuntimeTruth = workspaceRuntimeTruth;
+        this.sourceContextService = sourceContextService;
         Services = servicesViewModel;
         WorkspaceRuntimes.Add(CursorRuntime);
         WorkspaceRuntimes.Add(ClaudeRuntime);
@@ -499,6 +513,7 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
         try
         {
             var snapshots = await workspaceService.RefreshAsync();
+            var sourceContexts = await sourceContextService.ResolveAllAsync();
             void Apply()
             {
                 Workspaces.Clear();
@@ -506,6 +521,8 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
                 {
                     Workspaces.Add(workspace);
                 }
+
+                ApplySourceContexts(sourceContexts);
 
                 var available = snapshots.Count(item => item.Availability != WorkspaceAvailability.Unavailable);
                 WorkspaceStatusMessage = $"{available}/{snapshots.Count} workspace(s) accessible.";
@@ -1301,6 +1318,16 @@ public sealed partial class LocalDevServicesViewModel : ObservableObject
                 SolutionFolders.Add(folder);
             }
         });
+    }
+
+    private void ApplySourceContexts(IReadOnlyList<Models.SourceContext.SourceContext> contexts)
+    {
+        SharedSourcePath = contexts.FirstOrDefault(item =>
+            string.Equals(item.ContextId, SourceContextIds.Shared, StringComparison.OrdinalIgnoreCase))?.RootPath ?? "—";
+        CursorSourcePath = contexts.FirstOrDefault(item =>
+            string.Equals(item.ContextId, SourceContextIds.Cursor, StringComparison.OrdinalIgnoreCase))?.RootPath ?? "—";
+        ClaudeSourcePath = contexts.FirstOrDefault(item =>
+            string.Equals(item.ContextId, SourceContextIds.Claude, StringComparison.OrdinalIgnoreCase))?.RootPath ?? "—";
     }
 
     [RelayCommand]

@@ -42,6 +42,41 @@
                               HorizontalScrollBarVisibility="Disabled"
                               CanContentScroll="False">
                     <StackPanel Margin="8">
+                        <!-- Source context identity -->
+                        <Border Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
+                            <StackPanel>
+                                <TextBlock Text="Source Context" Style="{StaticResource HeadingTextStyle}" Margin="0,0,0,10" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource CaptionTextStyle}" Text="Shared Source" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1"
+                                               Text="{Binding SharedSourcePath}"
+                                               TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding SharedSourcePath}" />
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource CaptionTextStyle}" Text="Cursor Source" Margin="0,6,0,0" />
+                                    <TextBlock Grid.Row="1" Grid.Column="1"
+                                               Text="{Binding CursorSourcePath}"
+                                               TextTrimming="CharacterEllipsis"
+                                               Margin="0,6,0,0"
+                                               ToolTip="{Binding CursorSourcePath}" />
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource CaptionTextStyle}" Text="Claude Source" Margin="0,6,0,0" />
+                                    <TextBlock Grid.Row="2" Grid.Column="1"
+                                               Text="{Binding ClaudeSourcePath}"
+                                               TextTrimming="CharacterEllipsis"
+                                               Margin="0,6,0,0"
+                                               ToolTip="{Binding ClaudeSourcePath}" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
                         <!-- Compact Workspaces -->
                         <Border Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
                             <StackPanel>
@@ -1201,7 +1236,12 @@
                         <Border Style="{StaticResource CardBorderStyle}" Padding="14" Margin="{StaticResource SectionSpacing}">
                             <StackPanel>
                                 <Grid Margin="0,0,0,8">
-                                    <TextBlock Text="Solution Folders" Style="{StaticResource HeadingTextStyle}" VerticalAlignment="Center" />
+                                    <StackPanel>
+                                        <TextBlock Text="Solution Folders" Style="{StaticResource HeadingTextStyle}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Workspace discovery roots — does not change Shared source"
+                                                   Style="{StaticResource CaptionTextStyle}"
+                                                   Margin="0,4,0,0" />
+                                    </StackPanel>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                         <TextBlock Text="{Binding StatusMessage}"
                                                    Style="{StaticResource CaptionTextStyle}"

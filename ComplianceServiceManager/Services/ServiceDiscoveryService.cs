@@ -4,44 +4,93 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ComplianceServiceManager.Logging;
 using ComplianceServiceManager.Models;
+using ComplianceServiceManager.Models.SourceContext;
 using ComplianceServiceManager.Services.LocalDev;
+using ComplianceServiceManager.Services.SourceContexts;
 
 namespace ComplianceServiceManager.Services;
 
 /// <summary>
-/// Discovers runnable local development services (any .NET web solution plus Angular front ends)
-/// across every folder configured in the <see cref="SolutionFolderRegistry"/>. Solution-agnostic:
-/// nothing here is specific to any particular workload. The AOVIAS Runtime Agent is deliberately
-/// not part of local dev discovery — it is a platform component surfaced by the
-/// Platform → Runtime Agents workspace instead.
+/// Discovers runnable local development services across discovery roots supplied by a
+/// <see cref="SourceContext"/> via <see cref="ISourceDiscoveryBoundary"/>.
+/// Shared discovery never reads workspace solution-folder preferences directly.
 /// </summary>
 public sealed class ServiceDiscoveryService
 {
     private static readonly Regex UrlRegex = new(@"(?<scheme>https?)://[^:;]+:(?<port>\d+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-    private readonly SolutionFolderRegistry folderRegistry;
+    private readonly ISourceContextService sourceContexts;
+    private readonly ISourceDiscoveryBoundary discoveryBoundary;
     private readonly ILoggingService logger;
 
-    public ServiceDiscoveryService(SolutionFolderRegistry folderRegistry, ILoggingService logger)
+    public ServiceDiscoveryService(
+        ISourceContextService sourceContexts,
+        ISourceDiscoveryBoundary discoveryBoundary,
+        ILoggingService logger)
     {
-        this.folderRegistry = folderRegistry;
+        this.sourceContexts = sourceContexts;
+        this.discoveryBoundary = discoveryBoundary;
         this.logger = logger;
     }
 
     public Task<IReadOnlyList<ServiceInfoModel>> DiscoverAsync(CancellationToken cancellationToken)
+        => DiscoverAsync(SourceContextIds.Shared, cancellationToken);
+
+    public async Task<IReadOnlyList<ServiceInfoModel>> DiscoverAsync(
+        string contextId,
+        CancellationToken cancellationToken)
+    {
+        var context = await sourceContexts.ResolveAsync(contextId, cancellationToken);
+        return await DiscoverAsync(context, cancellationToken);
+    }
+
+    public Task<IReadOnlyList<ServiceInfoModel>> DiscoverAsync(
+        SourceContext context,
+        CancellationToken cancellationToken)
+    {
+        var roots = discoveryBoundary.GetDiscoveryRoots(context);
+        return DiscoverFromRootsAsync(context, roots, cancellationToken);
+    }
+
+    internal Task<IReadOnlyList<ServiceInfoModel>> DiscoverFromRootsAsync(
+        IReadOnlyList<string> roots,
+        CancellationToken cancellationToken)
+        => DiscoverFromRootsAsync(
+            new SourceContext
+            {
+                ContextId = SourceContextIds.Shared,
+                Kind = SourceContextKind.Shared,
+                RootPath = roots.FirstOrDefault() ?? string.Empty
+            },
+            roots,
+            cancellationToken);
+
+    private Task<IReadOnlyList<ServiceInfoModel>> DiscoverFromRootsAsync(
+        SourceContext context,
+        IReadOnlyList<string> roots,
+        CancellationToken cancellationToken)
     {
         return Task.Run(() =>
         {
             var services = new List<ServiceInfoModel>();
-            var roots = folderRegistry.Folders;
             if (roots.Count == 0)
             {
-                logger.Warning("Discovery", "No solution folders are configured. Add one from Local Dev Services.");
+                logger.Warning(
+                    "Discovery",
+                    $"No discovery roots for {context.DisplayLabel} ({context.RootPath}). Configure workspace folders or verify the source path.");
                 return (IReadOnlyList<ServiceInfoModel>)services;
             }
 
             foreach (var solutionRoot in roots)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                if (!sourceContexts.AcceptsSourcePath(context, solutionRoot))
+                {
+                    logger.Warning(
+                        "Discovery",
+                        $"Skipping discovery root outside {context.DisplayLabel}: {solutionRoot}");
+                    continue;
+                }
+
                 if (!Directory.Exists(solutionRoot))
                 {
                     logger.Error("Discovery", $"Solution folder not found: {solutionRoot}");
@@ -68,7 +117,9 @@ public sealed class ServiceDiscoveryService
                 .OrderBy(service => service.Name)
                 .ToList();
 
-            logger.Info("Discovery", $"Discovered {ordered.Count} service(s) across {roots.Count} solution folder(s).");
+            logger.Info(
+                "Discovery",
+                $"Discovered {ordered.Count} service(s) for {context.DisplayLabel} across {roots.Count} folder(s).");
             return (IReadOnlyList<ServiceInfoModel>)ordered;
         }, cancellationToken);
     }

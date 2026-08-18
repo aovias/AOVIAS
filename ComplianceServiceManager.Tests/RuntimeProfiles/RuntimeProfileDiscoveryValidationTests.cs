@@ -1,9 +1,14 @@
 using ComplianceServiceManager.Logging;
 using ComplianceServiceManager.Models;
+using ComplianceServiceManager.Models.SourceContext;
 using ComplianceServiceManager.Services;
 using ComplianceServiceManager.Services.LocalDev;
 using ComplianceServiceManager.Services.RuntimeProfiles;
+using ComplianceServiceManager.Services.SourceContexts;
+using ComplianceServiceManager.Services.Workspaces;
 using System.Collections.ObjectModel;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ComplianceServiceManager.Tests.RuntimeProfiles;
 
@@ -16,15 +21,14 @@ public sealed class RuntimeProfileDiscoveryValidationTests
     [Fact]
     public async Task SeedProfile_ValidatesAgainstLiveDiscovery_WhenServicesPresent()
     {
-        var logger = new NoopLoggingService();
-        var folderRegistry = new SolutionFolderRegistry();
-        if (folderRegistry.Folders.Count == 0)
+        var topology = TryCreateLiveDiscovery();
+        if (topology is null)
         {
             return;
         }
 
-        var discovery = new ServiceDiscoveryService(folderRegistry, logger);
-        var services = await discovery.DiscoverAsync(CancellationToken.None);
+        var discovery = topology.Value.Discovery;
+        var services = await discovery.DiscoverAsync(SourceContextIds.Shared, CancellationToken.None);
         if (services.Count == 0)
         {
             return;
@@ -55,15 +59,14 @@ public sealed class RuntimeProfileDiscoveryValidationTests
     [Fact]
     public async Task SeedProfileMembers_MatchDiscoveredIdentity_WhenFoldersConfigured()
     {
-        var logger = new NoopLoggingService();
-        var folderRegistry = new SolutionFolderRegistry();
-        if (folderRegistry.Folders.Count == 0)
+        var topology = TryCreateLiveDiscovery();
+        if (topology is null)
         {
             return;
         }
 
-        var discovery = new ServiceDiscoveryService(folderRegistry, logger);
-        var services = await discovery.DiscoverAsync(CancellationToken.None);
+        var discovery = topology.Value.Discovery;
+        var services = await discovery.DiscoverAsync(SourceContextIds.Shared, CancellationToken.None);
         var seed = RuntimeProfileRegistry.BuildDefaults().Profiles[0];
         var discoveredNames = services.Select(service => service.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
@@ -78,6 +81,38 @@ public sealed class RuntimeProfileDiscoveryValidationTests
 
         var webApp = services.Single(s => s.Name == "WebApp");
         Assert.Equal(ServiceKind.AngularWebApp, webApp.Kind);
+    }
+
+    private static (ServiceDiscoveryService Discovery, string MainPath)? TryCreateLiveDiscovery()
+    {
+        var main = @"V:\DevelopmentRepo\AOVIAS";
+        if (!Directory.Exists(main))
+        {
+            return null;
+        }
+
+        var root = Path.GetTempPath();
+        var storePath = Path.Combine(root, "aovias-rpdv-" + Guid.NewGuid().ToString("N"), "development-workspaces.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(storePath)!);
+        File.WriteAllText(storePath, JsonSerializer.Serialize(
+            DevelopmentWorkspaceRegistry.BuildDefaults(@"V:\DevelopmentRepo"),
+            new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters = { new JsonStringEnumConverter() }
+            }));
+
+        var registry = new DevelopmentWorkspaceRegistry(storePath);
+        var git = new GitWorkspaceService(new GitCliRunner(() => registry.GetAllowedRoots()));
+        var sourceContexts = new SourceContextService(registry, git);
+        var folderRegistry = new SolutionFolderRegistry(Path.Combine(Path.GetDirectoryName(storePath)!, "solution-folders.json"));
+        var discovery = new ServiceDiscoveryService(
+            sourceContexts,
+            new SourceDiscoveryBoundary(folderRegistry),
+            new NoopLoggingService());
+
+        return (discovery, main);
     }
 
     private sealed class NoopLoggingService : ILoggingService
