@@ -22,6 +22,7 @@ using ComplianceServiceManager.Services.ServiceInstances;
 using ComplianceServiceManager.Services.PortRegistry;
 using ComplianceServiceManager.Services.SharedRuntime;
 using ComplianceServiceManager.Services.WorkspaceRuntime;
+using ComplianceServiceManager.Services.SourceContexts;
 using ComplianceServiceManager.Services.Workspaces;
 using ComplianceServiceManager.ViewModels;
 using ComplianceServiceManager.ViewModels.AiCopilot;
@@ -152,6 +153,8 @@ public partial class App : Application
         services.AddSingleton(provider => new GitCliRunner(
             () => provider.GetRequiredService<DevelopmentWorkspaceRegistry>().GetAllowedRoots()));
         services.AddSingleton<IGitWorkspaceService, GitWorkspaceService>();
+        services.AddSingleton<ISourceContextService, SourceContextService>();
+        services.AddSingleton<ISourceDiscoveryBoundary, SourceDiscoveryBoundary>();
         services.AddSingleton<IDevelopmentWorkspaceService, DevelopmentWorkspaceService>();
         services.AddSingleton<RuntimeProfileRegistry>();
         services.AddSingleton<RuntimeProfileValidator>();
@@ -184,9 +187,7 @@ public partial class App : Application
                 provider.GetRequiredService<ResourceThresholdPolicy>(),
                 provider.GetRequiredService<IRuntimeProfileOrchestrator>(),
                 provider.GetRequiredService<IAgentSessionService>()));
-        services.AddSingleton(provider => new ServiceDiscoveryService(
-            provider.GetRequiredService<SolutionFolderRegistry>(),
-            provider.GetRequiredService<ILoggingService>()));
+        services.AddSingleton<ServiceDiscoveryService>();
         services.AddSingleton<ILogFileService>(_ =>
             new LogFileService(RootPathResolver.ResolveCompliancePlatformRoot()));
         services.AddSingleton<ProcessService>();
