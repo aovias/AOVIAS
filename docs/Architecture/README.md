@@ -113,6 +113,7 @@ See [26-Current-Development-Stage.md](./26-Current-Development-Stage.md) and [05
 | [AOVIAS-Command-Module-Dependency-Map.md](./AOVIAS-Command-Module-Dependency-Map.md) | Phase 1 verified module dependency map (integrity audit context) |
 | [AOVIAS-Command-Phase2-Data-Integrity-Audit.md](./AOVIAS-Command-Phase2-Data-Integrity-Audit.md) | Phase 2 API/data integrity audit (audit only; no production fixes) |
 | [AOVIAS-Command-Phase3B-Data-Reconciliation.md](./AOVIAS-Command-Phase3B-Data-Reconciliation.md) | Phase 3B Compliance hospital/org data reconciliation (classify only; no cleanup) |
+| [AOVIAS-Command-Phase3C-Canonical-Compliance-Identity.md](./AOVIAS-Command-Phase3C-Canonical-Compliance-Identity.md) | Phase 3C canonical OrganizationComplianceObligation identity (design only) |
 
 ### Experience & AI
 
