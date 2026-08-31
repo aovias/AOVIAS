@@ -115,6 +115,7 @@ See [26-Current-Development-Stage.md](./26-Current-Development-Stage.md) and [05
 | [AOVIAS-Command-Phase3B-Data-Reconciliation.md](./AOVIAS-Command-Phase3B-Data-Reconciliation.md) | Phase 3B Compliance hospital/org data reconciliation (classify only; no cleanup) |
 | [AOVIAS-Command-Phase3C-Canonical-Compliance-Identity.md](./AOVIAS-Command-Phase3C-Canonical-Compliance-Identity.md) | Phase 3C canonical OrganizationComplianceObligation identity (design only) |
 | [AOVIAS-Command-Phase3D-Obligation-Migration.md](./AOVIAS-Command-Phase3D-Obligation-Migration.md) | Phase 3D obligation canonical migration (Gate A dry-run + Gate B executed on local SQL Express) |
+| [AOVIAS-Command-Phase3E-Event-Propagation-Audit.md](./AOVIAS-Command-Phase3E-Event-Propagation-Audit.md) | Phase 3E cross-module event/outbox propagation contract (audit only) |
 
 ### Experience & AI
 
