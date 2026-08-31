@@ -1,10 +1,11 @@
 # AOVIAS Command — Phase 3D Obligation Migration
 
-**Phase:** 3D Gate A dry-run PASS. Gate B **BLOCKED** (no DML).  
-**Status:** Gate B was authorized 2026-08-31 but **stopped before DML** because the 41-pair operational-state merge policy and the 40-pair dual-deficiency policy are **not explicitly approved** in project documentation. MATCH-as-identity-survivor is **not** a merge policy.  
-**Environment:** `localhost\SQLEXPRESS` / database `Compliance` (same local SQL Express used in Phases 2–3C). Organization master: `Organization.dbo.Hospitals`.  
+**Phase:** 3D Gate A dry-run PASS. Gate B **EXECUTED** on local SQL Express (2026-08-31).  
+**Status:** Gate B PASS on the authorized development database.  
+**Environment:** `localhost\SQLEXPRESS` / database `Compliance`. Organization master: `Organization.dbo.Hospitals`.  
 **Gate A commit:** `b4f4d489d35e2cc3ac857e292050f6deada17411`  
-**Production DML/DDL executed:** **NO**
+**Backup:** `C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQL\Backup\Compliance_Phase3D_GateB_20260831.bak` (COPY_ONLY)  
+**Cloud/production DML:** **NO** (local development Compliance only)
 
 Contracts: [Phase 3C identity](./AOVIAS-Command-Phase3C-Canonical-Compliance-Identity.md), [Phase 3B](./AOVIAS-Command-Phase3B-Data-Reconciliation.md).
 
@@ -15,7 +16,9 @@ Artifacts:
 | `scripts/dev/phase3d-twin-mapping.csv` | 1006 TwinId → CanonicalId |
 | `scripts/dev/phase3d-missing-hospital-obligation-ids.csv` | 650 obligation IDs |
 | `scripts/dev/phase3d-dry-run-readonly.sql` | SELECT counts |
-| `scripts/dev/phase3d-obligation-migration.proposed.sql` | Gate B stub (`THROW`; not runnable) |
+| `scripts/dev/phase3d-obligation-migration.proposed.sql` | Historical Gate A stub |
+| `scripts/dev/phase3d-gateb-execute.ps1` | Gate B validate/backup/migrate |
+| `scripts/dev/phase3d-gateb-evidence/` | Before/after counts, deficiency remap log |
 
 ---
 
@@ -242,34 +245,51 @@ That file currently **THROWs** and performs no DML.
 
 ---
 
-## 18. Gate B attempt (2026-08-31) — BLOCKED, no DML
+## 18. Gate B execution (2026-08-31)
 
-**DESIGN / DRY RUN:** unchanged (sections 1–17).  
-**EXECUTED MIGRATION:** none.  
-**POST-MIGRATION VERIFICATION:** not applicable.
+Earlier the same day Gate B stopped before DML until human decisions A/A/approved/delete were recorded. Those decisions were then applied.
 
-Preflight: worktree `AOVIAS.Cursor`; branch `agent/cursor/phase3d-obligation-migration-dry-run`; HEAD at Gate A `b4f4d48`. Unrelated dirty file `ComplaincePlatform/IdentityService/IdentityService.csproj` left untouched.
+**DESIGN / DRY RUN:** sections 1–17 (unchanged as analysis).  
+**EXECUTED MIGRATION:** yes, one SQL transaction after COPY_ONLY backup.  
+**POST-MIGRATION VERIFICATION:** SQL postconditions + unit tests (below).
 
-Read-only revalidation immediately before the stop: `OrganizationComplianceObligations` count = **2662** (matches Gate A). Mapping CSVs and `phase3d-obligation-migration.proposed.sql` (`THROW`) were inspected; the proposed script still has **no** 41-pair merge and **no** dual-deficiency procedure.
+Approved decisions applied:
 
-What is documented (options, not a chosen policy):
-
-| Topic | Documented state |
+| Topic | Applied rule |
 | --- | --- |
-| Identity survivor | MATCH (correct OrganizationId) — **identity only** |
-| 41 operational state | **BDR:** keep MATCH as-is **or** overlay twin where richer **or** field-level merge |
-| 40 dual deficiency trees | **BDR:** retain both under MATCH **or** merge by type **or** archive twin-side |
-| 88 twin-backed deficiency OrganizationId | listed as BDR; no approved UPDATE text |
-| 650 missing-hospital | Gate A: delete only after approval; Gate B command would delete the ID list **if** the full transaction could run; **not executed** because 41 policy missing and uniqueness cannot be added with 41 duplicates remaining |
-| 965 identical twins | Gate A proven safe; **not executed** — top-level Gate B rule is stop **all** DML when 41/dual-deficiency policy is missing, so the DB is not left half-migrated |
+| 41 operational state | **A** — MATCH fields unchanged (no overlay) |
+| Dual deficiency trees | **A** — remap twin `ComplianceObligationId` → MATCH; keep both trees |
+| 88 deficiency OrganizationId | `Organization.Hospitals.OrganizationId` via `HospitalId` |
+| 650 missing-hospital | DELETE CSV IDs only |
+| 1006 twin obligation rows | DELETE after remap (965 identical + 41 identity-only twins). Required to reach 1006 remaining rows and unique canonical keys. MATCH rows not deleted. |
 
-**Unblock Gate B** only after a human records **one** chosen rule for each of:
+Preflight counts matched Gate A (2662 / 1006 dup keys / 177 defs / 1534 tasks / 473 evidence / 35 findings / 17 CAPA / 8 SLA / 4 maturity). Mapping 1006 / 965 IDENTICAL / 41 DIVERGED unchanged. 88 twin-backed deficiencies unchanged in total.
 
-1. **41 operational state** — pick exactly one: (A) preserve MATCH fields as-is for all 41; (B) copy an enumerated field list from twin → MATCH for pair `8F624C8B` / `F3D7CD49` only; (C) a written field-by-field map for all 41.
-2. **40 dual deficiency trees** — pick exactly one: (A) remap twin `ComplianceObligationId` to MATCH and keep both trees; (B) merge by deficiency type with a written duplicate rule; (C) archive/soft-delete twin-side defs with a written archive table/flag.
-3. **88 OrganizationId repairs** — confirm: apply after (2) for every **retained** twin-backed deficiency, using `Organization.Hospitals.OrganizationId` (never HospitalId).
-4. **650** — confirm delete of the CSV ID list vs retain forensic (Gate B text prefers delete; still confirm in writing if Gate B is re-run as a single transaction targeting 1006 remaining obligations).
+Deviation vs Gate A **narrative** (not vs approved 88 remap): Gate A said IDENTICAL pairs had 0 deficiencies. Live split was **83** twin defs on DIVERGED-labeled pairs and **5** on IDENTICAL-labeled pairs (two status-equal pairs with parallel trees; 0 tasks on those 5). All **88** were remapped under decision 2. No extra policy invented.
 
-Do **not** infer (A)/(B)/(C) from “MATCH survives.”
+41 MATCH obligation rows were not UPDATEd.
 
-Backup: not taken (no DML). Constraint swap and `ObligationSynchronizationService` identity change were **not** applied (same release as unique index; index cannot be added while 41 duplicate keys remain).
+After commit:
+
+| Metric | Result |
+| --- | ---: |
+| Obligations | 1006 |
+| Duplicate canonical keys | 0 |
+| Missing-hospital | 0 |
+| OrganizationId = HospitalId | 0 |
+| Hospital/org mismatch | 0 |
+| Orphan deficiencies / tasks | 0 |
+| Deficiencies / tasks / evidence / findings / CAPA / SLA / maturity | 177 / 1534 / 473 / 35 / 17 / 8 / 4 |
+| Hospital A / B obligation counts | 503 / 503 (same framework; shared OE ids coexist) |
+
+Indexes: dropped `UX_OrganizationComplianceObligations_OrgOE`; created `UX_OrganizationComplianceObligations_HospitalFrameworkOE`. EF migration `20260831111209_Phase3D_CanonicalObligationUniqueKey` stamped in `__EFMigrationsHistory`.
+
+Sync: `ObligationSynchronizationService` / `UpsertBatchAsync` / `GetByKeyAsync` use `(HospitalId, FrameworkId, ObjectiveElementId)`.
+
+Tests: `ObligationCanonicalIdentityTests` + `HospitalAccessAuthorizerTests` + `EnrollHospitalAccessTests` — 18 passed.
+
+Live HTTP: `http://localhost:5016/health` returned 200 (pre-existing process; **not** used for enroll — old binary). Cross-hospital JWT UI regression was not re-run against a newly built host.
+
+**40 dual deficiency trees were preserved under the canonical MATCH obligations by approved decision. Their semantic deduplication/merge policy remains unresolved and is deferred to a later business-rule phase.**
+
+Rollback: not required (transaction committed after postconditions). Restore path: the COPY_ONLY bak above.

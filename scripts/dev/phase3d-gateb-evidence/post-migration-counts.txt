@@ -1,0 +1,17 @@
+PostObligations=1006
+DuplicateKeys=0
+OrgEqHospital=0
+HospitalOrgMismatch=0
+OrphanDeficiencies=0
+DeficiencyRemaps=88
+OrganizationIdRepairs=88
+TwinsDeleted=1006
+MissingHospitalDeleted=650
+Deficiencies=177
+Tasks=1534
+Evidences=473
+Findings=35
+Capas=17
+SlaPolicies=8
+MaturityStates=4
+Index=UX_OrganizationComplianceObligations_HospitalFrameworkOE
