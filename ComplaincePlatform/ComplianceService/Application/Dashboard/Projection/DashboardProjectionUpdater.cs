@@ -233,7 +233,7 @@ public sealed class DashboardProjectionUpdater
         Guid frameworkId,
         CancellationToken cancellationToken)
     {
-        var query = _dbContext.ComplianceJourneys.AsNoTracking().Where(j => j.HospitalId == hospitalId);
+        var query = _dbContext.ComplianceJourneys.AsNoTracking().IgnoreQueryFilters().Where(j => j.HospitalId == hospitalId);
         if (frameworkId != Guid.Empty)
         {
             query = query.Where(j => j.FrameworkId == frameworkId);

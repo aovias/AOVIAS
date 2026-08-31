@@ -154,7 +154,7 @@ public sealed class DashboardProjectionEngine : IDashboardProjectionEngine
     {
         using var scope = _scopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ComplianceDbContext>();
-        var query = dbContext.ComplianceJourneys.AsNoTracking().Where(j => j.HospitalId == hospitalId);
+        var query = dbContext.ComplianceJourneys.AsNoTracking().IgnoreQueryFilters().Where(j => j.HospitalId == hospitalId);
         if (frameworkId != Guid.Empty)
         {
             query = query.Where(j => j.FrameworkId == frameworkId);

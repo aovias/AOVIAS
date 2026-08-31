@@ -152,6 +152,73 @@ public sealed class DashboardProjectionPropagationTests
         Assert.NotNull((await db.OutboxMessages.SingleAsync()).ProjectionProcessedOn);
     }
 
+    [Fact]
+    public async Task TaskOverdue_without_catalog_graph_does_not_throw_and_counts_zero_in_memory()
+    {
+        await using var db = CreateDb();
+        db.ComplianceTasks.Add(new ComplianceTask
+        {
+            Id = Guid.NewGuid(),
+            HospitalId = Hospital,
+            ComplianceStandardId = Guid.NewGuid(),
+            ObjectiveElementId = Guid.NewGuid(),
+            DueDate = DateTime.UtcNow.AddDays(-2),
+            Status = ComplianceTaskStatus.Pending,
+            CreatedAt = DateTime.UtcNow,
+            RowVersion = new byte[] { 1 }
+        });
+        await db.SaveChangesAsync();
+
+        var engine = CreateEngine(db, new StubSnapshotBuilder());
+        var envelope = new ComplianceEventEnvelope
+        {
+            EventId = Guid.NewGuid(),
+            EntityId = Guid.NewGuid(),
+            EntityType = nameof(ComplianceTask),
+            TenantId = Hospital,
+            EventType = ComplianceEventType.TaskOverdue,
+            Payload = JsonSerializer.Serialize(new { HospitalId = Hospital })
+        };
+        var message = new OutboxMessage
+        {
+            Id = envelope.EventId,
+            AggregateId = envelope.EntityId,
+            OccurredOn = DateTime.UtcNow,
+            Type = "ComplianceEvent.TaskOverdue",
+            Payload = JsonSerializer.Serialize(envelope)
+        };
+
+        await engine.ProcessOutboxMessageAsync(message);
+
+        var projection = await db.DashboardProjections.SingleAsync();
+        Assert.Equal(0, projection.OverdueTasksCount);
+        Assert.Equal(message.Id, projection.LastProcessedOutboxMessageId);
+    }
+
+    [Fact]
+    public async Task FrameworkEnrolled_payload_without_hospital_is_not_marked_projection_processed()
+    {
+        await using var db = CreateDb();
+        db.OutboxMessages.Add(new OutboxMessage
+        {
+            Id = Guid.NewGuid(),
+            AggregateId = Guid.NewGuid(),
+            OccurredOn = DateTime.UtcNow,
+            Type = typeof(FrameworkEnrolledDomainEvent).FullName!,
+            Payload = """{"OccurredOn":"2026-04-06T11:36:20.6239447Z"}""",
+            RetryCount = 0
+        });
+        await db.SaveChangesAsync();
+
+        var processor = CreateProcessor(db, new RecordingProjectionEngine());
+        await processor.ProcessPendingAsync(CancellationToken.None);
+
+        var stored = await db.OutboxMessages.SingleAsync();
+        Assert.Null(stored.ProjectionProcessedOn);
+        Assert.Equal(1, stored.RetryCount);
+        Assert.Contains("HospitalId", stored.Error);
+    }
+
     private static ComplianceDbContext CreateDb()
     {
         var options = new DbContextOptionsBuilder<ComplianceDbContext>()

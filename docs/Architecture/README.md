@@ -117,6 +117,7 @@ See [26-Current-Development-Stage.md](./26-Current-Development-Stage.md) and [05
 | [AOVIAS-Command-Phase3D-Obligation-Migration.md](./AOVIAS-Command-Phase3D-Obligation-Migration.md) | Phase 3D obligation canonical migration (Gate A dry-run + Gate B executed on local SQL Express) |
 | [AOVIAS-Command-Phase3E-Event-Propagation-Audit.md](./AOVIAS-Command-Phase3E-Event-Propagation-Audit.md) | Phase 3E cross-module event/outbox propagation contract (audit only) |
 | [AOVIAS-Command-Phase3F-Propagation-Remediation.md](./AOVIAS-Command-Phase3F-Propagation-Remediation.md) | Phase 3F P1 dashboard projection remediation; workforce/directory gated |
+| [AOVIAS-Command-Phase3G-Runtime-Verification-and-Consistency-Decisions.md](./AOVIAS-Command-Phase3G-Runtime-Verification-and-Consistency-Decisions.md) | Phase 3G runtime projection proof and consistency-decision matrix |
 
 ### Experience & AI
 
