@@ -1,9 +1,9 @@
-# AOVIAS Command — Phase 3D Obligation Migration (Dry Run)
+# AOVIAS Command — Phase 3D Obligation Migration
 
-**Phase:** 3D Gate A — mapping, dry-run, proposed DML (not executed)  
-**Status:** DRY-RUN PASS. Execution **blocked** on business decisions for 41 diverged pairs (and optional 650 delete).  
+**Phase:** 3D Gate A dry-run PASS. Gate B **BLOCKED** (no DML).  
+**Status:** Gate B was authorized 2026-08-31 but **stopped before DML** because the 41-pair operational-state merge policy and the 40-pair dual-deficiency policy are **not explicitly approved** in project documentation. MATCH-as-identity-survivor is **not** a merge policy.  
 **Environment:** `localhost\SQLEXPRESS` / database `Compliance` (same local SQL Express used in Phases 2–3C). Organization master: `Organization.dbo.Hospitals`.  
-**Starting HEAD:** `a75d5a40c4af789bdd9229e71c01ca6b62224060` (Phase 3C)  
+**Gate A commit:** `b4f4d489d35e2cc3ac857e292050f6deada17411`  
 **Production DML/DDL executed:** **NO**
 
 Contracts: [Phase 3C identity](./AOVIAS-Command-Phase3C-Canonical-Compliance-Identity.md), [Phase 3B](./AOVIAS-Command-Phase3B-Data-Reconciliation.md).
@@ -239,3 +239,37 @@ That file currently **THROWs** and performs no DML.
 - Re-enroll does not insert a second row (after sync code change).  
 - Deficiency count not dropped accidentally.  
 - Re-run Phase 3B classifiers.
+
+---
+
+## 18. Gate B attempt (2026-08-31) — BLOCKED, no DML
+
+**DESIGN / DRY RUN:** unchanged (sections 1–17).  
+**EXECUTED MIGRATION:** none.  
+**POST-MIGRATION VERIFICATION:** not applicable.
+
+Preflight: worktree `AOVIAS.Cursor`; branch `agent/cursor/phase3d-obligation-migration-dry-run`; HEAD at Gate A `b4f4d48`. Unrelated dirty file `ComplaincePlatform/IdentityService/IdentityService.csproj` left untouched.
+
+Read-only revalidation immediately before the stop: `OrganizationComplianceObligations` count = **2662** (matches Gate A). Mapping CSVs and `phase3d-obligation-migration.proposed.sql` (`THROW`) were inspected; the proposed script still has **no** 41-pair merge and **no** dual-deficiency procedure.
+
+What is documented (options, not a chosen policy):
+
+| Topic | Documented state |
+| --- | --- |
+| Identity survivor | MATCH (correct OrganizationId) — **identity only** |
+| 41 operational state | **BDR:** keep MATCH as-is **or** overlay twin where richer **or** field-level merge |
+| 40 dual deficiency trees | **BDR:** retain both under MATCH **or** merge by type **or** archive twin-side |
+| 88 twin-backed deficiency OrganizationId | listed as BDR; no approved UPDATE text |
+| 650 missing-hospital | Gate A: delete only after approval; Gate B command would delete the ID list **if** the full transaction could run; **not executed** because 41 policy missing and uniqueness cannot be added with 41 duplicates remaining |
+| 965 identical twins | Gate A proven safe; **not executed** — top-level Gate B rule is stop **all** DML when 41/dual-deficiency policy is missing, so the DB is not left half-migrated |
+
+**Unblock Gate B** only after a human records **one** chosen rule for each of:
+
+1. **41 operational state** — pick exactly one: (A) preserve MATCH fields as-is for all 41; (B) copy an enumerated field list from twin → MATCH for pair `8F624C8B` / `F3D7CD49` only; (C) a written field-by-field map for all 41.
+2. **40 dual deficiency trees** — pick exactly one: (A) remap twin `ComplianceObligationId` to MATCH and keep both trees; (B) merge by deficiency type with a written duplicate rule; (C) archive/soft-delete twin-side defs with a written archive table/flag.
+3. **88 OrganizationId repairs** — confirm: apply after (2) for every **retained** twin-backed deficiency, using `Organization.Hospitals.OrganizationId` (never HospitalId).
+4. **650** — confirm delete of the CSV ID list vs retain forensic (Gate B text prefers delete; still confirm in writing if Gate B is re-run as a single transaction targeting 1006 remaining obligations).
+
+Do **not** infer (A)/(B)/(C) from “MATCH survives.”
+
+Backup: not taken (no DML). Constraint swap and `ObligationSynchronizationService` identity change were **not** applied (same release as unique index; index cannot be added while 41 duplicate keys remain).
