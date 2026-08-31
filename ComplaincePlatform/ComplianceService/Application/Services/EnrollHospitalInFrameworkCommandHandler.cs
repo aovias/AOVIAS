@@ -1,3 +1,4 @@
+using ComplianceService.Application.Authorization;
 using ComplianceService.Application.Commands;
 using ComplianceService.Application.Contracts;
 using Shared.Infrastructure.DTO;
@@ -20,6 +21,9 @@ public class EnrollHospitalInFrameworkCommandHandler
     private readonly ComplianceDbContext _dbContext;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IObligationSynchronizationService _obligationSynchronizationService;
+    private readonly IHospitalAccessAuthorizer _hospitalAccessAuthorizer;
+    private readonly IHospitalAccessCallerResolver _hospitalAccessCallerResolver;
+    private readonly IHospitalAccessContext _hospitalAccessContext;
     private readonly ILogger<EnrollHospitalInFrameworkCommandHandler> _logger;
 
     public EnrollHospitalInFrameworkCommandHandler(
@@ -29,6 +33,9 @@ public class EnrollHospitalInFrameworkCommandHandler
         ComplianceDbContext dbContext,
         IUnitOfWork unitOfWork,
         IObligationSynchronizationService obligationSynchronizationService,
+        IHospitalAccessAuthorizer hospitalAccessAuthorizer,
+        IHospitalAccessCallerResolver hospitalAccessCallerResolver,
+        IHospitalAccessContext hospitalAccessContext,
         ILogger<EnrollHospitalInFrameworkCommandHandler> logger)
     {
         _hospitalComplianceRepository = hospitalComplianceRepository;
@@ -37,6 +44,9 @@ public class EnrollHospitalInFrameworkCommandHandler
         _dbContext = dbContext;
         _unitOfWork = unitOfWork;
         _obligationSynchronizationService = obligationSynchronizationService;
+        _hospitalAccessAuthorizer = hospitalAccessAuthorizer;
+        _hospitalAccessCallerResolver = hospitalAccessCallerResolver;
+        _hospitalAccessContext = hospitalAccessContext;
         _logger = logger;
     }
 
@@ -47,6 +57,14 @@ public class EnrollHospitalInFrameworkCommandHandler
         _logger.LogInformation(
             "Handling enrollment: HospitalId={HospitalId}, FrameworkId={FrameworkId}, RequestedBy={RequestedByUserId}",
             command.HospitalId, command.FrameworkId, command.RequestedByUserId);
+
+        var access = await ResolveHospitalAccessAsync(command.HospitalId, cancellationToken);
+        if (!access.IsAllowed)
+        {
+            throw new HospitalAccessException(access);
+        }
+
+        var organizationId = access.OrganizationId;
 
         // Validate framework exists and is active
         var frameworks = await _frameworkRepository.GetAllActiveFrameworksAsync(cancellationToken);
@@ -74,9 +92,6 @@ public class EnrollHospitalInFrameworkCommandHandler
                 $"Framework with ID {command.FrameworkId} cannot be enrolled when status is '{framework.Status}'. Status must be Active.");
         }
 
-        // Validate hospital exists (check if hospital has any existing compliance data)
-        // Note: Full hospital validation would require calling OrganizationService
-        // For now, we validate by checking if hospital can be enrolled (no duplicate enrollment check)
         var existingEnrollments = await _frameworkRepository.GetHospitalFrameworksAsync(command.HospitalId, cancellationToken);
         var alreadyEnrolled = existingEnrollments.Any(e => e.FrameworkId == command.FrameworkId);
         
@@ -136,17 +151,17 @@ public class EnrollHospitalInFrameworkCommandHandler
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation(
-            "Successfully enrolled HospitalId={HospitalId} in FrameworkId={FrameworkId}. Raised {EventCount} domain events.",
-            command.HospitalId, command.FrameworkId, domainEvents.Count);
+            "Successfully enrolled HospitalId={HospitalId} in FrameworkId={FrameworkId} OrganizationId={OrganizationId}. Raised {EventCount} domain events.",
+            command.HospitalId, command.FrameworkId, organizationId, domainEvents.Count);
 
         // Sync OrganizationComplianceObligation records for every ObjectiveElement in the framework.
         // Idempotent — safe on re-enrollment. Runs after the enrollment transaction commits.
         try
         {
             await _obligationSynchronizationService.SyncForOrganizationAsync(
-                organizationId: command.HospitalId,
+                organizationId: organizationId,
                 hospitalId: command.HospitalId,
-                tenantId: command.HospitalId,
+                tenantId: organizationId,
                 frameworkId: command.FrameworkId,
                 ct: cancellationToken);
         }
@@ -168,5 +183,21 @@ public class EnrollHospitalInFrameworkCommandHandler
             Status = "Enrolled",
             EnrolledOn = DateTime.UtcNow
         };
+    }
+
+    private async Task<HospitalAccessResult> ResolveHospitalAccessAsync(
+        Guid hospitalId,
+        CancellationToken cancellationToken)
+    {
+        if (_hospitalAccessContext.Current is { RequestedHospitalId: var authorizedId } current
+            && authorizedId == hospitalId)
+        {
+            return current;
+        }
+
+        return await _hospitalAccessAuthorizer.AuthorizeAsync(
+            hospitalId,
+            _hospitalAccessCallerResolver.Resolve(),
+            cancellationToken);
     }
 }
