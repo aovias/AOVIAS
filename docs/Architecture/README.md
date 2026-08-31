@@ -110,6 +110,8 @@ See [26-Current-Development-Stage.md](./26-Current-Development-Stage.md) and [05
 | [11-API-Architecture.md](./11-API-Architecture.md) | API surface |
 | [12-Event-Architecture.md](./12-Event-Architecture.md) | Events & outbox |
 | [13-Workflow-Architecture.md](./13-Workflow-Architecture.md) | End-to-end flows |
+| [AOVIAS-Command-Module-Dependency-Map.md](./AOVIAS-Command-Module-Dependency-Map.md) | Phase 1 verified module dependency map (integrity audit context) |
+| [AOVIAS-Command-Phase2-Data-Integrity-Audit.md](./AOVIAS-Command-Phase2-Data-Integrity-Audit.md) | Phase 2 API/data integrity audit (audit only; no production fixes) |
 
 ### Experience & AI
 
