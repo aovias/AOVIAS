@@ -244,7 +244,8 @@ public sealed class DashboardProjectionUpdater
 
     private static bool IsTaskEvent(string type) =>
         type.Contains("TaskCreated", StringComparison.OrdinalIgnoreCase)
-        || type.Contains("TaskCompleted", StringComparison.OrdinalIgnoreCase);
+        || type.Contains("TaskCompleted", StringComparison.OrdinalIgnoreCase)
+        || type.Contains("TaskOverdue", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsFindingEvent(string type) =>
         type.Contains("FindingCreated", StringComparison.OrdinalIgnoreCase)

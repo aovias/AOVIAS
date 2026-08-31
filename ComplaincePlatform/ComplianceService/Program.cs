@@ -477,6 +477,7 @@ builder.Services.AddScoped<ComplianceService.Application.Services.UpdateObligati
 builder.Services.AddScoped<ComplianceService.Application.Services.UpdateObligationJourneyProgressCommandHandler>();
 builder.Services.AddScoped<ComplianceService.Application.Contracts.IOnboardingObligationAssessmentService, ComplianceService.Application.Services.OnboardingObligationAssessmentService>();
 builder.Services.AddScoped<ComplianceService.Application.Services.InProcessOutboxProcessor>();
+builder.Services.AddHostedService<ComplianceService.Application.BackgroundJobs.OutboxProjectionDrainHostedService>();
 builder.Services.AddScoped<ComplianceService.Application.Services.IObligationNextActionService, ComplianceService.Application.Services.ObligationNextActionService>();
 builder.Services.AddScoped<ComplianceService.Application.Services.RebuildObligationAssessmentCommandHandler>();
 

@@ -143,6 +143,7 @@ public class InProcessOutboxProcessor
         || type.Contains(nameof(DeficiencyStatusChangedDomainEvent), StringComparison.OrdinalIgnoreCase)
         || type.Contains(nameof(ComplianceStateChangedDomainEvent), StringComparison.OrdinalIgnoreCase)
         || type.StartsWith("ComplianceEvent.", StringComparison.OrdinalIgnoreCase)
+        || type.Contains("FrameworkEnrolled", StringComparison.OrdinalIgnoreCase)
         || type.Contains("ComplianceEnrolled", StringComparison.OrdinalIgnoreCase)
         || type.Contains("ComplianceSubmitted", StringComparison.OrdinalIgnoreCase)
         || type.Contains("ComplianceApproved", StringComparison.OrdinalIgnoreCase)

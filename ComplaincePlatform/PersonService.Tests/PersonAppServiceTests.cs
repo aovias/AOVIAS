@@ -88,5 +88,37 @@ public class PersonAppServiceTests
         Assert.True(deleted);
         var stored = await db.Persons.FirstAsync(p => p.Id == person.Id);
         Assert.True(stored.IsDeleted);
+        Assert.DoesNotContain(db.OutboxMessages, o => o.Type == "PersonDeleted" || o.Type == "PersonUpdated");
+    }
+
+    [Fact]
+    public async Task UpdateAsync_DoesNotWritePersonUpdatedOutbox()
+    {
+        await using var db = CreateDb();
+        var person = new Person
+        {
+            Id = Guid.NewGuid(),
+            PlatformId = "PRS000004",
+            Status = PersonStatus.Active,
+            SearchName = "TEST",
+            LegalFirstName = "Ada",
+            RowVersion = new byte[8],
+            CreatedAt = DateTime.UtcNow
+        };
+        db.Persons.Add(person);
+        await db.SaveChangesAsync();
+
+        var idGen = new Mock<IPlatformIdGenerator>();
+        var audit = new PersonAuditService(db, Mock.Of<IAuditLogger>());
+        var http = new Mock<IHttpContextAccessor>();
+        var env = new Mock<IWebHostEnvironment>();
+        var service = new PersonAppService(db, idGen.Object, audit, http.Object, env.Object);
+
+        await service.UpdateAsync(person.Id, new PersonService.Application.DTOs.UpdatePersonRequest
+        {
+            LegalFirstName = "Grace"
+        });
+
+        Assert.DoesNotContain(db.OutboxMessages, o => o.Type == "PersonUpdated");
     }
 }

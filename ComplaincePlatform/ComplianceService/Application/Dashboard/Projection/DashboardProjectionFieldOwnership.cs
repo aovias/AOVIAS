@@ -56,6 +56,14 @@ public static class DashboardProjectionFieldOwnership
             [
                 "Summary", "Frameworks", "OverallComplianceScore"
             ],
+            ["ComplianceEvent.TaskOverdue"] =
+            [
+                "PendingTasksCount", "TasksSummary", "Summary.OverdueTasks"
+            ],
+            ["FrameworkEnrolledDomainEvent"] =
+            [
+                "TotalJourneysCount", "ActiveJourneysCount", "Frameworks", "Hospitals", "Summary"
+            ],
             ["ComplianceEnrolledDomainEvent"] =
             [
                 "TotalJourneysCount", "ActiveJourneysCount", "Frameworks", "Hospitals", "Summary"

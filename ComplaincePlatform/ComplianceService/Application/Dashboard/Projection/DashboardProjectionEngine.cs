@@ -175,7 +175,8 @@ public sealed class DashboardProjectionEngine : IDashboardProjectionEngine
             return true;
         }
 
-        if (eventType.Contains("ComplianceEnrolled", StringComparison.OrdinalIgnoreCase)
+        if (eventType.Contains("FrameworkEnrolled", StringComparison.OrdinalIgnoreCase)
+            || eventType.Contains("ComplianceEnrolled", StringComparison.OrdinalIgnoreCase)
             || eventType.Contains("ComplianceApproved", StringComparison.OrdinalIgnoreCase)
             || eventType.Contains("ComplianceRenewed", StringComparison.OrdinalIgnoreCase))
         {
@@ -266,6 +267,18 @@ public sealed class DashboardProjectionEngine : IDashboardProjectionEngine
             return evt is null
                 ? []
                 : [DashboardProjectionScope.ForHospital(evt.TenantId, evt.HospitalId, evt.FrameworkId)];
+        }
+
+        if (message.Type.Contains("FrameworkEnrolled", StringComparison.OrdinalIgnoreCase))
+        {
+            var evt = JsonSerializer.Deserialize<FrameworkEnrolledDomainEvent>(message.Payload);
+            if (evt is null)
+            {
+                return [];
+            }
+
+            var tenantId = await ResolveTenantIdAsync(evt.HospitalId, evt.FrameworkId, cancellationToken);
+            return [DashboardProjectionScope.ForHospital(tenantId, evt.HospitalId, evt.FrameworkId)];
         }
 
         return ResolveJourneyLifecycleScopes(message);
