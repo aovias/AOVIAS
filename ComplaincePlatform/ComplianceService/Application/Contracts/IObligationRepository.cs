@@ -14,15 +14,16 @@ public interface IObligationRepository
         Guid frameworkId,
         CancellationToken ct = default);
 
-    /// <summary>Returns the obligation uniquely identified by (organizationId, objectiveElementId), or null.</summary>
+    /// <summary>Returns the obligation uniquely identified by (hospitalId, frameworkId, objectiveElementId), or null.</summary>
     Task<OrganizationComplianceObligation?> GetByKeyAsync(
-        Guid organizationId,
+        Guid hospitalId,
+        Guid frameworkId,
         Guid objectiveElementId,
         CancellationToken ct = default);
 
     /// <summary>
-    /// Idempotent batch upsert. Inserts obligations that do not yet exist for the given organization.
-    /// Existing obligations are never modified by this method.
+    /// Idempotent batch upsert. Inserts obligations that do not yet exist for the canonical key
+    /// (HospitalId, FrameworkId, ObjectiveElementId). Existing obligations are never modified.
     /// </summary>
     Task UpsertBatchAsync(
         IReadOnlyList<OrganizationComplianceObligation> obligations,

@@ -110,6 +110,14 @@ See [26-Current-Development-Stage.md](./26-Current-Development-Stage.md) and [05
 | [11-API-Architecture.md](./11-API-Architecture.md) | API surface |
 | [12-Event-Architecture.md](./12-Event-Architecture.md) | Events & outbox |
 | [13-Workflow-Architecture.md](./13-Workflow-Architecture.md) | End-to-end flows |
+| [AOVIAS-Command-Module-Dependency-Map.md](./AOVIAS-Command-Module-Dependency-Map.md) | Phase 1 verified module dependency map (integrity audit context) |
+| [AOVIAS-Command-Phase2-Data-Integrity-Audit.md](./AOVIAS-Command-Phase2-Data-Integrity-Audit.md) | Phase 2 API/data integrity audit (audit only; no production fixes) |
+| [AOVIAS-Command-Phase3B-Data-Reconciliation.md](./AOVIAS-Command-Phase3B-Data-Reconciliation.md) | Phase 3B Compliance hospital/org data reconciliation (classify only; no cleanup) |
+| [AOVIAS-Command-Phase3C-Canonical-Compliance-Identity.md](./AOVIAS-Command-Phase3C-Canonical-Compliance-Identity.md) | Phase 3C canonical OrganizationComplianceObligation identity (design only) |
+| [AOVIAS-Command-Phase3D-Obligation-Migration.md](./AOVIAS-Command-Phase3D-Obligation-Migration.md) | Phase 3D obligation canonical migration (Gate A dry-run + Gate B executed on local SQL Express) |
+| [AOVIAS-Command-Phase3E-Event-Propagation-Audit.md](./AOVIAS-Command-Phase3E-Event-Propagation-Audit.md) | Phase 3E cross-module event/outbox propagation contract (audit only) |
+| [AOVIAS-Command-Phase3F-Propagation-Remediation.md](./AOVIAS-Command-Phase3F-Propagation-Remediation.md) | Phase 3F P1 dashboard projection remediation; workforce/directory gated |
+| [AOVIAS-Command-Phase3G-Runtime-Verification-and-Consistency-Decisions.md](./AOVIAS-Command-Phase3G-Runtime-Verification-and-Consistency-Decisions.md) | Phase 3G runtime projection proof and consistency-decision matrix |
 
 ### Experience & AI
 

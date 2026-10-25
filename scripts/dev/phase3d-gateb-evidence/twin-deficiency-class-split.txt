@@ -1,0 +1,3 @@
+IdentTwinDefs=5
+DivergedTwinDefs=83
+Note=IDENTICAL class is status-equal; 88 remaps still apply to every twin-backed deficiency

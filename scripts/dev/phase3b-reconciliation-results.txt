@@ -1,0 +1,196 @@
+=== 0. ORG: hospital Id never equals OrganizationId ===
+HospCount	IdEqualsOrgId
+---------	-------------
+15	0
+=== 1. DISTINCT HOSPITAL IDS IN COMPLIANCE (union) ===
+=== 1a. SOURCE TABLES WITH HOSPITAL REFS (collapsed) ===
+SourceTable	DistH	Rows
+-----------	-----	----
+ActivityEvents	3	68
+Alerts	3	4
+AnalyticsDailySnapshots	5	88
+AssignmentRoutingLogs	1	1
+AuditSessions	2	17
+Capas	1	17
+ClinicalIndicators	1	23
+ComplianceDeficiencies	1	177
+ComplianceJourneys	5	6
+ComplianceSnapshots	4	1725
+ComplianceTasks	5	1534
+ControlledDocuments	1	197
+DashboardProjections	3	7
+DeficiencyEscalationHistories	1	167
+EscalationPolicies	1	8
+EvidenceReviewAuditEntries	2	8
+Evidences	4	473
+Incidents	1	18
+MaturityStageUnlockAuditEntries	1	1
+ObjectiveJourneys	2	14
+OrganizationComplianceObligations	4	2662
+OrganizationMaturityStageStates	1	4
+PatientFeedbacks	1	1
+Risks	1	15
+ScheduledAudits	2	19
+SlaPolicies	1	8
+WizardOnboardingAssessments	4	4
+=== 1b. HOSPITAL CLASSIFICATION vs Organization.Hospitals ===
+HospitalId	HospitalClass	OrgHospitalOrganizationId	OrgStatus	IsDeleted	RefRowSum
+----------	-------------	-------------------------	---------	---------	---------
+EDB9321A-F922-4CBC-8C1C-1D2C0D5DC1AB	MISSING_HOSPITAL	NULL	NULL	NULL	325
+F653E630-C9A9-4014-918D-23B33DE93845	MISSING_HOSPITAL	NULL	NULL	NULL	325
+564A2C5C-AE08-42A8-A19E-0F3E409D55E3	UNKNOWN	9B8EF3FE-569F-4B21-9CEB-50700C1DE4F4		0	159
+68CAE20E-6DD9-4E14-B0A9-ED6978B1AFE8	UNKNOWN	4A57CEF0-A543-46A8-B7FA-21874E34097E		0	72
+07738D43-2DF7-4292-B7F7-38206E0D5E55	VALID_HOSPITAL	3B16E8CC-CAFA-44B5-8331-88BD19BAB415	Active	0	2
+F17FC194-157B-4BCA-940E-8762086C4A51	VALID_HOSPITAL	BCB783DB-2773-4CB5-A369-C86D2542DE85	Active	0	1523
+D9F5554A-BF83-4262-B386-A31587B0BA06	VALID_HOSPITAL	2759FAD4-C895-4A5F-9E49-6DED5D378098	Active	0	4262
+5CD1EC4A-62E3-41BC-A331-F686E79791BF	VALID_HOSPITAL	B7632D36-4A68-4FA2-865F-21C4025EA3D3	Active	0	598
+=== 1c. CLASS COUNTS (distinct hospitals) ===
+HospitalClass	DistinctHospitals
+-------------	-----------------
+MISSING_HOSPITAL	2
+UNKNOWN	2
+VALID_HOSPITAL	4
+=== 2. OBLIGATION ORG/HOSPITAL PAIRS ===
+OrganizationId	HospitalId	TenantId	Cnt	MinCreated	MaxCreated	CreatedBySample	OrgEqHosp	TenantEqOrg	TenantEqHosp	TrueOrgId	OrgOwnership
+--------------	----------	--------	---	----------	----------	---------------	---------	-----------	------------	---------	------------
+BCB783DB-2773-4CB5-A369-C86D2542DE85	F17FC194-157B-4BCA-940E-8762086C4A51	BCB783DB-2773-4CB5-A369-C86D2542DE85	503	2026-08-02 05:00:58.3093441	2026-08-02 05:00:58.3093441	system	0	1	0	BCB783DB-2773-4CB5-A369-C86D2542DE85	MATCH
+2759FAD4-C895-4A5F-9E49-6DED5D378098	D9F5554A-BF83-4262-B386-A31587B0BA06	2759FAD4-C895-4A5F-9E49-6DED5D378098	503	2026-06-20 10:31:43.8323505	2026-06-20 10:31:43.8323505	system	0	1	0	2759FAD4-C895-4A5F-9E49-6DED5D378098	MATCH
+F17FC194-157B-4BCA-940E-8762086C4A51	F17FC194-157B-4BCA-940E-8762086C4A51	F17FC194-157B-4BCA-940E-8762086C4A51	503	2026-08-02 05:00:47.9755761	2026-08-02 05:00:47.9755761	system	1	1	1	BCB783DB-2773-4CB5-A369-C86D2542DE85	MISMATCH
+D9F5554A-BF83-4262-B386-A31587B0BA06	D9F5554A-BF83-4262-B386-A31587B0BA06	D9F5554A-BF83-4262-B386-A31587B0BA06	503	2026-06-20 05:25:16.0778077	2026-06-20 05:25:16.0778077	system	1	1	1	2759FAD4-C895-4A5F-9E49-6DED5D378098	MISMATCH
+EDB9321A-F922-4CBC-8C1C-1D2C0D5DC1AB	EDB9321A-F922-4CBC-8C1C-1D2C0D5DC1AB	EDB9321A-F922-4CBC-8C1C-1D2C0D5DC1AB	325	2026-08-31 06:14:43.9052346	2026-08-31 06:14:43.9052346	system	1	1	1	NULL	MISSING_HOSPITAL
+F653E630-C9A9-4014-918D-23B33DE93845	F653E630-C9A9-4014-918D-23B33DE93845	F653E630-C9A9-4014-918D-23B33DE93845	325	2026-08-31 05:31:35.7486588	2026-08-31 05:31:35.7486588	system	1	1	1	NULL	MISSING_HOSPITAL
+=== 2b. OBLIGATION OWNERSHIP ROLLUP ===
+OrgOwnership	OrgEqHospRows	Rows
+------------	-------------	----
+MISSING_HOSPITAL	650	650
+MISMATCH	1006	1006
+MATCH	0	1006
+=== 2c. ORG_EQ_HOSP breakdown vs Org authority ===
+EqClass	Rows	DistinctHospitals
+-------	----	-----------------
+EQUAL_INVALID_HOSPITAL_COPIED_INTO_ORG	1006	2
+EQUAL_MISSING_HOSPITAL	650	2
+NOT_EQUAL	1006	2
+=== 3. JOURNEY ORG/HOSPITAL ===
+OrganizationId	HospitalId	TenantId	FrameworkId	Status	CreatedAt	OrgEqHosp	OrgOwnership
+--------------	----------	--------	-----------	------	---------	---------	------------
+2759FAD4-C895-4A5F-9E49-6DED5D378098	D9F5554A-BF83-4262-B386-A31587B0BA06	2759FAD4-C895-4A5F-9E49-6DED5D378098	0FE8A9C0-9EA0-4970-9097-D4F73D45DCA7	0	2025-11-13 11:59:12.8166667	0	MATCH
+9B8EF3FE-569F-4B21-9CEB-50700C1DE4F4	564A2C5C-AE08-42A8-A19E-0F3E409D55E3	9B8EF3FE-569F-4B21-9CEB-50700C1DE4F4	2A244FB6-7095-4643-A7C0-A539419B3FEC	0	2026-04-06 11:36:20.8215901	0	MATCH
+4A57CEF0-A543-46A8-B7FA-21874E34097E	68CAE20E-6DD9-4E14-B0A9-ED6978B1AFE8	4A57CEF0-A543-46A8-B7FA-21874E34097E	0FE8A9C0-9EA0-4970-9097-D4F73D45DCA7	0	2026-06-16 08:51:01.2444249	0	MATCH
+B7632D36-4A68-4FA2-865F-21C4025EA3D3	5CD1EC4A-62E3-41BC-A331-F686E79791BF	B7632D36-4A68-4FA2-865F-21C4025EA3D3	2A244FB6-7095-4643-A7C0-A539419B3FEC	0	2026-07-12 01:04:29.8447826	0	MATCH
+B7632D36-4A68-4FA2-865F-21C4025EA3D3	5CD1EC4A-62E3-41BC-A331-F686E79791BF	B7632D36-4A68-4FA2-865F-21C4025EA3D3	1AC431BE-7CA8-4E7B-E98A-08DEB4CBD8AE	0	2026-07-13 02:08:49.4385145	0	MATCH
+BCB783DB-2773-4CB5-A369-C86D2542DE85	F17FC194-157B-4BCA-940E-8762086C4A51	BCB783DB-2773-4CB5-A369-C86D2542DE85	0FE8A9C0-9EA0-4970-9097-D4F73D45DCA7	0	2026-08-02 05:00:52.6343579	0	MATCH
+=== 4. DUPLICATE OBLIGATIONS Hospital+Framework+OE (summary) ===
+HospitalId	FrameworkId	DuplicateOeKeys	TotalRowsInDupKeys
+----------	-----------	---------------	------------------
+F17FC194-157B-4BCA-940E-8762086C4A51	0FE8A9C0-9EA0-4970-9097-D4F73D45DCA7	503	1006
+D9F5554A-BF83-4262-B386-A31587B0BA06	0FE8A9C0-9EA0-4970-9097-D4F73D45DCA7	503	1006
+=== 4b. DUPLICATE OrganizationId+OE (unique index key) ===
+OrganizationId	ObjectiveElementId	DupCnt	DistinctHospitals
+--------------	------------------	------	-----------------
+=== 4c. same Hospital+Framework obligation count vs OE catalog ===
+HospitalId	FrameworkId	OblCnt	DistinctOE
+----------	-----------	------	----------
+F17FC194-157B-4BCA-940E-8762086C4A51	0FE8A9C0-9EA0-4970-9097-D4F73D45DCA7	1006	503
+D9F5554A-BF83-4262-B386-A31587B0BA06	0FE8A9C0-9EA0-4970-9097-D4F73D45DCA7	1006	503
+EDB9321A-F922-4CBC-8C1C-1D2C0D5DC1AB	1AC431BE-7CA8-4E7B-E98A-08DEB4CBD8AE	325	325
+F653E630-C9A9-4014-918D-23B33DE93845	1AC431BE-7CA8-4E7B-E98A-08DEB4CBD8AE	325	325
+=== 5. PHASE2 ARTIFACT f653e630 ===
+T	C
+-	-
+OrganizationComplianceObligations	325
+ComplianceJourneys	0
+ObjectiveElementOwnerships	0
+ComplianceTasks	0
+Evidences	0
+Risks	0
+Capas	0
+ComplianceDeficiencies	0
+DashboardProjections	0
+ComplianceSnapshots	0
+AnalyticsDailySnapshots	0
+SlaPolicies	0
+OrganizationMaturityStageStates	0
+ObjectiveJourneys	0
+OutboxMessages	0
+=== 5b. ACCIDENTAL 5016 ENROLL edb9321a ===
+T	C
+-	-
+OrganizationComplianceObligations	325
+ComplianceJourneys	0
+OutboxMessages	0
+=== 6. FRAMEWORK / OE / NODE ===
+Obl	MissingFramework	MissingOE	NullNodeId
+---	----------------	---------	----------
+2662	0	0	2662
+=== 7. TASKS / EVIDENCE / RISKS / CAPA / DEF HOSPITAL CLASS ===
+T	Rows	DistH	MissingHospRows
+-	----	-----	---------------
+ComplianceTasks	1534	5	0
+Evidences	473	4	0
+Risks	15	1	0
+Capas	17	1	0
+ComplianceDeficiencies	177	1	0
+=== 8. DEFICIENCY -> OBLIGATION PARENT ===
+DefRows	NullObligationId	OrphanObligation	CrossHospitalParent
+-------	----------------	----------------	-------------------
+177	0	0	0
+=== 8b. TASK -> DEFICIENCY HOSPITAL ===
+TaskRows	OrphanDeficiency	CrossHospitalParent
+--------	----------------	-------------------
+1534	0	0
+=== 8c. EVIDENCE -> TASK HOSPITAL ===
+EvRows	OrphanTask	CrossHospitalParent
+------	----------	-------------------
+473	0	0
+=== 8d. CAPA -> FINDING HOSPITAL ===
+CapaRows	OrphanFinding	CrossHospitalViaJourney
+--------	-------------	-----------------------
+17	0	0
+=== 8e. FINDING -> JOURNEY HOSPITAL ===
+FindingRows	OrphanJourney	TenantMismatch
+-----------	-------------	--------------
+35	0	0
+=== 8f. OWNERSHIP USER / DEPARTMENT ===
+OwnRows	MissingOwnerUser	MissingDepartment	DeptWrongHospital
+-------	----------------	-----------------	-----------------
+0	NULL	NULL	NULL
+=== 9. OWNERSHIP org match ===
+OrgOwnership	Rows
+------------	----
+=== 10. DASHBOARD / SNAPSHOT HOSPITAL CLASS ===
+T	Rows	DistH	MissingH
+-	----	-----	--------
+DashboardProjections	7	3	0
+ComplianceSnapshots	1725	4	0
+AnalyticsDailySnapshots	88	5	0
+=== 11. JOURNEY OWNERSHIP ROLLUP ===
+OrgOwnership	OrgEqHosp	Rows
+------------	---------	----
+MATCH	0	6
+=== 12. DASHBOARD ORG MATCH ===
+OrgOwnership	Rows
+------------	----
+MATCH	1
+MISMATCH	6
+=== 13. TASK ASSIGNED USER ORPHANS ===
+Tasks	MissingAssignee
+-----	---------------
+1534	10
+=== 14. OUTBOX ARTIFACT / ENROLL TYPES ===
+Type	C
+----	-
+ComplianceService.Domain.FrameworkEnrolledDomainEvent	7
+=== 15. SLA / MATURITY HOSPITAL CLASS ===
+T	Rows	MissingH
+-	----	--------
+SlaPolicies	8	0
+OrganizationMaturityStageStates	4	0
+=== 16. OBLIGATION CreatedBy / dates for EQ pairs ===
+CreatedBy	MinD	MaxD	Cnt
+---------	----	----	---
+system	2026-06-20	2026-08-31	1656
+=== 17. OBLIGATION CreatedBy DISTINCT pairs MATCH ===
+CreatedBy	MinD	MaxD	Cnt
+---------	----	----	---
+system	2026-06-20	2026-08-02	1006

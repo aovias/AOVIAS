@@ -5549,9 +5549,9 @@ namespace ComplianceService.Migrations
                     b.HasIndex("OrganizationId", "ImplementationStatus")
                         .HasDatabaseName("IX_OrganizationComplianceObligations_Org_ImplementationStatus");
 
-                    b.HasIndex("OrganizationId", "ObjectiveElementId")
+                    b.HasIndex("HospitalId", "FrameworkId", "ObjectiveElementId")
                         .IsUnique()
-                        .HasDatabaseName("UX_OrganizationComplianceObligations_OrgOE");
+                        .HasDatabaseName("UX_OrganizationComplianceObligations_HospitalFrameworkOE");
 
                     b.HasIndex("OrganizationId", "FrameworkId", "MaturityLevel")
                         .HasDatabaseName("IX_OrganizationComplianceObligations_Org_Framework_Maturity");
@@ -6303,8 +6303,8 @@ namespace ComplianceService.Migrations
 
                     b.Property<string>("Prefix")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 

@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using ComplianceService.Application.Contracts;
+using ComplianceService.Application.Authorization;
 using Microsoft.Extensions.Logging;
 using Shared.Infrastructure.DTO;
 
 namespace ComplianceService.Infrastructure.Services;
 
-public interface IOrganizationServiceClient
+public interface IOrganizationServiceClient : IHospitalDirectory
 {
     Task<IReadOnlyList<OrganizationHospitalDto>> GetHospitalsAsync(Guid organizationId, CancellationToken cancellationToken = default);
     Task<OrganizationBusinessCalendarDto?> GetBusinessCalendarAsync(Guid organizationId, int? year = null, CancellationToken cancellationToken = default);
@@ -89,6 +90,60 @@ public sealed class OrganizationServiceClient : IOrganizationServiceClient
             return null;
         }
     }
+
+    public async Task<HospitalLookupResult> GetHospitalAsync(Guid hospitalId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"/internal/hospitals/{hospitalId:D}", cancellationToken);
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return HospitalLookupResult.NotFound();
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "OrganizationService returned {StatusCode} while fetching hospital {HospitalId}",
+                    response.StatusCode,
+                    hospitalId);
+                return HospitalLookupResult.Unavailable();
+            }
+
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            var envelope = JsonSerializer.Deserialize<ApiResponse<OrganizationHospitalRecordDto>>(content, JsonOptions);
+            var data = envelope?.Data;
+            if (data is null || data.Id == Guid.Empty || data.OrganizationId == Guid.Empty)
+            {
+                return HospitalLookupResult.NotFound();
+            }
+
+            return HospitalLookupResult.Found(new OrganizationHospitalRecord(
+                data.Id,
+                data.OrganizationId,
+                data.Status ?? "Active",
+                data.IsDeleted,
+                data.IsOnboarded));
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve hospital {HospitalId} from OrganizationService", hospitalId);
+            return HospitalLookupResult.Unavailable();
+        }
+    }
+}
+
+internal sealed class OrganizationHospitalRecordDto
+{
+    public Guid Id { get; set; }
+    public Guid OrganizationId { get; set; }
+    public string? Status { get; set; }
+    public bool IsDeleted { get; set; }
+    public bool IsOnboarded { get; set; }
 }
 
 public sealed record OrganizationHospitalDto

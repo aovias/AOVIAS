@@ -1,9 +1,11 @@
 using System.Security.Claims;
+using ComplianceService.Application.Authorization;
 using ComplianceService.Application.Commands;
 using ComplianceService.Application.Contracts;
 using ComplianceService.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Infrastructure.Api;
 using Shared.Infrastructure.Auth;
 using Shared.Infrastructure.DTO;
 using Shared.Infrastructure.Extensions;
@@ -219,6 +221,14 @@ public class FrameworkController : ControllerBase
             var apiVersion = HttpContext.GetRequestedApiVersion()?.ToString() ?? "1.0";
             var location = $"/api/v{apiVersion}/hospitals/{hospitalId}/frameworks/{frameworkId}";
             return this.CreatedResponse(location, result);
+        }
+        catch (HospitalAccessException ex)
+        {
+            _logger.LogWarning(
+                "Enrollment hospital access denied for HospitalId={HospitalId}: {Status}",
+                hospitalId,
+                ex.Result.Status);
+            return ApiResponseFactory.FailureResult<object>(ex.Result.ToApiResponseCode(), HttpContext.TraceIdentifier);
         }
         catch (InvalidOperationException ex)
         {

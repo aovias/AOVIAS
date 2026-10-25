@@ -1,0 +1,2 @@
+BackupPath=C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQL\Backup\Compliance_Phase3D_GateB_20260831.bak
+BackupUtc=2026-08-31T11:09:21.1082128Z

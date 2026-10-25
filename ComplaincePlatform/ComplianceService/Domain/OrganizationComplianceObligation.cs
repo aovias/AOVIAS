@@ -7,7 +7,7 @@ namespace ComplianceService.Domain;
 /// Hospital-specific operational projection of an Objective Element.
 ///
 /// Represents "how this organization is currently fulfilling a specific NABH requirement".
-/// One record is created per (Organization × ObjectiveElement) when a framework is enrolled.
+/// One record is created per (Hospital × Framework × ObjectiveElement) when a framework is enrolled.
 ///
 /// The existing compliance hierarchy (Framework → Chapter → Standard → ObjectiveElement)
 /// remains unchanged and is the authoritative source of compliance truth.

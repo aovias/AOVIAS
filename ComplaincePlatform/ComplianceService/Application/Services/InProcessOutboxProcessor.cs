@@ -120,6 +120,16 @@ public class InProcessOutboxProcessor
                     await InvalidateSummaryCacheAsync(statusEvent.HospitalId, statusEvent.FrameworkId, ct);
                 }
 
+                if (message.Type.Contains("FrameworkEnrolled", StringComparison.OrdinalIgnoreCase))
+                {
+                    var enrolled = JsonSerializer.Deserialize<FrameworkEnrolledDomainEvent>(message.Payload);
+                    if (enrolled is null || enrolled.HospitalId == Guid.Empty || enrolled.FrameworkId == Guid.Empty)
+                    {
+                        throw new InvalidOperationException(
+                            $"FrameworkEnrolled outbox {message.Id} payload is missing HospitalId/FrameworkId; not marking projection processed.");
+                    }
+                }
+
                 await _dashboardProjectionEngine.ProcessOutboxMessageAsync(message, ct);
 
                 message.ProjectionProcessedOn = DateTime.UtcNow;
@@ -143,6 +153,7 @@ public class InProcessOutboxProcessor
         || type.Contains(nameof(DeficiencyStatusChangedDomainEvent), StringComparison.OrdinalIgnoreCase)
         || type.Contains(nameof(ComplianceStateChangedDomainEvent), StringComparison.OrdinalIgnoreCase)
         || type.StartsWith("ComplianceEvent.", StringComparison.OrdinalIgnoreCase)
+        || type.Contains("FrameworkEnrolled", StringComparison.OrdinalIgnoreCase)
         || type.Contains("ComplianceEnrolled", StringComparison.OrdinalIgnoreCase)
         || type.Contains("ComplianceSubmitted", StringComparison.OrdinalIgnoreCase)
         || type.Contains("ComplianceApproved", StringComparison.OrdinalIgnoreCase)
@@ -154,6 +165,7 @@ public class InProcessOutboxProcessor
     {
         var tenantId = await _dbContext.ComplianceJourneys
             .AsNoTracking()
+            .IgnoreQueryFilters()
             .Where(j => j.HospitalId == hospitalId && j.FrameworkId == frameworkId)
             .Select(j => j.TenantId)
             .FirstOrDefaultAsync(ct);

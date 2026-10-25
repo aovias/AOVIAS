@@ -103,11 +103,10 @@ public class OrganizationComplianceObligationConfiguration
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.RowVersion).IsRowVersion().IsRequired();
 
-        // ─── Unique constraint ────────────────────────────────────────────────
-        // Core business rule: one obligation per (Organization × ObjectiveElement).
-        builder.HasIndex(x => new { x.OrganizationId, x.ObjectiveElementId })
+        // Canonical business key: one obligation per (Hospital × Framework × ObjectiveElement).
+        builder.HasIndex(x => new { x.HospitalId, x.FrameworkId, x.ObjectiveElementId })
             .IsUnique()
-            .HasDatabaseName("UX_OrganizationComplianceObligations_OrgOE");
+            .HasDatabaseName("UX_OrganizationComplianceObligations_HospitalFrameworkOE");
 
         // ─── Indexes for common queries ───────────────────────────────────────
         // Tenant isolation — used by global query filter.

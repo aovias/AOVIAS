@@ -11,8 +11,9 @@ namespace ComplianceService.Application.Services;
 /// Idempotent synchronization of OrganizationComplianceObligation records.
 ///
 /// Creates one obligation per ObjectiveElement under the given framework for the
-/// specified organization. Existing obligations are never modified or deleted.
+/// specified hospital. Existing obligations are never modified or deleted.
 /// Safe to call on every enrollment and re-enrollment.
+/// Canonical identity: (HospitalId, FrameworkId, ObjectiveElementId).
 /// </summary>
 public class ObligationSynchronizationService : IObligationSynchronizationService
 {
@@ -38,8 +39,8 @@ public class ObligationSynchronizationService : IObligationSynchronizationServic
         CancellationToken ct = default)
     {
         _logger.LogInformation(
-            "ObligationSync: Starting sync for OrganizationId={OrganizationId} FrameworkId={FrameworkId}",
-            organizationId, frameworkId);
+            "ObligationSync: Starting sync for HospitalId={HospitalId} OrganizationId={OrganizationId} FrameworkId={FrameworkId}",
+            hospitalId, organizationId, frameworkId);
 
         // 1. Load all ObjectiveElements under the framework (Chapter → Standard → OE).
         var allOes = await _db.ObjectiveElements
@@ -66,10 +67,10 @@ public class ObligationSynchronizationService : IObligationSynchronizationServic
             return;
         }
 
-        // 2. Load existing obligation OE IDs for this organization to skip duplicates.
+        // 2. Load existing obligation OE IDs for this hospital+framework to skip duplicates.
         var existingOeIds = await _db.OrganizationComplianceObligations
             .IgnoreQueryFilters()
-            .Where(o => o.OrganizationId == organizationId && o.FrameworkId == frameworkId)
+            .Where(o => o.HospitalId == hospitalId && o.FrameworkId == frameworkId)
             .Select(o => o.ObjectiveElementId)
             .ToHashSetAsync(ct);
 
@@ -79,8 +80,8 @@ public class ObligationSynchronizationService : IObligationSynchronizationServic
         if (newOes.Count == 0)
         {
             _logger.LogInformation(
-                "ObligationSync: All {Total} obligations already exist for OrganizationId={OrganizationId} FrameworkId={FrameworkId}. No action needed.",
-                allOes.Count, organizationId, frameworkId);
+            "ObligationSync: All {Total} obligations already exist for HospitalId={HospitalId} FrameworkId={FrameworkId}. No action needed.",
+            allOes.Count, hospitalId, frameworkId);
             return;
         }
 
@@ -113,7 +114,8 @@ public class ObligationSynchronizationService : IObligationSynchronizationServic
             CreatedAt = now,
             UpdatedAt = now,
             CreatedBy = "system",
-            UpdatedBy = "system"
+            UpdatedBy = "system",
+            RowVersion = new byte[] { 0 }
         }).ToList();
 
         // 5. Batch-insert new obligations (idempotent — duplicates guarded by unique constraint).
@@ -121,8 +123,8 @@ public class ObligationSynchronizationService : IObligationSynchronizationServic
 
         _logger.LogInformation(
             "ObligationSync: Created {NewCount} obligations (skipped {ExistingCount} existing) " +
-            "for OrganizationId={OrganizationId} FrameworkId={FrameworkId}",
-            newOes.Count, existingOeIds.Count, organizationId, frameworkId);
+            "for HospitalId={HospitalId} OrganizationId={OrganizationId} FrameworkId={FrameworkId}",
+            newOes.Count, existingOeIds.Count, hospitalId, organizationId, frameworkId);
     }
 
     private sealed class OeProjection

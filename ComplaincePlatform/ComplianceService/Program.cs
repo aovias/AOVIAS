@@ -18,7 +18,6 @@ using Hangfire.Dashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
-using ComplianceService.Infrastructure.Filters;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
@@ -68,6 +67,7 @@ builder.Services.AddSingleton<IgnoreRequestAbortedExceptionFilter>();
 builder.Services.AddControllers(options =>
     {
         options.Filters.Add<IgnoreRequestAbortedExceptionFilter>();
+        options.Filters.Add<ComplianceService.Infrastructure.Filters.HospitalAccessActionFilter>();
     })
     .AddJsonOptions(o =>
     {
@@ -172,6 +172,12 @@ builder.Services.AddHttpClient<IAiOrchestratorAssistClient, AiOrchestratorAssist
 .AddHttpMessageHandler<Shared.Logging.Correlation.CorrelationForwardingHandler>()
 .AddHttpMessageHandler<Shared.Infrastructure.Auth.InternalApiKeyForwardingHandler>();
 builder.Services.AddScoped<ComplianceService.Application.Contracts.IUserContextService, ComplianceService.Infrastructure.Services.UserContextService>();
+builder.Services.AddScoped<ComplianceService.Application.Authorization.IHospitalDirectory>(sp =>
+    sp.GetRequiredService<ComplianceService.Infrastructure.Services.IOrganizationServiceClient>());
+builder.Services.AddScoped<ComplianceService.Application.Authorization.IHospitalAccessAuthorizer, ComplianceService.Application.Authorization.HospitalAccessAuthorizer>();
+builder.Services.AddScoped<ComplianceService.Application.Authorization.IHospitalAccessCallerResolver, ComplianceService.Infrastructure.Authorization.HospitalAccessCallerResolver>();
+builder.Services.AddScoped<ComplianceService.Application.Authorization.IHospitalAccessContext, ComplianceService.Infrastructure.Authorization.HospitalAccessContext>();
+builder.Services.AddScoped<ComplianceService.Infrastructure.Filters.HospitalAccessActionFilter>();
 
 // Execution context: the tenant source that also works on internal API-key routes, where there is
 // no user principal for IUserContextService to read. ComplianceDbContext prefers this and falls
@@ -471,6 +477,7 @@ builder.Services.AddScoped<ComplianceService.Application.Services.UpdateObligati
 builder.Services.AddScoped<ComplianceService.Application.Services.UpdateObligationJourneyProgressCommandHandler>();
 builder.Services.AddScoped<ComplianceService.Application.Contracts.IOnboardingObligationAssessmentService, ComplianceService.Application.Services.OnboardingObligationAssessmentService>();
 builder.Services.AddScoped<ComplianceService.Application.Services.InProcessOutboxProcessor>();
+builder.Services.AddHostedService<ComplianceService.Application.BackgroundJobs.OutboxProjectionDrainHostedService>();
 builder.Services.AddScoped<ComplianceService.Application.Services.IObligationNextActionService, ComplianceService.Application.Services.ObligationNextActionService>();
 builder.Services.AddScoped<ComplianceService.Application.Services.RebuildObligationAssessmentCommandHandler>();
 

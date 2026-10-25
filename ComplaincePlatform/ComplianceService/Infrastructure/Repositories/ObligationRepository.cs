@@ -40,14 +40,16 @@ public class ObligationRepository : IObligationRepository
     }
 
     public async Task<OrganizationComplianceObligation?> GetByKeyAsync(
-        Guid organizationId,
+        Guid hospitalId,
+        Guid frameworkId,
         Guid objectiveElementId,
         CancellationToken ct = default)
     {
         return await _db.OrganizationComplianceObligations
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(
-                o => o.OrganizationId == organizationId
+                o => o.HospitalId == hospitalId
+                  && o.FrameworkId == frameworkId
                   && o.ObjectiveElementId == objectiveElementId,
                 ct);
     }
@@ -61,20 +63,25 @@ public class ObligationRepository : IObligationRepository
             return;
         }
 
-        // Guard: do not insert obligations whose (OrganizationId, ObjectiveElementId) already exist.
-        // This handles races and repeated calls idempotently at the application layer.
-        // The unique DB constraint is the final safety net.
-        var oeIds = obligations.Select(o => o.ObjectiveElementId).ToList();
-        var orgId = obligations[0].OrganizationId;
+        // Guard: do not insert obligations whose canonical key already exists.
+        var hospitalIds = obligations.Select(o => o.HospitalId).Distinct().ToList();
+        var frameworkIds = obligations.Select(o => o.FrameworkId).Distinct().ToList();
+        var oeIds = obligations.Select(o => o.ObjectiveElementId).Distinct().ToList();
 
-        var existingOeIds = await _db.OrganizationComplianceObligations
+        var existing = await _db.OrganizationComplianceObligations
             .IgnoreQueryFilters()
-            .Where(o => o.OrganizationId == orgId && oeIds.Contains(o.ObjectiveElementId))
-            .Select(o => o.ObjectiveElementId)
-            .ToHashSetAsync(ct);
+            .Where(o => hospitalIds.Contains(o.HospitalId)
+                     && frameworkIds.Contains(o.FrameworkId)
+                     && oeIds.Contains(o.ObjectiveElementId))
+            .Select(o => new { o.HospitalId, o.FrameworkId, o.ObjectiveElementId })
+            .ToListAsync(ct);
+
+        var existingKeys = existing
+            .Select(e => (e.HospitalId, e.FrameworkId, e.ObjectiveElementId))
+            .ToHashSet();
 
         var toInsert = obligations
-            .Where(o => !existingOeIds.Contains(o.ObjectiveElementId))
+            .Where(o => !existingKeys.Contains((o.HospitalId, o.FrameworkId, o.ObjectiveElementId)))
             .ToList();
 
         if (toInsert.Count == 0)
@@ -89,8 +96,8 @@ public class ObligationRepository : IObligationRepository
         await _db.SaveChangesAsync(ct);
 
         _logger.LogInformation(
-            "ObligationRepository: Inserted {Count} new obligations for OrganizationId={OrgId}.",
-            toInsert.Count, orgId);
+            "ObligationRepository: Inserted {Count} new obligations for canonical hospital/framework/OE keys.",
+            toInsert.Count);
     }
 
     public async Task<IReadOnlyList<ObligationStatusCount>> GetSummaryCountsAsync(

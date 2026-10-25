@@ -124,7 +124,7 @@ public class OutboxDomainEventDispatcher : IDomainEventDispatcher
         CancellationToken ct)
     {
         // Serialize to JSON
-        var payload = JsonSerializer.Serialize(domainEvent, new JsonSerializerOptions
+        var payload = JsonSerializer.Serialize(domainEvent, domainEvent.GetType(), new JsonSerializerOptions
         {
             WriteIndented = false
         });

@@ -73,6 +73,7 @@ public class EmploymentAppServiceTests
         Assert.True(deleted);
         var stored = await db.Employments.FirstAsync(e => e.Id == employment.Id);
         Assert.True(stored.IsDeleted);
+        Assert.DoesNotContain(db.OutboxMessages, o => o.Type == "EmploymentTerminated");
     }
 
     [Fact]
@@ -93,6 +94,8 @@ public class EmploymentAppServiceTests
 
         Assert.Equal("EMP000099", created.EmploymentNumber);
         Assert.Equal("TEST", created.PersonSearchName);
+        var createdOutbox = Assert.Single(db.OutboxMessages, o => o.Type == "EmploymentCreated");
+        Assert.Equal($"{{\"employmentId\":\"{created.Id}\"}}", createdOutbox.Payload);
     }
 
     [Fact]
@@ -196,6 +199,8 @@ public class EmploymentAppServiceTests
 
         Assert.Contains(db.EmploymentHistories, h => h.EmploymentId == employment.Id && h.EventType == "Transferred");
         Assert.Contains(db.WorkforceTimeline, t => t.EmploymentId == employment.Id && t.EventType == "Transferred");
+        var transferOutbox = Assert.Single(db.OutboxMessages, o => o.Type == "EmploymentTransferred");
+        Assert.Equal("{}", transferOutbox.Payload);
     }
 
     private static readonly Mock<IPlatformIdGenerator> idGen = new();

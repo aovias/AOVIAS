@@ -233,7 +233,7 @@ public sealed class DashboardProjectionUpdater
         Guid frameworkId,
         CancellationToken cancellationToken)
     {
-        var query = _dbContext.ComplianceJourneys.AsNoTracking().Where(j => j.HospitalId == hospitalId);
+        var query = _dbContext.ComplianceJourneys.AsNoTracking().IgnoreQueryFilters().Where(j => j.HospitalId == hospitalId);
         if (frameworkId != Guid.Empty)
         {
             query = query.Where(j => j.FrameworkId == frameworkId);
@@ -244,7 +244,8 @@ public sealed class DashboardProjectionUpdater
 
     private static bool IsTaskEvent(string type) =>
         type.Contains("TaskCreated", StringComparison.OrdinalIgnoreCase)
-        || type.Contains("TaskCompleted", StringComparison.OrdinalIgnoreCase);
+        || type.Contains("TaskCompleted", StringComparison.OrdinalIgnoreCase)
+        || type.Contains("TaskOverdue", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsFindingEvent(string type) =>
         type.Contains("FindingCreated", StringComparison.OrdinalIgnoreCase)

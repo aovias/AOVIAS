@@ -1,0 +1,10 @@
+MigrationTimestampUtc=2026-08-31T11:09:21.1082128Z
+TotalObligations=2662
+DuplicateBusinessKeys=1006
+Deficiencies=177
+Tasks=1534
+Evidences=473
+Findings=35
+Capas=17
+SlaPolicies=8
+MaturityStates=4

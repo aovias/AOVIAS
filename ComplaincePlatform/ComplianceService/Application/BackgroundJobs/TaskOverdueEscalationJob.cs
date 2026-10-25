@@ -1,3 +1,4 @@
+using ComplianceService.Application.Services;
 using ComplianceService.Application.Contracts;
 using ComplianceService.Application.Events;
 using ComplianceService.Domain;
@@ -16,17 +17,20 @@ public sealed class TaskOverdueEscalationJob
     private readonly ComplianceDbContext _db;
     private readonly IComplianceEventEmitter _eventEmitter;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly InProcessOutboxProcessor _outboxProcessor;
     private readonly ILogger<TaskOverdueEscalationJob> _logger;
 
     public TaskOverdueEscalationJob(
         ComplianceDbContext db,
         IComplianceEventEmitter eventEmitter,
         IUnitOfWork unitOfWork,
+        InProcessOutboxProcessor outboxProcessor,
         ILogger<TaskOverdueEscalationJob> logger)
     {
         _db = db;
         _eventEmitter = eventEmitter;
         _unitOfWork = unitOfWork;
+        _outboxProcessor = outboxProcessor;
         _logger = logger;
     }
 
@@ -75,6 +79,8 @@ public sealed class TaskOverdueEscalationJob
         {
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
+
+        await _outboxProcessor.ProcessPendingAsync(cancellationToken);
 
         _logger.LogInformation("TaskOverdueEscalationJob completed. Emitted={Emitted}", emitted);
     }
