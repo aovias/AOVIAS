@@ -119,7 +119,7 @@ Sprints are sized for one implementation-model session each, with `IMPLEMENTATIO
   4 projects + its external reference closure; `ComplianceServiceManager.slnx` now explicitly lists
   `Aovias.DesignSystem` alongside CSM and is documented as the platform's Windows canonical build
   entry point, paired with `Aovias.Platform.slnx` as the cross-platform entry point; two
-  previously-unlisted cross-platform tools (`tools/PublishAllServices`, `tools/PublishRuntimeAgent`)
+  previously-unlisted cross-platform tools (`AOVIAS.Infrastructure/tools/PublishAllServices`, `AOVIAS.Infrastructure/tools/PublishRuntimeAgent`)
   added to `Aovias.Platform.slnx`. Static Verification (scripts actually run, not traced): all 90
   `ProjectReference` paths across all 36 production `.csproj` resolve; zero circular project
   references (max depth 8); zero package-version drift across every `PackageReference` in the

@@ -35,7 +35,7 @@ bash: line 1: dotnet: command not found
 **Result: BLOCKED** — depends on Stage 2.
 
 ### Stage 4 — Publish (platform services + Runtime Agent)
-**Result: BLOCKED** — depends on Stage 2; additionally, `tools/PublishRuntimeAgent` itself requires the SDK to run.
+**Result: BLOCKED** — depends on Stage 2; additionally, `AOVIAS.Infrastructure/tools/PublishRuntimeAgent` itself requires the SDK to run.
 
 ### Stage 5 — Generate Deployment Package (Gateway / Identity / remaining services)
 **Result: BLOCKED** — depends on Stage 4. Additionally not attempted for a second, independent reason: whether `ComplaincePlatform/Gateway`/`IdentityService` carry the deployment metadata Aovias's publisher expects was never confirmed (flagged in the runbook as needing verification during a real run) — that verification itself requires the SDK to exercise the publisher's discovery logic, so it could not be checked here either.

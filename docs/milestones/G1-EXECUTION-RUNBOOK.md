@@ -54,13 +54,13 @@ dotnet test Aovias.Platform.slnx --no-build -c Release --logger "console;verbosi
 ## Stage 4 — Publish (platform services + Runtime Agent)
 
 ```bash
-dotnet run --project tools/PublishRuntimeAgent -c Release
+dotnet run --project AOVIAS.Infrastructure/tools/PublishRuntimeAgent -c Release
 ```
 
 **Pass criteria:** ends with `SUCCESS: <path-to-package>` and `Deployment Ready: True`. Note the printed package path — you need it in Stage 6. If it prints `FAILED:` with `ReadinessReport.Errors`, that's a Deployment-category defect in the DRV (Deployment Readiness Validation) pipeline itself — capture every listed error verbatim.
 
 ```bash
-dotnet run --project tools/PublishAllServices -c Release
+dotnet run --project AOVIAS.Infrastructure/tools/PublishAllServices -c Release
 ```
 
 **Pass criteria:** every platform service publishes successfully. This tool's own console output enumerates which services it covers — capture the full list and any per-service failure.
@@ -71,11 +71,11 @@ This platform needs a real workload to deploy against a fresh environment to pro
 
 ```bash
 # Adjust the project path once you've confirmed the correct target and manifest are in place.
-dotnet run --project tools/PublishAllServices -c Release -- --project ComplaincePlatform/Gateway/Gateway.csproj
-dotnet run --project tools/PublishAllServices -c Release -- --project ComplaincePlatform/IdentityService/IdentityService.csproj
+dotnet run --project AOVIAS.Infrastructure/tools/PublishAllServices -c Release -- --project ComplaincePlatform/Gateway/Gateway.csproj
+dotnet run --project AOVIAS.Infrastructure/tools/PublishAllServices -c Release -- --project ComplaincePlatform/IdentityService/IdentityService.csproj
 ```
 
-(The exact CLI argument shape depends on `tools/PublishAllServices/Program.cs`'s actual argument parsing — read it before running; adjust this command to match. If `ComplaincePlatform` turns out not to be deployable as-is, publish just the Runtime Agent from Stage 4 and treat this as a self-hosting-only first run — still a valid, meaningful G1 result, just narrower than the full pipeline diagram.)
+(The exact CLI argument shape depends on `AOVIAS.Infrastructure/tools/PublishAllServices/Program.cs`'s actual argument parsing — read it before running; adjust this command to match. If `ComplaincePlatform` turns out not to be deployable as-is, publish just the Runtime Agent from Stage 4 and treat this as a self-hosting-only first run — still a valid, meaningful G1 result, just narrower than the full pipeline diagram.)
 
 **Pass criteria:** a `.aovdeploy` package per service, each reporting `Deployment Ready: True`.
 

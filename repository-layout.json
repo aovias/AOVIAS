@@ -131,11 +131,11 @@
           "target": "AOVIAS.Infrastructure/aovias-config"
         },
         "releaseValidation": {
-          "current": "Aovias.ReleaseValidation",
+          "current": "AOVIAS.Infrastructure/Aovias.ReleaseValidation",
           "target": "AOVIAS.Infrastructure/Aovias.ReleaseValidation"
         },
         "publishTools": {
-          "current": "tools",
+          "current": "AOVIAS.Infrastructure/tools",
           "target": "AOVIAS.Infrastructure/tools",
           "ownershipNote": "UNRESOLVED O-5 — PublishAllServices and PublishRuntimeAgent only"
         }
