@@ -2,7 +2,7 @@
 
 **Status:** Accepted (documents existing, intentional behaviour)
 **Date:** 2026-08-07
-**Supersedes:** nothing. **Amends:** `Aovias.ReleaseValidation/TESTID-CONTRACT.md` §2 (documentation only)
+**Supersedes:** nothing. **Amends:** `AOVIAS.Infrastructure/Aovias.ReleaseValidation/TESTID-CONTRACT.md` §2 (documentation only)
 **Raised by:** RC3 Foundation F1.2A.1 identifier audit
 
 ---

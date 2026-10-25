@@ -24,8 +24,8 @@
       Windows build agent with the .NET Desktop workload. Kept as a second, separate entry point
       rather than folded into this file for exactly the reason `Aovias.DesignSystem` was already
       excluded below.
-    A repo-wide `find *.csproj` scan (M3.0) also found `tools/PublishAllServices` and
-    `tools/PublishRuntimeAgent` — both net10.0, both previously in no solution at all — added to
+    A repo-wide `find *.csproj` scan (M3.0) also found `AOVIAS.Infrastructure/tools/PublishAllServices` and
+    `AOVIAS.Infrastructure/tools/PublishRuntimeAgent` — both net10.0, both previously in no solution at all — added to
     the new `/tools/` folder below.
 
     Deliberately excluded, with reason:
@@ -90,7 +90,7 @@
     <Project Path="ComplianceServiceManager.Operations.Tests/ComplianceServiceManager.Operations.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
-    <Project Path="tools/PublishAllServices/PublishAllServices.csproj" />
-    <Project Path="tools/PublishRuntimeAgent/PublishRuntimeAgent.csproj" />
+    <Project Path="AOVIAS.Infrastructure/tools/PublishAllServices/PublishAllServices.csproj" />
+    <Project Path="AOVIAS.Infrastructure/tools/PublishRuntimeAgent/PublishRuntimeAgent.csproj" />
   </Folder>
 </Solution>

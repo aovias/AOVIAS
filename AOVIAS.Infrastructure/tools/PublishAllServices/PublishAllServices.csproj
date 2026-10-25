@@ -10,7 +10,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.9" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Aovias.Configuration\Aovias.Configuration.csproj" />
-    <ProjectReference Include="..\..\Aovias.Publishing\src\Aovias.Publishing.SDK\Aovias.Publishing.SDK.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Configuration\Aovias.Configuration.csproj" />
+    <ProjectReference Include="..\..\..\Aovias.Publishing\src\Aovias.Publishing.SDK\Aovias.Publishing.SDK.csproj" />
   </ItemGroup>
 </Project>
