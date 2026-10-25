@@ -25,7 +25,7 @@ public sealed class EnvironmentNeutralPortabilityRegressionTests
     ];
 
     private static string ConfigRoot => Path.GetFullPath(Path.Combine(
-        AppContext.BaseDirectory, "..", "..", "..", "..", "..", "..", "aovias-config"));
+        AppContext.BaseDirectory, "..", "..", "..", "..", "..", "..", "AOVIAS.Infrastructure", "aovias-config"));
 
     // Shared empty directory used as a stand-in project root: no appsettings*.json
     // exists here, so config-template generation stays hermetic across every call.

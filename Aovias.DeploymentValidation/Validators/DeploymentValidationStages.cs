@@ -538,7 +538,7 @@ public sealed class RuntimeBootstrapValidationStage : IDeploymentValidationStage
         if (output.Contains("V:/DevelopmentRepo/V1.0/aovias-config", StringComparison.OrdinalIgnoreCase)
             || output.Contains("V:\\DevelopmentRepo\\V1.0\\aovias-config", StringComparison.OrdinalIgnoreCase))
         {
-            errors.Add("Runtime Agent fell back to developer configuration paths.");
+            errors.Add("Runtime Agent fell back to legacy V1.0 developer configuration paths.");
         }
 
         var bootstrap = RuntimeBootstrapReportParser.Parse(output);

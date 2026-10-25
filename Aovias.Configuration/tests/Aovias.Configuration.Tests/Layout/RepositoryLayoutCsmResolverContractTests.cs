@@ -196,7 +196,7 @@ public sealed class RepositoryLayoutCsmResolverContractTests
         var root = Path.Combine(Path.GetTempPath(), "aovias-csm-fix-" + Guid.NewGuid().ToString("N"));
         if (includeConfig)
         {
-            Directory.CreateDirectory(Path.Combine(root, "aovias-config"));
+            Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Infrastructure", "aovias-config"));
         }
 
         if (includeAgent)
@@ -236,8 +236,8 @@ public sealed class RepositoryLayoutCsmResolverContractTests
               "solutions": [],
               "discovery": {
                 "current": {
-                  "platformRoot": { "requiredAll": ["aovias-config"], "requiredAny": ["ComplaincePlatform", "Aovias.Runtime.Agent"] },
-                  "csmPlatformRoot": { "requiredAll": ["aovias-config", "Aovias.Runtime.Agent"], "requiredAny": [] },
+                  "platformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config"], "requiredAny": ["ComplaincePlatform", "Aovias.Runtime.Agent"] },
+                  "csmPlatformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config", "Aovias.Runtime.Agent"], "requiredAny": [] },
                   "defaultApplicationRoots": ["ComplaincePlatform", "WebApp"],
                   "deployableProjectScanRoots": ["ComplaincePlatform", "Aovias.Runtime.Agent"],
                   "runtimeAgentProjectRelative": "Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Api/Aovias.Runtime.Agent.Api.csproj",

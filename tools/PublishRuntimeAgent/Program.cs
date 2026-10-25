@@ -1,4 +1,5 @@
 using Aovias.Configuration.Extensions;
+using Aovias.Configuration.Layout;
 using Aovias.Publishing.Contracts;
 using Aovias.Publishing.SDK;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +23,7 @@ if (!File.Exists(projectPath))
 var bootstrap = new ConfigurationBuilder()
     .AddInMemoryCollection(new Dictionary<string, string?>
     {
-        ["Aovias:ConfigRoot"] = Path.Combine(platformRoot, "aovias-config").Replace('\\', '/'),
+        ["Aovias:ConfigRoot"] = RepositoryLayoutAoviasConfigPaths.ResolveConfigRootDirectory(platformRoot).Replace('\\', '/'),
         ["Aovias:ProfilesDirectory"] = "profiles",
         ["Aovias:SecretsDirectory"] = "secrets",
         ["Aovias:ActiveProfile"] = "local"
@@ -83,7 +84,7 @@ static string ResolvePlatformRoot()
     while (current is not null)
     {
         if (Directory.Exists(Path.Combine(current.FullName, "Aovias.Runtime.Agent"))
-            && Directory.Exists(Path.Combine(current.FullName, "aovias-config")))
+            && RepositoryLayoutAoviasConfigPaths.ConfigDirectoryExistsAtRepositoryRoot(current.FullName))
         {
             return current.FullName;
         }

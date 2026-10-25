@@ -13,7 +13,7 @@ namespace Aovias.Publishing.Core.Tests;
 public sealed class RegressionTests
 {
     private static string ConfigRoot => Path.GetFullPath(Path.Combine(
-        AppContext.BaseDirectory, "..", "..", "..", "..", "..", "..", "aovias-config"));
+        AppContext.BaseDirectory, "..", "..", "..", "..", "..", "..", "AOVIAS.Infrastructure", "aovias-config"));
 
     [Fact]
     public void EnvironmentComparison_server_profiles_only_differ_in_expected_values()

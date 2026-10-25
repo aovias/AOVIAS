@@ -124,10 +124,10 @@
       "id": "infrastructure",
       "displayName": "AOVIAS.Infrastructure",
       "owner": "AOVIAS.Infrastructure",
-      "migrationStatus": "partial-at-root",
+      "migrationStatus": "infrastructure-config-at-target",
       "paths": {
         "aoviasConfig": {
-          "current": "aovias-config",
+          "current": "AOVIAS.Infrastructure/aovias-config",
           "target": "AOVIAS.Infrastructure/aovias-config"
         },
         "releaseValidation": {
@@ -187,11 +187,11 @@
   "discovery": {
     "current": {
       "platformRoot": {
-        "requiredAll": ["aovias-config"],
+        "requiredAll": ["AOVIAS.Infrastructure/aovias-config"],
         "requiredAny": ["ComplaincePlatform", "Aovias.Runtime.Agent"]
       },
       "csmPlatformRoot": {
-        "requiredAll": ["aovias-config", "Aovias.Runtime.Agent"],
+        "requiredAll": ["AOVIAS.Infrastructure/aovias-config", "Aovias.Runtime.Agent"],
         "requiredAny": []
       },
       "defaultApplicationRoots": ["ComplaincePlatform", "WebApp"],
@@ -239,7 +239,7 @@
     }
   },
   "compatibilityConstraints": [
-    "Publishing PlatformRootResolver and CSM RootPathResolver.ResolvePlatformRoot use RepositoryLayoutProductionAdapter with the Current profile and discovery.current markers (Publishing: aovias-config plus ComplaincePlatform or Aovias.Runtime.Agent; CSM platform root: aovias-config and Aovias.Runtime.Agent). When repository-layout.json is missing, invalid, or markers do not match, legacy directory walks apply. Other path resolvers and tooling are not manifest-driven.",
+    "Publishing PlatformRootResolver and CSM RootPathResolver.ResolvePlatformRoot use RepositoryLayoutProductionAdapter with the Current profile and discovery.current markers (Publishing: AOVIAS.Infrastructure/aovias-config plus ComplaincePlatform or Aovias.Runtime.Agent; CSM platform root: AOVIAS.Infrastructure/aovias-config and Aovias.Runtime.Agent). Legacy fallback accepts the infrastructure path or the pre-W1 root aovias-config directory during transition. When repository-layout.json is missing, invalid, or markers do not match, legacy directory walks apply. Other path resolvers and tooling are not manifest-driven.",
     "ComplaincePlatform spelling must be preserved until a separate reviewed rename.",
     "Git worktree paths (AOVIAS, AOVIAS.Cursor, AOVIAS.Claude) are independent of product folder layout.",
     "Command csproj graph has no ProjectReference to Aovias.* at baseline HEAD."

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Aovias.Configuration.Deployment;
+using Aovias.Configuration.Layout;
 using Aovias.Configuration.Settings;
 using Aovias.DeploymentValidation.Models;
 using Aovias.DeploymentValidation.Services;
@@ -832,7 +833,7 @@ public sealed class SolutionPublishingPreflightService : ISolutionPublishingPref
             {
                 candidates.Add(Path.Combine(current.FullName, "Aovias.Runtime.Agent", "Dockerfile"));
                 candidates.Add(Path.Combine(current.FullName, "Dockerfile"));
-                if (Directory.Exists(Path.Combine(current.FullName, "aovias-config"))
+                if (RepositoryLayoutAoviasConfigPaths.ConfigDirectoryExistsAtRepositoryRoot(current.FullName)
                     && Directory.Exists(Path.Combine(current.FullName, "ComplaincePlatform")))
                 {
                     break;

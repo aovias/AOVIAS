@@ -11,7 +11,7 @@ public static class LegacyPublishingPlatformRootDiscovery
         var current = new DirectoryInfo(baseDirectory);
         while (current is not null)
         {
-            if (Directory.Exists(Path.Combine(current.FullName, "aovias-config"))
+            if (RepositoryLayoutAoviasConfigPaths.ConfigDirectoryExistsAtRepositoryRoot(current.FullName)
                 && (Directory.Exists(Path.Combine(current.FullName, "ComplaincePlatform"))
                     || Directory.Exists(Path.Combine(current.FullName, "Aovias.Runtime.Agent"))))
             {
