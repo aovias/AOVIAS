@@ -63,60 +63,60 @@
       "id": "studio",
       "displayName": "AOVIAS.Studio",
       "owner": "AOVIAS.Studio",
-      "migrationStatus": "at-repository-root",
+      "migrationStatus": "studio-at-target",
       "paths": {
         "platformSolution": {
-          "current": "Aovias.Platform.slnx",
+          "current": "AOVIAS.Studio/Aovias.Platform.slnx",
           "target": "AOVIAS.Studio/Aovias.Platform.slnx"
         },
         "publishingEngineSolution": {
-          "current": "Aovias.PublishingEngine.slnx",
+          "current": "AOVIAS.Studio/Aovias.PublishingEngine.slnx",
           "target": "AOVIAS.Studio/Aovias.PublishingEngine.slnx"
         },
         "complianceServiceManager": {
-          "current": "ComplianceServiceManager",
+          "current": "AOVIAS.Studio/ComplianceServiceManager",
           "target": "AOVIAS.Studio/ComplianceServiceManager"
         },
         "configuration": {
-          "current": "Aovias.Configuration",
+          "current": "AOVIAS.Studio/Aovias.Configuration",
           "target": "AOVIAS.Studio/Aovias.Configuration"
         },
         "deploymentContracts": {
-          "current": "Aovias.Deployment.Contracts",
+          "current": "AOVIAS.Studio/Aovias.Deployment.Contracts",
           "target": "AOVIAS.Studio/Aovias.Deployment.Contracts"
         },
         "commandCenter": {
-          "current": "Aovias.CommandCenter",
+          "current": "AOVIAS.Studio/Aovias.CommandCenter",
           "target": "AOVIAS.Studio/Aovias.CommandCenter"
         },
         "runtimeAgent": {
-          "current": "Aovias.Runtime.Agent",
+          "current": "AOVIAS.Studio/Aovias.Runtime.Agent",
           "target": "AOVIAS.Studio/Aovias.Runtime.Agent"
         },
         "publishing": {
-          "current": "Aovias.Publishing",
+          "current": "AOVIAS.Studio/Aovias.Publishing",
           "target": "AOVIAS.Studio/Aovias.Publishing"
         },
         "bootstrap": {
-          "current": "Aovias.Bootstrap",
+          "current": "AOVIAS.Studio/Aovias.Bootstrap",
           "target": "AOVIAS.Studio/Aovias.Bootstrap"
         },
         "release": {
-          "current": "Aovias.Release",
+          "current": "AOVIAS.Studio/Aovias.Release",
           "target": "AOVIAS.Studio/Aovias.Release"
         },
         "orchestration": {
-          "current": "Aovias.Orchestration",
+          "current": "AOVIAS.Studio/Aovias.Orchestration",
           "target": "AOVIAS.Studio/Aovias.Orchestration"
         },
         "designSystem": {
-          "current": "Aovias.DesignSystem",
+          "current": "AOVIAS.Studio/Aovias.DesignSystem",
           "target": "AOVIAS.Studio/Aovias.DesignSystem"
         },
         "deploymentValidation": {
-          "current": "Aovias.DeploymentValidation",
+          "current": "AOVIAS.Studio/Aovias.DeploymentValidation",
           "target": "AOVIAS.Studio/Aovias.DeploymentValidation",
-          "ownershipNote": "UNRESOLVED O-3 — provisional Studio target"
+          "ownershipNote": "Studio (W3) — O-3 closed per approval record §11"
         }
       }
     },
@@ -174,38 +174,38 @@
     }
   ],
   "solutions": [
-    { "path": { "current": "Aovias.Platform.slnx", "target": "AOVIAS.Studio/Aovias.Platform.slnx" }, "owner": "AOVIAS.Studio" },
-    { "path": { "current": "Aovias.PublishingEngine.slnx", "target": "AOVIAS.Studio/Aovias.PublishingEngine.slnx" }, "owner": "AOVIAS.Studio" },
+    { "path": { "current": "AOVIAS.Studio/Aovias.Platform.slnx", "target": "AOVIAS.Studio/Aovias.Platform.slnx" }, "owner": "AOVIAS.Studio" },
+    { "path": { "current": "AOVIAS.Studio/Aovias.PublishingEngine.slnx", "target": "AOVIAS.Studio/Aovias.PublishingEngine.slnx" }, "owner": "AOVIAS.Studio" },
     { "path": { "current": "ComplaincePlatform/CompliancePlatform.slnx", "target": "AOVIAS.Command/CompliancePlatform/CompliancePlatform.slnx" }, "owner": "AOVIAS.Command" },
-    { "path": { "current": "ComplianceServiceManager/ComplianceServiceManager.slnx", "target": "AOVIAS.Studio/ComplianceServiceManager/ComplianceServiceManager.slnx" }, "owner": "AOVIAS.Studio" },
-    { "path": { "current": "Aovias.CommandCenter/Aovias.CommandCenter.slnx", "target": "AOVIAS.Studio/Aovias.CommandCenter/Aovias.CommandCenter.slnx" }, "owner": "AOVIAS.Studio" },
-    { "path": { "current": "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx", "target": "AOVIAS.Studio/Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx" }, "owner": "AOVIAS.Studio" },
-    { "path": { "current": "Aovias.Publishing/Aovias.Publishing.slnx", "target": "AOVIAS.Studio/Aovias.Publishing/Aovias.Publishing.slnx" }, "owner": "AOVIAS.Studio" },
-    { "path": { "current": "Aovias.Release/Aovias.Release.slnx", "target": "AOVIAS.Studio/Aovias.Release/Aovias.Release.slnx" }, "owner": "AOVIAS.Studio" },
-    { "path": { "current": "Aovias.Orchestration/Aovias.Orchestration.slnx", "target": "AOVIAS.Studio/Aovias.Orchestration/Aovias.Orchestration.slnx" }, "owner": "AOVIAS.Studio" }
+    { "path": { "current": "AOVIAS.Studio/ComplianceServiceManager/ComplianceServiceManager.slnx", "target": "AOVIAS.Studio/ComplianceServiceManager/ComplianceServiceManager.slnx" }, "owner": "AOVIAS.Studio" },
+    { "path": { "current": "AOVIAS.Studio/Aovias.CommandCenter/Aovias.CommandCenter.slnx", "target": "AOVIAS.Studio/Aovias.CommandCenter/Aovias.CommandCenter.slnx" }, "owner": "AOVIAS.Studio" },
+    { "path": { "current": "AOVIAS.Studio/Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx", "target": "AOVIAS.Studio/Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx" }, "owner": "AOVIAS.Studio" },
+    { "path": { "current": "AOVIAS.Studio/Aovias.Publishing/Aovias.Publishing.slnx", "target": "AOVIAS.Studio/Aovias.Publishing/Aovias.Publishing.slnx" }, "owner": "AOVIAS.Studio" },
+    { "path": { "current": "AOVIAS.Studio/Aovias.Release/Aovias.Release.slnx", "target": "AOVIAS.Studio/Aovias.Release/Aovias.Release.slnx" }, "owner": "AOVIAS.Studio" },
+    { "path": { "current": "AOVIAS.Studio/Aovias.Orchestration/Aovias.Orchestration.slnx", "target": "AOVIAS.Studio/Aovias.Orchestration/Aovias.Orchestration.slnx" }, "owner": "AOVIAS.Studio" }
   ],
   "discovery": {
     "current": {
       "platformRoot": {
         "requiredAll": ["AOVIAS.Infrastructure/aovias-config"],
-        "requiredAny": ["ComplaincePlatform", "Aovias.Runtime.Agent"]
+        "requiredAny": ["ComplaincePlatform", "AOVIAS.Studio/Aovias.Runtime.Agent"]
       },
       "csmPlatformRoot": {
-        "requiredAll": ["AOVIAS.Infrastructure/aovias-config", "Aovias.Runtime.Agent"],
+        "requiredAll": ["AOVIAS.Infrastructure/aovias-config", "AOVIAS.Studio/Aovias.Runtime.Agent"],
         "requiredAny": []
       },
       "defaultApplicationRoots": ["ComplaincePlatform", "WebApp"],
-      "deployableProjectScanRoots": ["ComplaincePlatform", "Aovias.Runtime.Agent"],
-      "runtimeAgentProjectRelative": "Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Api/Aovias.Runtime.Agent.Api.csproj",
+      "deployableProjectScanRoots": ["ComplaincePlatform", "AOVIAS.Studio/Aovias.Runtime.Agent"],
+      "runtimeAgentProjectRelative": "AOVIAS.Studio/Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Api/Aovias.Runtime.Agent.Api.csproj",
       "webAppAngularManifestRelative": "WebApp/angular.json",
       "runtimeAgentDockerCopyRoots": [
-        "Aovias.Configuration",
-        "Aovias.Deployment.Contracts",
-        "Aovias.DeploymentValidation",
-        "Aovias.Orchestration",
-        "Aovias.Release",
-        "Aovias.Publishing",
-        "Aovias.Runtime.Agent"
+        "AOVIAS.Studio/Aovias.Configuration",
+        "AOVIAS.Studio/Aovias.Deployment.Contracts",
+        "AOVIAS.Studio/Aovias.DeploymentValidation",
+        "AOVIAS.Studio/Aovias.Orchestration",
+        "AOVIAS.Studio/Aovias.Release",
+        "AOVIAS.Studio/Aovias.Publishing",
+        "AOVIAS.Studio/Aovias.Runtime.Agent"
       ]
     },
     "target": {
@@ -239,7 +239,7 @@
     }
   },
   "compatibilityConstraints": [
-    "Publishing PlatformRootResolver and CSM RootPathResolver.ResolvePlatformRoot use RepositoryLayoutProductionAdapter with the Current profile and discovery.current markers (Publishing: AOVIAS.Infrastructure/aovias-config plus ComplaincePlatform or Aovias.Runtime.Agent; CSM platform root: AOVIAS.Infrastructure/aovias-config and Aovias.Runtime.Agent). Legacy fallback accepts the infrastructure path or the pre-W1 root aovias-config directory during transition. When repository-layout.json is missing, invalid, or markers do not match, legacy directory walks apply. Other path resolvers and tooling are not manifest-driven.",
+    "Publishing PlatformRootResolver and CSM RootPathResolver.ResolvePlatformRoot use RepositoryLayoutProductionAdapter with the Current profile and discovery.current markers (Publishing: AOVIAS.Infrastructure/aovias-config plus ComplaincePlatform or AOVIAS.Studio/Aovias.Runtime.Agent; CSM platform root: AOVIAS.Infrastructure/aovias-config and AOVIAS.Studio/Aovias.Runtime.Agent). Legacy fallback accepts the infrastructure path or the pre-W1 root aovias-config directory during transition. When repository-layout.json is missing, invalid, or markers do not match, legacy directory walks apply. Other path resolvers and tooling are not manifest-driven.",
     "ComplaincePlatform spelling must be preserved until a separate reviewed rename.",
     "Git worktree paths (AOVIAS, AOVIAS.Cursor, AOVIAS.Claude) are independent of product folder layout.",
     "Command csproj graph has no ProjectReference to Aovias.* at baseline HEAD."
