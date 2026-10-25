@@ -79,18 +79,4 @@ if (result.ReadinessReport?.Errors is { Count: > 0 } errors)
 return 1;
 
 static string ResolvePlatformRoot()
-{
-    var current = new DirectoryInfo(AppContext.BaseDirectory);
-    while (current is not null)
-    {
-        if (Directory.Exists(Path.Combine(current.FullName, "Aovias.Runtime.Agent"))
-            && RepositoryLayoutAoviasConfigPaths.ConfigDirectoryExistsAtRepositoryRoot(current.FullName))
-        {
-            return current.FullName;
-        }
-
-        current = current.Parent;
-    }
-
-    return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
-}
+    => RepositoryLayoutProductionAdapter.ResolvePublishingPlatformRoot(AppContext.BaseDirectory);

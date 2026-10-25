@@ -10,14 +10,16 @@
 ## One-time bootstrap
 
 ```powershell
-dotnet run --project V:\DevelopmentRepo\V1.0\Aovias.Bootstrap\src\Aovias.Bootstrap.Host\Aovias.Bootstrap.Host.csproj -- deploy `
+dotnet run --project V:\DevelopmentRepo\AOVIAS\Aovias.Bootstrap\src\Aovias.Bootstrap.Host\Aovias.Bootstrap.Host.csproj -- deploy `
   --package V:\path\to\runtime-agent-1.0.0.aovdeploy `
   --profile demo `
   --target demo.praman.cloud `
   --ssh-user deploy `
   --ssh-key C:\Users\you\.ssh\id_ed25519 `
-  --config-root V:\DevelopmentRepo\V1.0\aovias-config
+  --config-root V:\DevelopmentRepo\AOVIAS\AOVIAS.Infrastructure\aovias-config
 ```
+
+Use the path to your on-disk AOVIAS config root (the directory that contains `profiles/` and `secrets/`). On the VPS, that is typically mounted separately (see prerequisite above); the Windows `--config-root` example points at this repository's infrastructure config tree after the W1 layout move.
 
 The bootstrap host tool will:
 

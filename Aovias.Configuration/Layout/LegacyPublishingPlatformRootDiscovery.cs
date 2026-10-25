@@ -6,21 +6,16 @@ namespace Aovias.Configuration.Layout;
 /// </summary>
 public static class LegacyPublishingPlatformRootDiscovery
 {
+    public static bool TryResolve(string baseDirectory, out string repositoryRoot)
+        => RepositoryLayoutPlatformRootDiscovery.TryResolvePublishingPlatformRoot(baseDirectory, out repositoryRoot);
+
     public static string Resolve(string baseDirectory)
     {
-        var current = new DirectoryInfo(baseDirectory);
-        while (current is not null)
+        if (TryResolve(baseDirectory, out var repositoryRoot))
         {
-            if (RepositoryLayoutAoviasConfigPaths.ConfigDirectoryExistsAtRepositoryRoot(current.FullName)
-                && (Directory.Exists(Path.Combine(current.FullName, "ComplaincePlatform"))
-                    || Directory.Exists(Path.Combine(current.FullName, "Aovias.Runtime.Agent"))))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
+            return repositoryRoot;
         }
 
-        return Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", ".."));
+        throw RepositoryLayoutPlatformRootDiscovery.CreatePublishingNotFoundException(baseDirectory);
     }
 }

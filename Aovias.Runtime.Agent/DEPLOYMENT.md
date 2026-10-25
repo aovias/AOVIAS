@@ -57,7 +57,7 @@ Copy `.env.example` to `.env` and adjust values for the target environment.
 
 ## Docker Compose
 
-The publishing pipeline generates compose files from `aovias-config/templates/publishing/docker-compose.runtime-agent.yml`.
+In this repository, tracked publishing and deployment templates live under `AOVIAS.Infrastructure/aovias-config/templates/` (for example `templates/publishing/` for service Dockerfiles and related publish outputs, and `templates/nginx/runtime-agent.site.conf.template` used when rendering nginx site config). The publishing pipeline resolves templates from the configured AOVIAS config root (`AOVIAS_CONFIG_ROOT` on the host or the equivalent `ConfigRoot` in development settings), not from a root-level `aovias-config/` directory.
 
 Mount the config root read-only and provide the environment variables above. The same image can be reused across Local, Demo, UAT, and Production by changing only the mounted config tree and environment variables.
 

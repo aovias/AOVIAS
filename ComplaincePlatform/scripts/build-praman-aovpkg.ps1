@@ -8,6 +8,12 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $infraConfigRoot = Join-Path $repoRoot "AOVIAS.Infrastructure\aovias-config"
 $legacyConfigRoot = Join-Path $repoRoot "aovias-config"
+if (-not (Test-Path $infraConfigRoot) -and -not (Test-Path $legacyConfigRoot)) {
+    throw "Could not locate AOVIAS configuration directory under repository root '$repoRoot'. Expected '$infraConfigRoot' or '$legacyConfigRoot'."
+}
+if (-not (Test-Path (Join-Path $repoRoot "ComplaincePlatform"))) {
+    throw "Could not locate ComplaincePlatform under repository root '$repoRoot'."
+}
 $configRoot = if (Test-Path $infraConfigRoot) { $infraConfigRoot } elseif (Test-Path $legacyConfigRoot) { $legacyConfigRoot } else { $infraConfigRoot }
 $packagesRoot = Join-Path $configRoot "storage\local\packages\praman"
 $publishRoot = Join-Path $repoRoot "ComplaincePlatform\.publish"

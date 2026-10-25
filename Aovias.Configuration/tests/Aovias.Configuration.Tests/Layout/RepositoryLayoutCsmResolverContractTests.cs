@@ -83,8 +83,10 @@ public sealed class RepositoryLayoutCsmResolverContractTests
             RepositoryLayoutManifestProvider.ResetCacheForTesting();
             var start = Path.Combine(root, "ComplianceServiceManager", "bin");
             Assert.False(RepositoryLayoutProductionAdapter.TryResolveCsmPlatformRepositoryRoot(start, out _));
-            Assert.False(string.IsNullOrWhiteSpace(
-                RepositoryLayoutProductionAdapter.ResolveCsmPlatformRoot(start)));
+            Assert.Throws<InvalidOperationException>(
+                () => RepositoryLayoutProductionAdapter.ResolveCsmPlatformRoot(start));
+            Assert.Throws<InvalidOperationException>(
+                () => LegacyCsmPlatformRootDiscovery.Resolve(start));
         }
         finally
         {

@@ -10,5 +10,6 @@ ComplianceServiceManager/
 ComplaincePlatform/
 WebApp/
 aovias-config/storage/
+AOVIAS.Infrastructure/aovias-config/storage/
 **/*.user
 **/*.suo
