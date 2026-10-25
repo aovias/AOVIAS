@@ -230,18 +230,4 @@ static void PrintInspectionReport(SolutionPackageInspectionResult inspection)
 }
 
 static string ResolvePlatformRoot()
-{
-    var current = new DirectoryInfo(AppContext.BaseDirectory);
-    while (current is not null)
-    {
-        if (RepositoryLayoutAoviasConfigPaths.ConfigDirectoryExistsAtRepositoryRoot(current.FullName)
-            && Directory.Exists(Path.Combine(current.FullName, "ComplaincePlatform")))
-        {
-            return current.FullName;
-        }
-
-        current = current.Parent;
-    }
-
-    return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
-}
+    => RepositoryLayoutProductionAdapter.ResolvePublishingPlatformRoot(AppContext.BaseDirectory);

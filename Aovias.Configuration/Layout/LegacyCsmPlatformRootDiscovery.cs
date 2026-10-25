@@ -6,20 +6,16 @@ namespace Aovias.Configuration.Layout;
 /// </summary>
 public static class LegacyCsmPlatformRootDiscovery
 {
+    public static bool TryResolve(string baseDirectory, out string repositoryRoot)
+        => RepositoryLayoutPlatformRootDiscovery.TryResolveCsmPlatformRoot(baseDirectory, out repositoryRoot);
+
     public static string Resolve(string baseDirectory)
     {
-        var current = new DirectoryInfo(baseDirectory);
-        while (current is not null)
+        if (TryResolve(baseDirectory, out var repositoryRoot))
         {
-            if (Directory.Exists(Path.Combine(current.FullName, "Aovias.Runtime.Agent"))
-                && RepositoryLayoutAoviasConfigPaths.ConfigDirectoryExistsAtRepositoryRoot(current.FullName))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
+            return repositoryRoot;
         }
 
-        return Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", ".."));
+        throw RepositoryLayoutPlatformRootDiscovery.CreateCsmNotFoundException(baseDirectory);
     }
 }

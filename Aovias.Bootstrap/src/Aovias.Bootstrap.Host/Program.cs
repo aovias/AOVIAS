@@ -435,18 +435,5 @@ internal sealed class BootstrapOptions
     }
 
     private static string ResolveLocalPlatformRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current is not null)
-        {
-            if (RepositoryLayoutAoviasConfigPaths.ConfigDirectoryExistsAtRepositoryRoot(current.FullName))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        return AppContext.BaseDirectory;
-    }
+        => RepositoryLayoutProductionAdapter.ResolvePublishingPlatformRoot(AppContext.BaseDirectory);
 }

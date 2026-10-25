@@ -14,10 +14,11 @@ public sealed class RepositoryLayoutProductionAdapterTests
         try
         {
             Assert.False(RepositoryLayoutProductionAdapter.TryResolvePlatformRepositoryRoot(start, out _));
-            var legacy = LegacyPublishingPlatformRootDiscovery.Resolve(start);
-            Assert.Equal(
-                legacy,
-                RepositoryLayoutProductionAdapter.ResolvePublishingPlatformRoot(start));
+            var publishingEx = Assert.Throws<InvalidOperationException>(
+                () => LegacyPublishingPlatformRootDiscovery.Resolve(start));
+            var adapterEx = Assert.Throws<InvalidOperationException>(
+                () => RepositoryLayoutProductionAdapter.ResolvePublishingPlatformRoot(start));
+            Assert.Equal(publishingEx.Message, adapterEx.Message);
         }
         finally
         {
