@@ -1,0 +1,42 @@
+{
+  "host": "win32",
+  "safariNote": "Safari/WebKit native unavailable on Windows — record under RC checklist (macOS/iOS device QA).",
+  "browsers": [
+    {
+      "name": "chromium",
+      "ok": true,
+      "routes": [
+        {
+          "route": "/",
+          "status": 200,
+          "hasMain": true,
+          "ok": true
+        },
+        {
+          "route": "/products",
+          "status": 200,
+          "hasMain": true,
+          "ok": true
+        },
+        {
+          "route": "/company/contact",
+          "status": 200,
+          "hasMain": true,
+          "ok": true
+        },
+        {
+          "route": "/pricing",
+          "status": 200,
+          "hasMain": true,
+          "ok": true
+        },
+        {
+          "route": "/auth/sign-in",
+          "status": 200,
+          "hasMain": true,
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,328 @@
+/*
+  Primitive + shared tokens.
+  Values mirror packages/design-system/src/tokens/*.ts (single hierarchy).
+  Palette primitives use --palette-* to avoid clashes with semantic --color-* Tailwind maps.
+*/
+
+:root {
+  /* Brand — primary (chromatic enterprise blue, R1 visual review) */
+  --palette-primary-50: #eff5fb;
+  --palette-primary-100: #dde9f7;
+  --palette-primary-200: #bad2ee;
+  --palette-primary-300: #8ab2e0;
+  --palette-primary-400: #5a8fd0;
+  --palette-primary-500: #3672be;
+  --palette-primary-600: #285ca4;
+  --palette-primary-700: #204a86;
+  --palette-primary-800: #1a3a69;
+  --palette-primary-900: #142b4e;
+  --palette-primary-950: #0c1b33;
+
+  /* Brand — secondary (indigo) */
+  --palette-secondary-50: #f2f3fb;
+  --palette-secondary-100: #e3e5f6;
+  --palette-secondary-200: #c7caed;
+  --palette-secondary-300: #a2a7e0;
+  --palette-secondary-400: #7b81d0;
+  --palette-secondary-500: #5b62c0;
+  --palette-secondary-600: #474da4;
+  --palette-secondary-700: #393e85;
+  --palette-secondary-800: #303468;
+  --palette-secondary-900: #282b52;
+  --palette-secondary-950: #181a33;
+
+  /* Brand — accent (cyan) */
+  --palette-accent-50: #ebf9fd;
+  --palette-accent-100: #d0f0f9;
+  --palette-accent-200: #a5e2f2;
+  --palette-accent-300: #6bcce8;
+  --palette-accent-400: #30afd6;
+  --palette-accent-500: #1292bc;
+  --palette-accent-600: #0f759d;
+  --palette-accent-700: #135e7f;
+  --palette-accent-800: #174d68;
+  --palette-accent-900: #174058;
+  --palette-accent-950: #0e2a3b;
+
+  /* Brand — supporting (emerald) */
+  --palette-supporting-50: #edf9f2;
+  --palette-supporting-100: #d4f0e2;
+  --palette-supporting-200: #ace2c8;
+  --palette-supporting-300: #79cca4;
+  --palette-supporting-400: #45b07e;
+  --palette-supporting-500: #2ba06a;
+  --palette-supporting-600: #1f8254;
+  --palette-supporting-700: #1a6743;
+  --palette-supporting-800: #175338;
+  --palette-supporting-900: #13442f;
+  --palette-supporting-950: #0a261a;
+
+  /* Neutrals — near-white extreme at 0; canvases use 50+ / 1000 */
+  --palette-neutral-0: #fcfcfd;
+  --palette-neutral-50: #f6f7f9;
+  --palette-neutral-100: #eeeff3;
+  --palette-neutral-200: #d8dce4;
+  --palette-neutral-300: #b6becb;
+  --palette-neutral-400: #8b95a5;
+  --palette-neutral-500: #6a7485;
+  --palette-neutral-600: #535c6c;
+  --palette-neutral-700: #424957;
+  --palette-neutral-800: #2e343f;
+  --palette-neutral-900: #1b2028;
+  --palette-neutral-950: #12161c;
+  --palette-neutral-1000: #0b0e13;
+
+  /* Semantic primitives */
+  --palette-success-50: #edf9f2;
+  --palette-success-100: #d4f0e2;
+  --palette-success-500: #2ba06a;
+  --palette-success-600: #1f8254;
+  --palette-success-700: #1a6743;
+
+  --palette-warning-50: #fbf6ed;
+  --palette-warning-100: #f4e7cf;
+  --palette-warning-500: #c48a1a;
+  --palette-warning-600: #a37114;
+  --palette-warning-700: #825b12;
+
+  --palette-error-50: #fbf1f1;
+  --palette-error-100: #f4dada;
+  --palette-error-500: #c23b3b;
+  --palette-error-600: #a12f2f;
+  --palette-error-700: #812626;
+
+  --palette-info-50: #eff5fb;
+  --palette-info-100: #dde9f7;
+  --palette-info-500: #3672be;
+  --palette-info-600: #285ca4;
+  --palette-info-700: #204a86;
+
+  /* Domain accent primitives (R1.DS.3.1 brand application) */
+  --palette-product-platform: #474da4;
+  --palette-product-command: #285ca4;
+  --palette-product-studio: #5a3f96;
+  --palette-product-future: #3d4a5c;
+
+  --palette-tech-platform: #474da4;
+  --palette-tech-engineering: #285ca4;
+  --palette-tech-ai: #0c5f80;
+  --palette-tech-security: #186a44;
+  --palette-tech-identity: #147070;
+  --palette-tech-architecture: #5a3f96;
+
+  --palette-industry-healthcare: #1f8254;
+  --palette-industry-government: #204a86;
+  --palette-industry-education: #474da4;
+  --palette-industry-enterprise: #285ca4;
+  --palette-industry-manufacturing: #5c6570;
+  --palette-industry-financial: #1a5f6e;
+
+  --palette-trust-security: #1f8254;
+  --palette-trust-compliance: #1a6743;
+  --palette-trust-privacy: #178080;
+  --palette-trust-verified: #2ba06a;
+
+  /* Typography — apps may override via next/font CSS variables */
+  --font-sans-family: var(--font-ibm-plex-sans, 'IBM Plex Sans'), ui-sans-serif, system-ui, sans-serif;
+  --font-mono-family: var(--font-ibm-plex-mono, 'IBM Plex Mono'), ui-monospace, SFMono-Regular, Menlo,
+    monospace;
+
+  /* Fluid titles (R1.DS.3) — identical page/hero title roles */
+  --font-size-display-xl: clamp(2.75rem, 2rem + 3.5vw, 4.5rem);
+  --font-size-display-l: clamp(2.25rem, 1.6rem + 2.8vw, 3.75rem);
+  --font-size-display: clamp(2.25rem, 1.6rem + 2.8vw, 3.75rem);
+  --font-size-hero-title: clamp(2rem, 1.55rem + 1.8vw, 3rem);
+  --font-size-page-title: clamp(2rem, 1.55rem + 1.8vw, 3rem);
+  --font-size-section-title: clamp(1.75rem, 1.4rem + 1.2vw, 2.5rem);
+  --font-size-card-title: clamp(1.25rem, 1.15rem + 0.4vw, 1.5rem);
+  --font-size-subheading: 1.25rem;
+  --font-size-lead: 1.125rem;
+  --font-size-eyebrow: 0.75rem;
+  --font-size-label: 0.875rem;
+  --font-size-helper: 0.875rem;
+  --font-size-h1: clamp(2rem, 1.55rem + 1.8vw, 3rem);
+  --font-size-h2: clamp(1.75rem, 1.4rem + 1.2vw, 2.5rem);
+  --font-size-h3: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
+  --font-size-h4: 1.5rem;
+  --font-size-h5: 1.25rem;
+  --font-size-h6: 1.125rem;
+  --font-size-body-lg: 1.125rem;
+  --font-size-body: 1rem;
+  --font-size-small: 0.875rem;
+  --font-size-caption: 0.75rem;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-none: 1;
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.35;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.65;
+  --line-height-loose: 1.8;
+
+  --letter-spacing-tighter: -0.04em;
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0em;
+  --letter-spacing-wide: 0.02em;
+  --letter-spacing-wider: 0.04em;
+
+  /* Spacing (8pt) */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --space-8: 48px;
+  --space-9: 64px;
+  --space-10: 80px;
+  --space-11: 96px;
+  --space-12: 128px;
+  --space-13: 160px;
+
+  /* Semantic spacing roles — layout rhythm (R1.DS.3) */
+  --space-control-x: var(--space-3);
+  --space-control-y: var(--space-2);
+  --space-stack-xs: var(--space-1);
+  --space-stack-sm: var(--space-2);
+  --space-stack-md: var(--space-3);
+  --space-stack-lg: var(--space-5);
+  --space-stack-xl: var(--space-6);
+  --space-grid-gap: var(--space-6);
+  --space-grid-gap-lg: var(--space-8);
+  --space-card-padding: var(--space-5);
+  --space-section-y-md: clamp(2.5rem, 2rem + 2vw, 4rem);
+  --space-section-y-lg: clamp(3rem, 2.25rem + 3vw, 5rem);
+  --space-section-y-xl: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+  --space-hero-y: clamp(3rem, 2.25rem + 3.5vw, 7rem);
+
+  /* Radius */
+  --ds-radius-none: 0px;
+  --ds-radius-sm: 6px;
+  --ds-radius-md: 8px;
+  --ds-radius-lg: 12px;
+  --ds-radius-xl: 16px;
+  --ds-radius-full: 9999px;
+
+  /* Shadows / elevation */
+  --ds-shadow-flat: none;
+  --ds-shadow-surface: 0 1px 2px rgba(11, 21, 32, 0.06);
+  --ds-shadow-raised: 0 4px 12px rgba(11, 21, 32, 0.08);
+  --ds-shadow-floating: 0 12px 32px rgba(11, 21, 32, 0.12);
+  --ds-shadow-overlay: 0 12px 32px rgba(11, 21, 32, 0.12);
+  --ds-shadow-modal: 0 24px 48px rgba(11, 21, 32, 0.18);
+
+  /* Borders */
+  --border-width-none: 0px;
+  --border-width-thin: 1px;
+  --border-width-medium: 2px;
+  --border-width-thick: 3px;
+
+  /* Layout */
+  --layout-grid-columns: 12;
+  /* Tuned for ~1920×1080 (common 23″) while remaining balanced on wider displays */
+  --layout-content-max: 1440px;
+  --layout-hero-max: 1760px;
+  --layout-gutter: var(--space-5);
+  --layout-gutter-lg: var(--space-6);
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1440px;
+
+  /* Motion — Enterprise Motion Language (Phase V10) */
+  --duration-instant: 100ms; /* Immediate feedback */
+  --duration-fast: 150ms; /* Immediate → hover floor */
+  --duration-hover: 200ms; /* Hover refinement */
+  --duration-standard: 250ms; /* Dropdown / UI */
+  --duration-dropdown: 260ms;
+  --duration-slow: 350ms;
+  --duration-overlay: 350ms; /* Overlay enter/exit */
+  --duration-deliberate: 450ms;
+  --duration-hero: 700ms; /* Hero composed entrance */
+  --duration-diagram: 800ms; /* Diagram progression */
+  --duration-signature: 800ms; /* Horizon Reveal ceiling */
+
+  --easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --easing-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --easing-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  --transition-color: color var(--duration-fast) var(--easing-standard),
+    background-color var(--duration-fast) var(--easing-standard),
+    border-color var(--duration-fast) var(--easing-standard);
+  --transition-transform: transform var(--duration-hover) var(--easing-standard);
+  --transition-opacity: opacity var(--duration-fast) var(--easing-standard);
+  --transition-shadow: box-shadow var(--duration-hover) var(--easing-standard);
+  --transition-interactive: color var(--duration-fast) var(--easing-standard),
+    background-color var(--duration-fast) var(--easing-standard),
+    border-color var(--duration-fast) var(--easing-standard),
+    box-shadow var(--duration-hover) var(--easing-standard),
+    transform var(--duration-hover) var(--easing-standard);
+  --transition-overlay: opacity var(--duration-overlay) var(--easing-enter),
+    transform var(--duration-overlay) var(--easing-enter);
+  --transition-nav: color var(--duration-hover) var(--easing-standard),
+    background-color var(--duration-hover) var(--easing-standard),
+    border-color var(--duration-hover) var(--easing-standard),
+    box-shadow var(--duration-dropdown) var(--easing-standard),
+    backdrop-filter var(--duration-dropdown) var(--easing-standard);
+
+  /* Z-index */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-dropdown: 20;
+  --z-sticky: 30;
+  --z-overlay: 40;
+  --z-modal: 50;
+  --z-popover: 60;
+  --z-toast: 70;
+  --z-tooltip: 80;
+
+  /* Opacity */
+  --opacity-0: 0;
+  --opacity-5: 0.05;
+  --opacity-10: 0.1;
+  --opacity-20: 0.2;
+  --opacity-40: 0.4;
+  --opacity-60: 0.6;
+  --opacity-80: 0.8;
+  --opacity-90: 0.9;
+  --opacity-100: 1;
+
+  /* Blur */
+  --blur-none: 0px;
+  --blur-sm: 4px;
+  --blur-md: 8px;
+  --blur-lg: 16px;
+  --blur-xl: 24px;
+
+  /* Icon sizes */
+  --icon-xs: 12px;
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --icon-xl: 32px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast: 0ms;
+    --duration-hover: 0ms;
+    --duration-standard: 0ms;
+    --duration-dropdown: 0ms;
+    --duration-slow: 0ms;
+    --duration-overlay: 0ms;
+    --duration-deliberate: 0ms;
+    --duration-hero: 0ms;
+    --duration-diagram: 0ms;
+    --duration-signature: 0ms;
+  }
+}

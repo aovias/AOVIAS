@@ -1,0 +1,32 @@
+/** @deprecated Prefer `@aovias/design-system`. Re-export for Sprint 1.1 compatibility. */
+export {
+  tokens,
+  colors,
+  brandColors,
+  neutralColors,
+  semanticColors,
+  typography,
+  fontFamilies,
+  fontSizes,
+  fontWeights,
+  lineHeights,
+  letterSpacings,
+  spacing,
+  radius,
+  shadows,
+  elevation,
+  borders,
+  borderWidths,
+  layout,
+  breakpoints,
+  motion,
+  durations,
+  easings,
+  transitions,
+  zIndex,
+  opacity,
+  blur,
+  iconSizes,
+} from '@aovias/design-system/tokens';
+
+export type { DesignTokens, BrandColorScale, NeutralColorScale, SemanticColorGroup, SpacingToken } from '@aovias/design-system/tokens';

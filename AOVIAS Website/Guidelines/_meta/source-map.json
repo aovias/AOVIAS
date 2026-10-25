@@ -1,0 +1,125 @@
+{
+  "workspace_id": "359ce6df-f951-4d69-b4e2-2ea0abc6e77a",
+  "workspace_name": "AOVIAS Website",
+  "space_id": "a3f32808-44d3-476e-aa50-ef0221557ea9",
+  "space_name": "General",
+  "exported_at": "2026-07-19",
+  "documents": [
+    {
+      "title": "AOVIAS Autonomous Engineering Execution Framework (AEEF)",
+      "view_id": "1a938c20-7929-4f7d-9bee-c1f04f90b1ad",
+      "file": "01-aeef.md",
+      "bytes": 18880,
+      "extract_method": "zstd+yjs-blocks",
+      "blocks": 244,
+      "body_chars": 7804,
+      "sha256": "d0175495f4c15d1fae458d97e552dd3c5da4a3edfe31dbc41fd22db5cca833ac"
+    },
+    {
+      "title": "AOVIAS Website Development Execution Rules",
+      "view_id": "cb881e33-f6a2-4967-94bb-a8d19925f638",
+      "file": "02-development-execution-rules.md",
+      "bytes": 15311,
+      "extract_method": "zstd+yjs-blocks",
+      "blocks": 241,
+      "body_chars": 7353,
+      "sha256": "2d2f51d9e2257323970a9372a5dd999ff0886a55c66e66125a008a8e9c5912fd"
+    },
+    {
+      "title": "AOVIAS Website Engineering & Coding Standards",
+      "view_id": "719c8699-bf80-49d5-a752-c4f6c2c85529",
+      "file": "03-engineering-coding-standards.md",
+      "bytes": 16046,
+      "extract_method": "zstd+yjs-blocks",
+      "blocks": 247,
+      "body_chars": 7633,
+      "sha256": "09891dc5745cf5500b6bebd66655b9c9687af6c7294efa3ec70c2c2400e2db74"
+    },
+    {
+      "title": "AOVIAS Website Solution Architecture & Folder Structure",
+      "view_id": "4514dad4-ad61-4f8b-bb74-7f98d8a967f4",
+      "file": "04-solution-architecture-folder-structure.md",
+      "bytes": 10025,
+      "extract_method": "zstd+yjs-blocks",
+      "blocks": 132,
+      "body_chars": 6686,
+      "sha256": "f279868adfeb34149905e6067dff5b005592d2e16407be1927d9f8d638d42d69"
+    },
+    {
+      "title": "AOVIAS Website Component Architecture & Inventory",
+      "view_id": "e4a816af-9403-4d49-ba46-0733a019b870",
+      "file": "05-component-architecture-inventory.md",
+      "bytes": 19464,
+      "extract_method": "zstd+yjs-blocks",
+      "blocks": 338,
+      "body_chars": 7826,
+      "sha256": "1de52427568cdc9bfc7191bd83ad1f57939c73beba53643b6a055e49d4141646"
+    },
+    {
+      "title": "AOVIAS Enterprise Design Language",
+      "view_id": "90e6abda-19f8-442f-a220-b6d01650c11c",
+      "file": "06-enterprise-design-language.md",
+      "bytes": 18193,
+      "extract_method": "zstd+yjs-blocks",
+      "blocks": 262,
+      "body_chars": 7035,
+      "sha256": "020ef00f834becb735b2a2508056f2fac5dc9b6d00c4b77a5159c64ad6208e2e"
+    },
+    {
+      "title": "AOVIAS Motion Design System",
+      "view_id": "b5269d6d-95d6-438b-8d33-88a2c4f5b750",
+      "file": "07-motion-design-system.md",
+      "bytes": 30381,
+      "extract_method": "zstd+yjs-blocks",
+      "blocks": 291,
+      "body_chars": 7086,
+      "sha256": "b3f0882096614214c55dddf033f7358daf87f3910265b6155c78aae14ec72947"
+    },
+    {
+      "title": "AOVIAS Search, SEO & Discoverability Standards",
+      "view_id": "9df334fc-8066-4643-a423-8ff229d3d076",
+      "file": "08-search-seo-discoverability-standards.md",
+      "bytes": 16147,
+      "extract_method": "zstd+yjs-blocks",
+      "blocks": 257,
+      "body_chars": 8016,
+      "sha256": "1753192eb05aeba3a9bef1e41a3597a843e109d2aac9a3cf5cfd2245dfefba20"
+    },
+    {
+      "title": "AOVIAS Website Definition of Done (DoD)",
+      "view_id": "0e2beb4e-20d1-42a6-98d8-6fc7caaec2b5",
+      "file": "09-definition-of-done.md",
+      "bytes": 14509,
+      "extract_method": "zstd+yjs-blocks",
+      "blocks": 232,
+      "body_chars": 6939,
+      "sha256": "40c00aaeb30e6bdc6bce454c43f43a003e67ec60a8c121907bfafd111c8d9e25"
+    },
+    {
+      "title": "AOVIAS Website Performance Engineering Standards & Performance Budget",
+      "view_id": "1109b8f8-cb96-4ad1-9e19-b1f4cbc8f202",
+      "file": "10-performance-engineering-standards.md",
+      "bytes": 21010,
+      "extract_method": "zstd+yjs-blocks",
+      "blocks": 287,
+      "body_chars": 8688,
+      "sha256": "af6603ca25e5369b742e89e86db3a068668f967d5c63f4cccf69fa8b30e6db64"
+    },
+    {
+      "title": "First Plan",
+      "view_id": "946b660b-06e9-4651-b14e-5f04e111746c",
+      "file": "11-first-plan.md",
+      "bytes": 8575,
+      "extract_method": "zstd+yjs-blocks",
+      "blocks": 133,
+      "body_chars": 3557,
+      "sha256": "790794419f2c01824d76423bffb5864554f2e4563ecefcf518e4fb823e8d648f"
+    }
+  ],
+  "dod_dedup": {
+    "canonical_view_id": "0e2beb4e-20d1-42a6-98d8-6fc7caaec2b5",
+    "nested_view_id": "e1877af8-ea9d-45e7-a600-76cd2ab3c62e",
+    "identical_restore_state": false,
+    "note": "Nested Getting started DoD differs from General copy; canonical General copy kept."
+  }
+}

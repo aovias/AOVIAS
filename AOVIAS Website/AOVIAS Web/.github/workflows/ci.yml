@@ -1,0 +1,138 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: '1'
+  NEXT_PUBLIC_SITE_URL: https://aovias.com
+  NEXT_PUBLIC_APP_ENV: production
+
+jobs:
+  verify:
+    name: Checkout · Install · Lint · Typecheck · Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit verification (future-ready)
+        run: |
+          echo "Unit test suite placeholder — add vitest/jest jobs here when suites land."
+
+      - name: Build
+        run: npm run build
+
+  docker:
+    name: Docker Build · Validate
+    runs-on: ubuntu-latest
+    needs: verify
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build production image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deployment/docker/Dockerfile
+          target: runner
+          push: false
+          load: true
+          tags: aovias-website:ci
+          build-args: |
+            NEXT_PUBLIC_SITE_URL=https://aovias.com
+            NEXT_PUBLIC_APP_ENV=production
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run container
+        run: |
+          docker run -d --name aovias-website-ci \
+            -p 3000:3000 \
+            -e NODE_ENV=production \
+            -e NEXT_PUBLIC_SITE_URL=https://aovias.com \
+            -e NEXT_PUBLIC_APP_ENV=production \
+            -e NEXT_PUBLIC_FF_ANALYTICS=false \
+            aovias-website:ci
+
+      - name: Wait for health
+        run: |
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:3000/api/health | grep -q '"status":"ok"'; then
+              echo "Healthy"
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs aovias-website-ci
+          exit 1
+
+      - name: Validate routes
+        run: node deployment/scripts/validate-container.mjs
+        env:
+          SITE_URL: http://127.0.0.1:3000
+
+      - name: Artifact metadata
+        run: |
+          mkdir -p artifacts
+          docker image inspect aovias-website:ci > artifacts/image-inspect.json
+          curl -fsS http://127.0.0.1:3000/api/health > artifacts/health.json
+          echo "image=aovias-website:ci" > artifacts/deploy-prep.env
+
+      - name: Upload deployment preparation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-prep
+          path: artifacts/
+
+      - name: Stop container
+        if: always()
+        run: docker rm -f aovias-website-ci || true
+
+  deploy-prepare:
+    name: Deployment Preparation
+    runs-on: ubuntu-latest
+    needs: docker
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy-prep
+          path: artifacts/
+
+      - name: Summarize
+        run: |
+          echo "Release 1 image validated. Wire environment-specific deploy jobs here (staging/production)."
+          cat artifacts/deploy-prep.env
+          cat artifacts/health.json

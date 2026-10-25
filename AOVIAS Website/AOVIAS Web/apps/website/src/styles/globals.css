@@ -1,0 +1,585 @@
+@import 'tailwindcss';
+@import '@aovias/design-system/css';
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-normal);
+    transition: var(--transition-color);
+    overflow-x: clip;
+  }
+}
+
+/**
+ * Enterprise Motion Language utilities (Phase V10).
+ * Prefer CSS transforms + opacity. No bounce / elastic.
+ */
+@layer utilities {
+  .em-interactive {
+    transition: var(--transition-interactive);
+  }
+
+  .em-nav {
+    transition: var(--transition-nav);
+  }
+
+  .em-color {
+    transition: var(--transition-color);
+  }
+
+  .em-lift {
+    transition: var(--transition-interactive);
+  }
+
+  .em-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  .em-lift:active {
+    transform: translateY(0);
+  }
+
+  /* Atmosphere fade-in — stable field, quiet presence */
+  .em-atmosphere-enter {
+    animation: em-atmosphere-fade var(--duration-hero) var(--easing-enter) both;
+  }
+
+  /* Diagram step progression — SVG flow groups */
+  .em-diagram-reveal > g {
+    animation: em-diagram-step var(--duration-diagram) var(--easing-enter) both;
+  }
+
+  .em-diagram-reveal > g:nth-of-type(1) {
+    animation-delay: 0ms;
+  }
+  .em-diagram-reveal > g:nth-of-type(2) {
+    animation-delay: 80ms;
+  }
+  .em-diagram-reveal > g:nth-of-type(3) {
+    animation-delay: 160ms;
+  }
+  .em-diagram-reveal > g:nth-of-type(4) {
+    animation-delay: 240ms;
+  }
+  .em-diagram-reveal > g:nth-of-type(5) {
+    animation-delay: 320ms;
+  }
+  .em-diagram-reveal > g:nth-of-type(6) {
+    animation-delay: 400ms;
+  }
+  .em-diagram-reveal > g:nth-of-type(7) {
+    animation-delay: 480ms;
+  }
+  .em-diagram-reveal > g:nth-of-type(8) {
+    animation-delay: 560ms;
+  }
+  .em-diagram-reveal > g:nth-of-type(n + 9) {
+    animation-delay: 640ms;
+  }
+
+  /* Hero composition — transform only (never opacity — protects LCP) */
+  .em-hero-compose {
+    animation: em-hero-compose var(--duration-hero) var(--easing-enter) both;
+  }
+
+  .em-hero-compose-cta {
+    animation: em-hero-compose var(--duration-hero) var(--easing-enter) both;
+    animation-delay: 180ms;
+  }
+
+  .em-hero-compose-illustration {
+    animation: em-hero-compose var(--duration-hero) var(--easing-enter) both;
+    animation-delay: 120ms;
+  }
+
+  .em-horizon-line {
+    animation: em-horizon-draw var(--duration-signature, 900ms) var(--easing-enter)
+      both;
+    transform-origin: left center;
+  }
+
+  /* Mobile: skip decorative hero motion to protect LCP */
+  @media (max-width: 767px) {
+    .em-atmosphere-enter,
+    .em-hero-compose,
+    .em-hero-compose-cta,
+    .em-hero-compose-illustration,
+    .em-horizon-line,
+    .em-stagger-children > * {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+}
+
+@keyframes em-atmosphere-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes em-diagram-step {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes em-hero-compose {
+  from {
+    transform: translateY(8px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Healthcare Command hero — soft flow pulse (decorative) */
+@keyframes hch-flow-pulse {
+  0%,
+  100% {
+    opacity: 0.42;
+  }
+  50% {
+    opacity: 0.78;
+  }
+}
+
+.hch-flow-pulse {
+  animation: hch-flow-pulse 3.4s ease-in-out infinite;
+}
+
+.hch-flow-pulse-delay {
+  animation: hch-flow-pulse 3.4s ease-in-out 1.1s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hch-flow-pulse,
+  .hch-flow-pulse-delay {
+    animation: none !important;
+    opacity: 0.55 !important;
+  }
+}
+
+@keyframes em-horizon-draw {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes em-drawer-backdrop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes em-drawer-panel {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.em-drawer-backdrop {
+  animation: em-drawer-backdrop var(--duration-overlay, 220ms) var(--easing-enter, ease)
+    both;
+}
+
+.em-drawer-panel {
+  animation: em-drawer-panel var(--duration-overlay, 260ms) var(--easing-enter, ease) both;
+  will-change: transform, opacity;
+}
+
+/* Feature grid stagger — transform only, no Framer on the shared import path */
+.em-stagger-children > * {
+  animation: em-stagger-item var(--duration-section, 400ms) var(--easing-enter, ease) both;
+}
+.em-stagger-children > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.em-stagger-children > *:nth-child(2) {
+  animation-delay: 60ms;
+}
+.em-stagger-children > *:nth-child(3) {
+  animation-delay: 120ms;
+}
+.em-stagger-children > *:nth-child(4) {
+  animation-delay: 180ms;
+}
+.em-stagger-children > *:nth-child(5) {
+  animation-delay: 240ms;
+}
+.em-stagger-children > *:nth-child(6) {
+  animation-delay: 300ms;
+}
+.em-stagger-children > *:nth-child(n + 7) {
+  animation-delay: 360ms;
+}
+
+@keyframes em-stagger-item {
+  from {
+    transform: translateY(6px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Product experience showcase — quiet fade/rise on enter */
+@keyframes em-product-showcase-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.em-product-showcase-row {
+  animation: em-product-showcase-enter 560ms var(--easing-enter, ease) both;
+}
+
+.em-product-showcase-row:nth-child(1) {
+  animation-delay: 0ms;
+}
+.em-product-showcase-row:nth-child(2) {
+  animation-delay: 40ms;
+}
+.em-product-showcase-row:nth-child(3) {
+  animation-delay: 80ms;
+}
+.em-product-showcase-row:nth-child(4) {
+  animation-delay: 120ms;
+}
+.em-product-showcase-row:nth-child(5) {
+  animation-delay: 160ms;
+}
+.em-product-showcase-row:nth-child(6) {
+  animation-delay: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .em-product-showcase-row {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Institutional operating cycle — progressive reveal on scroll */
+.ioc-root[data-active='false'] .ioc-step,
+.ioc-root[data-active='false'] .ioc-spine,
+.ioc-root[data-active='false'] .ioc-loop-path {
+  opacity: 0;
+}
+
+.ioc-root[data-active='true'] .ioc-step {
+  animation: ioc-step-enter 520ms var(--easing-enter, ease) both;
+  animation-delay: calc(var(--ioc-i, 0) * 110ms);
+}
+
+.ioc-root[data-active='true'] .ioc-spine {
+  animation: ioc-spine-draw 1.1s var(--easing-enter, ease) both;
+}
+
+.ioc-root[data-active='true'] .ioc-loop-path {
+  animation: ioc-loop-draw 900ms var(--easing-enter, ease) both;
+  animation-delay: 900ms;
+}
+
+.ioc-spine {
+  background: linear-gradient(
+    180deg,
+    rgba(103, 232, 249, 0.05),
+    rgba(90, 143, 208, 0.55),
+    rgba(90, 143, 208, 0.15)
+  );
+  transform-origin: top center;
+}
+
+.ioc-node-ring {
+  background: radial-gradient(
+    circle,
+    rgba(90, 143, 208, 0.35) 0%,
+    transparent 70%
+  );
+  opacity: 0.85;
+}
+
+.ioc-root[data-active='true'] .ioc-node-ring {
+  animation: ioc-node-pulse 2.8s ease-in-out infinite;
+  animation-delay: calc(var(--ioc-i, 0) * 110ms + 400ms);
+}
+
+@keyframes ioc-step-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ioc-spine-draw {
+  from {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes ioc-loop-draw {
+  from {
+    opacity: 0;
+    stroke-dashoffset: 90;
+  }
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes ioc-node-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ioc-root .ioc-step,
+  .ioc-root .ioc-spine,
+  .ioc-root .ioc-loop-path,
+  .ioc-root .ioc-node-ring {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Platform ecosystem — scroll-once sequential layer reveal */
+.pe-ecosystem[data-active='false'] .pe-layer {
+  opacity: 0;
+}
+
+.pe-ecosystem[data-active='true'] .pe-layer {
+  animation: pe-layer-enter 560ms var(--easing-enter, ease) both;
+  animation-delay: calc(var(--pe-i, 0) * 120ms);
+}
+
+@keyframes pe-layer-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pe-ecosystem .pe-layer {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Institutional transformation diagram */
+.itb-diagram[data-active='false'] .itb-step,
+.itb-diagram[data-active='false'] .itb-hub,
+.itb-diagram[data-active='false'] .itb-connector {
+  opacity: 0;
+}
+
+.itb-diagram[data-active='true'] .itb-hub {
+  animation: itb-enter 480ms var(--easing-enter, ease) both;
+}
+
+.itb-diagram[data-active='true'] .itb-step {
+  animation: itb-enter 480ms var(--easing-enter, ease) both;
+  animation-delay: calc(100ms + var(--itb-i, 0) * 95ms);
+}
+
+.itb-diagram[data-active='true'] .itb-connector {
+  animation: itb-enter 420ms var(--easing-enter, ease) both;
+  animation-delay: calc(160ms + var(--itb-i, 0) * 95ms);
+}
+
+.itb-diagram[data-active='true'] .itb-connector-path {
+  animation: itb-connector-flow 2.4s ease-in-out infinite;
+}
+
+.itb-diagram[data-active='true'] .itb-connector-dot {
+  animation: itb-dot-pulse 2.4s ease-in-out infinite;
+  animation-delay: calc(var(--itb-i, 0) * 95ms);
+}
+
+@keyframes itb-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes itb-connector-flow {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: -18;
+    opacity: 0.45;
+  }
+}
+
+@keyframes itb-dot-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .itb-diagram .itb-step,
+  .itb-diagram .itb-hub,
+  .itb-diagram .itb-connector,
+  .itb-diagram .itb-connector-path,
+  .itb-diagram .itb-connector-dot {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .em-atmosphere-enter,
+  .em-diagram-reveal > g,
+  .em-hero-compose,
+  .em-hero-compose-cta,
+  .em-hero-compose-illustration,
+  .em-horizon-line,
+  .em-drawer-backdrop,
+  .em-drawer-panel,
+  .em-stagger-children > * {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .em-lift:hover,
+  .em-lift:active {
+    transform: none;
+  }
+}
+
+/**
+ * Responsive utilities (R1.UI.7) — shared patterns for intentional layouts.
+ */
+@layer utilities {
+  .touch-target {
+    min-height: 2.5rem; /* 40px — maps near --space-7; avoid Tailwind size-11 (96px) */
+    min-width: 2.5rem;
+  }
+
+  .responsive-media {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+
+  .responsive-embed {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  .responsive-embed > iframe,
+  .responsive-embed > video,
+  .responsive-embed > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .break-words-safe {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .section-pad-x {
+    padding-inline: 0.75rem;
+  }
+
+  @media (min-width: 360px) {
+    .section-pad-x {
+      padding-inline: 1rem;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .section-pad-x {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-pad-x {
+      padding-inline: 2rem;
+    }
+  }
+}
