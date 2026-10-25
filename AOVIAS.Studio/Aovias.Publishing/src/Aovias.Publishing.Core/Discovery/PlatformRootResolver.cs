@@ -19,8 +19,14 @@ public static class PlatformRootResolver
 
     public static string ResolveWebAppRoot(string platformRoot)
     {
-        var candidate = Path.Combine(platformRoot, "WebApp");
-        return Directory.Exists(candidate) ? candidate : string.Empty;
+        var commandWebApp = Path.Combine(platformRoot, "AOVIAS.Command", "WebApp");
+        if (Directory.Exists(commandWebApp))
+        {
+            return commandWebApp;
+        }
+
+        var legacyWebApp = Path.Combine(platformRoot, "WebApp");
+        return Directory.Exists(legacyWebApp) ? legacyWebApp : string.Empty;
     }
 
     public static string ResolveRuntimeAgentProjectPath(string platformRoot)

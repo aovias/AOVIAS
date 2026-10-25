@@ -99,7 +99,7 @@ public sealed class RepositoryLayoutContractTests
         var outer = CreateCurrentLayoutFixture();
         var inner = Path.Combine(outer, "nested");
         Directory.CreateDirectory(Path.Combine(inner, "AOVIAS.Infrastructure", "aovias-config"));
-        Directory.CreateDirectory(Path.Combine(inner, "ComplaincePlatform"));
+        Directory.CreateDirectory(Path.Combine(inner, "AOVIAS.Command", "ComplaincePlatform"));
         var manifest = LoadMinimalManifest();
 
         var resolved = RepositoryLayoutPathResolver.TryResolveRepositoryRoot(
@@ -144,7 +144,7 @@ public sealed class RepositoryLayoutContractTests
             manifest,
             RepositoryLayoutProfile.Current);
 
-        Assert.Contains(Path.Combine(repoRoot, "ComplaincePlatform"), scanRoots, StringComparer.OrdinalIgnoreCase);
+        Assert.Contains(Path.Combine(repoRoot, "AOVIAS.Command", "ComplaincePlatform"), scanRoots, StringComparer.OrdinalIgnoreCase);
         Assert.Contains(Path.Combine(repoRoot, "AOVIAS.Studio", "Aovias.Runtime.Agent"), scanRoots, StringComparer.OrdinalIgnoreCase);
     }
 
@@ -165,8 +165,8 @@ public sealed class RepositoryLayoutContractTests
             manifest,
             RepositoryLayoutProfile.Current);
 
-        Assert.Contains(Path.Combine(repoRoot, "ComplaincePlatform"), roots, StringComparer.OrdinalIgnoreCase);
-        Assert.Contains(Path.Combine(repoRoot, "WebApp"), roots, StringComparer.OrdinalIgnoreCase);
+        Assert.Contains(Path.Combine(repoRoot, "AOVIAS.Command", "ComplaincePlatform"), roots, StringComparer.OrdinalIgnoreCase);
+        Assert.Contains(Path.Combine(repoRoot, "AOVIAS.Command", "WebApp"), roots, StringComparer.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -251,12 +251,12 @@ public sealed class RepositoryLayoutContractTests
               "solutions": [],
               "discovery": {
                 "current": {
-                  "platformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config"], "requiredAny": ["ComplaincePlatform", "Aovias.Runtime.Agent"] },
-                  "csmPlatformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config", "Aovias.Runtime.Agent"], "requiredAny": [] },
-                  "defaultApplicationRoots": ["ComplaincePlatform", "WebApp"],
-                  "deployableProjectScanRoots": ["ComplaincePlatform", "Aovias.Runtime.Agent"],
-                  "runtimeAgentProjectRelative": "Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Api/Aovias.Runtime.Agent.Api.csproj",
-                  "webAppAngularManifestRelative": "WebApp/angular.json",
+                  "platformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config"], "requiredAny": ["AOVIAS.Command/ComplaincePlatform", "AOVIAS.Studio/Aovias.Runtime.Agent"] },
+                  "csmPlatformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config", "AOVIAS.Studio/Aovias.Runtime.Agent"], "requiredAny": [] },
+                  "defaultApplicationRoots": ["AOVIAS.Command/ComplaincePlatform", "AOVIAS.Command/WebApp"],
+                  "deployableProjectScanRoots": ["AOVIAS.Command/ComplaincePlatform", "AOVIAS.Studio/Aovias.Runtime.Agent"],
+                  "runtimeAgentProjectRelative": "AOVIAS.Studio/Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Api/Aovias.Runtime.Agent.Api.csproj",
+                  "webAppAngularManifestRelative": "AOVIAS.Command/WebApp/angular.json",
                   "runtimeAgentDockerCopyRoots": ["Aovias.Configuration", "Aovias.Runtime.Agent"]
                 },
                 "target": {
@@ -278,8 +278,8 @@ public sealed class RepositoryLayoutContractTests
     {
         var root = Path.Combine(Path.GetTempPath(), "aovias-current-layout-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Infrastructure", "aovias-config"));
-        Directory.CreateDirectory(Path.Combine(root, "ComplaincePlatform"));
-        Directory.CreateDirectory(Path.Combine(root, "WebApp"));
+        Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Command", "ComplaincePlatform"));
+        Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Command", "WebApp"));
         Directory.CreateDirectory(Path.Combine(root, "ComplianceServiceManager", "bin", "Debug"));
         return root;
     }
@@ -288,7 +288,7 @@ public sealed class RepositoryLayoutContractTests
     {
         var root = Path.Combine(Path.GetTempPath(), "aovias-target-layout-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Infrastructure", "aovias-config"));
-        Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Command", "CompliancePlatform"));
+        Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Command", "ComplaincePlatform"));
         Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Command", "WebApp"));
         Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Studio", "Aovias.Runtime.Agent", "src"));
         return root;

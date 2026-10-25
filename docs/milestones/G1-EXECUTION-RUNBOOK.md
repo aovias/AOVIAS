@@ -71,8 +71,8 @@ This platform needs a real workload to deploy against a fresh environment to pro
 
 ```bash
 # Adjust the project path once you've confirmed the correct target and manifest are in place.
-dotnet run --project AOVIAS.Infrastructure/tools/PublishAllServices -c Release -- --project ComplaincePlatform/Gateway/Gateway.csproj
-dotnet run --project AOVIAS.Infrastructure/tools/PublishAllServices -c Release -- --project ComplaincePlatform/IdentityService/IdentityService.csproj
+dotnet run --project AOVIAS.Infrastructure/tools/PublishAllServices -c Release -- --project AOVIAS.Command/ComplaincePlatform/Gateway/Gateway.csproj
+dotnet run --project AOVIAS.Infrastructure/tools/PublishAllServices -c Release -- --project AOVIAS.Command/ComplaincePlatform/IdentityService/IdentityService.csproj
 ```
 
 (The exact CLI argument shape depends on `AOVIAS.Infrastructure/tools/PublishAllServices/Program.cs`'s actual argument parsing — read it before running; adjust this command to match. If `ComplaincePlatform` turns out not to be deployable as-is, publish just the Runtime Agent from Stage 4 and treat this as a self-hosting-only first run — still a valid, meaningful G1 result, just narrower than the full pipeline diagram.)

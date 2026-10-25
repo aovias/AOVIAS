@@ -7,7 +7,8 @@ public static class RepositoryLayoutPlatformRootDiscovery
 {
     public static bool MatchesPublishingLegacyMarkers(string repositoryRoot)
         => RepositoryLayoutAoviasConfigPaths.ConfigDirectoryExistsAtRepositoryRoot(repositoryRoot)
-           && (Directory.Exists(Path.Combine(repositoryRoot, "ComplaincePlatform"))
+           && (Directory.Exists(Path.Combine(repositoryRoot, "AOVIAS.Command", "ComplaincePlatform"))
+               || Directory.Exists(Path.Combine(repositoryRoot, "ComplaincePlatform"))
                || Directory.Exists(Path.Combine(repositoryRoot, "AOVIAS.Studio", "Aovias.Runtime.Agent"))
                || Directory.Exists(Path.Combine(repositoryRoot, "Aovias.Runtime.Agent")));
 
@@ -70,7 +71,7 @@ public static class RepositoryLayoutPlatformRootDiscovery
             + RepositoryLayoutAoviasConfigPaths.InfrastructureRelativePath
             + "' or '"
             + RepositoryLayoutAoviasConfigPaths.LegacyRootRelativeDirectory
-            + "', plus 'ComplaincePlatform' or 'AOVIAS.Studio/Aovias.Runtime.Agent'.");
+            + "', plus 'AOVIAS.Command/ComplaincePlatform' or 'AOVIAS.Studio/Aovias.Runtime.Agent'.");
 
     internal static InvalidOperationException CreateCsmNotFoundException(string startDirectory)
         => new(

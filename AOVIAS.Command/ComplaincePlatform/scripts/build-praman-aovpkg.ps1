@@ -5,18 +5,19 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$repoRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+$platformDir = Split-Path $PSScriptRoot -Parent
+$repoRoot = Split-Path (Split-Path $platformDir -Parent) -Parent
 $infraConfigRoot = Join-Path $repoRoot "AOVIAS.Infrastructure\aovias-config"
 $legacyConfigRoot = Join-Path $repoRoot "aovias-config"
 if (-not (Test-Path $infraConfigRoot) -and -not (Test-Path $legacyConfigRoot)) {
     throw "Could not locate AOVIAS configuration directory under repository root '$repoRoot'. Expected '$infraConfigRoot' or '$legacyConfigRoot'."
 }
-if (-not (Test-Path (Join-Path $repoRoot "ComplaincePlatform"))) {
-    throw "Could not locate ComplaincePlatform under repository root '$repoRoot'."
+if (-not (Test-Path $platformDir)) {
+    throw "Could not locate ComplaincePlatform platform directory at '$platformDir'."
 }
 $configRoot = if (Test-Path $infraConfigRoot) { $infraConfigRoot } elseif (Test-Path $legacyConfigRoot) { $legacyConfigRoot } else { $infraConfigRoot }
 $packagesRoot = Join-Path $configRoot "storage\local\packages\praman"
-$publishRoot = Join-Path $repoRoot "ComplaincePlatform\.publish"
+$publishRoot = Join-Path $platformDir ".publish"
 
 $services = @(
     @{ Project = "Gateway\Gateway.csproj"; ServiceId = "praman-gateway"; DisplayName = "PRAMAN Gateway"; PackageId = "PKG-PRAMAN-GATEWAY" },
@@ -30,7 +31,7 @@ $services = @(
 
 Write-Host "Publishing PRAMAN services..."
 foreach ($service in $services) {
-    $projectPath = Join-Path $repoRoot "ComplaincePlatform\$($service.Project)"
+    $projectPath = Join-Path $platformDir $service.Project
     $outputPath = Join-Path $publishRoot $service.ServiceId
     if (Test-Path $outputPath) { Remove-Item $outputPath -Recurse -Force }
     dotnet publish $projectPath -c $Configuration -o $outputPath

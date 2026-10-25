@@ -24,8 +24,8 @@ public sealed class DeploymentPlanGenerationVerifierTests
     public void Verify_passes_for_a_real_service_bundle_under_permissive_capabilities()
     {
         var contents = BuildPackageContentsForRealService(
-            "ComplaincePlatform/AIOrchestratorService/deployment.metadata.json",
-            "ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj");
+            "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/deployment.metadata.json",
+            "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj");
 
         var status = DeploymentPlanGenerationVerifier.Verify(contents);
 

@@ -106,7 +106,7 @@ public sealed class RepositoryLayoutW1TransitionTests
 
         if (complaincePlatform)
         {
-            Directory.CreateDirectory(Path.Combine(root, "ComplaincePlatform"));
+            Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Command", "ComplaincePlatform"));
         }
 
         if (runtimeAgent)

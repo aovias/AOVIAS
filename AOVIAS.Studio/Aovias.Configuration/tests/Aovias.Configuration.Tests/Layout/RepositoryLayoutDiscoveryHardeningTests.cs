@@ -112,7 +112,7 @@ public sealed class RepositoryLayoutDiscoveryHardeningTests
             Directory.CreateDirectory(Path.Combine(root, "aovias-config"));
         }
 
-        Directory.CreateDirectory(Path.Combine(root, "ComplaincePlatform"));
+        Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Command", "ComplaincePlatform"));
         return root;
     }
 

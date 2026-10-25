@@ -17,10 +17,10 @@ public sealed class ContractDrivenPublishingTests
         "..", "..", "..", "..", "..", ".."));
 
     [Theory]
-    [InlineData("ComplaincePlatform/Gateway/deployment.metadata.json", "gateway")]
-    [InlineData("ComplaincePlatform/OutboxRelayWorker/deployment.metadata.json", "outbox-worker")]
+    [InlineData("AOVIAS.Command/ComplaincePlatform/Gateway/deployment.metadata.json", "gateway")]
+    [InlineData("AOVIAS.Command/ComplaincePlatform/OutboxRelayWorker/deployment.metadata.json", "outbox-worker")]
     [InlineData("Aovias.Runtime.Agent/deployment.metadata.json", "runtime-agent")]
-    [InlineData("WebApp/deployment.metadata.json", "portal")]
+    [InlineData("AOVIAS.Command/WebApp/deployment.metadata.json", "portal")]
     public void DeploymentMetadataReader_loads_service_contracts(string relativePath, string expectedServiceId)
     {
         var path = Path.Combine(PlatformRoot, relativePath);
@@ -104,20 +104,20 @@ public sealed class ContractDrivenPublishingTests
     [Fact]
     public void Manifest_and_health_generators_use_deployment_metadata()
     {
-        var metadata = LoadMetadata("ComplaincePlatform/AIOrchestratorService/deployment.metadata.json");
+        var metadata = LoadMetadata("AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/deployment.metadata.json");
         var context = new PublishingContext
         {
             Request = new PublishingRequest
             {
-                ProjectPath = Path.Combine(PlatformRoot, "ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj"),
+                ProjectPath = Path.Combine(PlatformRoot, "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj"),
                 ServiceId = metadata.ServiceId,
                 Version = "1.0.0"
             },
             Discovery = new ProjectDiscoveryResult
             {
                 ProjectType = PublishingProjectType.AspNetCore,
-                ProjectPath = Path.Combine(PlatformRoot, "ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj"),
-                ProjectRoot = Path.Combine(PlatformRoot, "ComplaincePlatform/AIOrchestratorService"),
+                ProjectPath = Path.Combine(PlatformRoot, "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj"),
+                ProjectRoot = Path.Combine(PlatformRoot, "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService"),
                 ServiceId = "AIOrchestratorService",
                 ServiceName = "AIOrchestratorService",
                 ProviderName = "DotNet",
@@ -185,20 +185,20 @@ public sealed class ContractDrivenPublishingTests
     [Fact]
     public async Task Compose_generation_uses_manifest_ports_and_health_contract()
     {
-        var metadata = LoadMetadata("ComplaincePlatform/AIOrchestratorService/deployment.metadata.json");
+        var metadata = LoadMetadata("AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/deployment.metadata.json");
         var context = new PublishingContext
         {
             Request = new PublishingRequest
             {
-                ProjectPath = Path.Combine(PlatformRoot, "ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj"),
+                ProjectPath = Path.Combine(PlatformRoot, "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj"),
                 ServiceId = metadata.ServiceId,
                 Version = "1.0.0"
             },
             Discovery = new ProjectDiscoveryResult
             {
                 ProjectType = PublishingProjectType.AspNetCore,
-                ProjectPath = Path.Combine(PlatformRoot, "ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj"),
-                ProjectRoot = Path.Combine(PlatformRoot, "ComplaincePlatform/AIOrchestratorService"),
+                ProjectPath = Path.Combine(PlatformRoot, "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj"),
+                ProjectRoot = Path.Combine(PlatformRoot, "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService"),
                 ServiceId = "AIOrchestratorService",
                 ServiceName = "AIOrchestratorService",
                 ProviderName = "DotNet",

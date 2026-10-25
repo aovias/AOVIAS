@@ -47,15 +47,18 @@ public sealed class SourceDiscoveryBoundary : ISourceDiscoveryBoundary
         }
 
         var roots = new List<string>();
-        foreach (var folderName in new[] { "ComplaincePlatform", "WebApp" })
+        TryAddRoot(roots, Path.Combine(rootPath, "AOVIAS.Command", "ComplaincePlatform"));
+        TryAddRoot(roots, Path.Combine(rootPath, "AOVIAS.Command", "WebApp"));
+        TryAddRoot(roots, Path.Combine(rootPath, "ComplaincePlatform"));
+        TryAddRoot(roots, Path.Combine(rootPath, "WebApp"));
+        return roots;
+
+        static void TryAddRoot(List<string> roots, string candidate)
         {
-            var candidate = Path.Combine(rootPath, folderName);
             if (Directory.Exists(candidate))
             {
                 roots.Add(Path.GetFullPath(candidate));
             }
         }
-
-        return roots;
     }
 }

@@ -137,7 +137,13 @@ public sealed class SolutionDeployableProjectDiscoverer : IDeployableProjectDisc
 
     private static IEnumerable<string> GetScanRoots(string platformRoot)
     {
-        yield return Path.Combine(platformRoot, "ComplaincePlatform");
+        yield return Path.Combine(platformRoot, "AOVIAS.Command", "ComplaincePlatform");
+        var legacyCommandRoot = Path.Combine(platformRoot, "ComplaincePlatform");
+        if (Directory.Exists(legacyCommandRoot))
+        {
+            yield return legacyCommandRoot;
+        }
+
         yield return Path.Combine(platformRoot, "AOVIAS.Studio", "Aovias.Runtime.Agent");
     }
 
