@@ -10,7 +10,7 @@ import { APP_BASE_URL, ARTIFACT_ROOT } from './src/environment/service-registry.
  */
 export default defineConfig({
   testDir: '.',
-  testMatch: ['foundation/**/*.spec.ts', 'scenarios/**/*.spec.ts', 'regression/**/*.spec.ts'],
+  testMatch: ['unit/**/*.spec.ts', 'foundation/**/*.spec.ts', 'scenarios/**/*.spec.ts', 'regression/**/*.spec.ts'],
 
   // A business assertion that only passes on the second attempt is a defect, not a flake.
   // Retries exist for infrastructure faults and are off locally by design.
