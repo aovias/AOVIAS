@@ -1,3 +1,5 @@
+using Aovias.Configuration.Layout;
+
 namespace Aovias.Publishing.Core.Discovery;
 
 /// <summary>
@@ -12,20 +14,7 @@ public static class PlatformRootResolver
             return Path.GetFullPath(configuredRoot);
         }
 
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current is not null)
-        {
-            if (Directory.Exists(Path.Combine(current.FullName, "aovias-config"))
-                && (Directory.Exists(Path.Combine(current.FullName, "ComplaincePlatform"))
-                    || Directory.Exists(Path.Combine(current.FullName, "Aovias.Runtime.Agent"))))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
+        return RepositoryLayoutProductionAdapter.ResolvePublishingPlatformRoot(AppContext.BaseDirectory);
     }
 
     public static string ResolveWebAppRoot(string platformRoot)

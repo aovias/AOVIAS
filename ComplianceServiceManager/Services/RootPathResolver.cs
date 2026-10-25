@@ -1,4 +1,5 @@
 using System.IO;
+using Aovias.Configuration.Layout;
 
 namespace ComplianceServiceManager.Services;
 
@@ -42,23 +43,7 @@ public static class RootPathResolver
     }
 
     public static string ResolvePlatformRoot()
-    {
-        var baseDirectory = AppContext.BaseDirectory;
-        var current = new DirectoryInfo(baseDirectory);
-
-        while (current is not null)
-        {
-            if (Directory.Exists(Path.Combine(current.FullName, "Aovias.Runtime.Agent")) &&
-                Directory.Exists(Path.Combine(current.FullName, "aovias-config")))
-            {
-                return current.FullName;
-            }
-
-            current = current.Parent;
-        }
-
-        return Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", ".."));
-    }
+        => RepositoryLayoutProductionAdapter.ResolveCsmPlatformRoot(AppContext.BaseDirectory);
 
     public static string ResolveRuntimeAgentProjectPath()
         => Path.Combine(
