@@ -76,6 +76,9 @@ __screenshots__/
 **/appsettings.Local.json
 **/appsettings.*.Local.json
 **/secrets/
+# Track options model source only (not secret JSON under secrets/ dirs elsewhere)
+!AOVIAS.Studio/Aovias.Configuration/Secrets/
+!AOVIAS.Studio/Aovias.Configuration/Secrets/SecretsSettings.cs
 aovias-config/secrets/
 aovias-config/storage/
 aovias-config/logs/
