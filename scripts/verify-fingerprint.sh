@@ -21,7 +21,7 @@ set -euo pipefail
 
 RUN_COUNT="${1:-10}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-TEST_PROJECT="${REPO_ROOT}/Aovias.Publishing/tests/Aovias.Publishing.Core.Tests/Aovias.Publishing.Core.Tests.csproj"
+TEST_PROJECT="${REPO_ROOT}/AOVIAS.Studio/Aovias.Publishing/tests/Aovias.Publishing.Core.Tests/Aovias.Publishing.Core.Tests.csproj"
 FILTER="FullyQualifiedName~DeterministicPackageFingerprint|FullyQualifiedName~ReleaseLibraryRegression"
 RESULTS_DIR="${REPO_ROOT}/_build_out/fingerprint-gate/$(date -u +%Y%m%dT%H%M%SZ)"
 
