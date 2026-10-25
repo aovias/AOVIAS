@@ -6,7 +6,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$packagesRoot = Join-Path $repoRoot "aovias-config\storage\local\packages\praman"
+$infraConfigRoot = Join-Path $repoRoot "AOVIAS.Infrastructure\aovias-config"
+$legacyConfigRoot = Join-Path $repoRoot "aovias-config"
+$configRoot = if (Test-Path $infraConfigRoot) { $infraConfigRoot } elseif (Test-Path $legacyConfigRoot) { $legacyConfigRoot } else { $infraConfigRoot }
+$packagesRoot = Join-Path $configRoot "storage\local\packages\praman"
 $publishRoot = Join-Path $repoRoot "ComplaincePlatform\.publish"
 
 $services = @(

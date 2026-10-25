@@ -12,7 +12,7 @@ public static class LegacyCsmPlatformRootDiscovery
         while (current is not null)
         {
             if (Directory.Exists(Path.Combine(current.FullName, "Aovias.Runtime.Agent"))
-                && Directory.Exists(Path.Combine(current.FullName, "aovias-config")))
+                && RepositoryLayoutAoviasConfigPaths.ConfigDirectoryExistsAtRepositoryRoot(current.FullName))
             {
                 return current.FullName;
             }

@@ -80,6 +80,10 @@ aovias-config/secrets/
 aovias-config/storage/
 aovias-config/logs/
 aovias-config/certificates/
+AOVIAS.Infrastructure/aovias-config/secrets/
+AOVIAS.Infrastructure/aovias-config/storage/
+AOVIAS.Infrastructure/aovias-config/logs/
+AOVIAS.Infrastructure/aovias-config/certificates/
 *.pem
 *.key
 *.pfx

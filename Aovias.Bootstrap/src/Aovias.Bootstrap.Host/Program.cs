@@ -4,6 +4,7 @@ using Aovias.Bootstrap.Contracts;
 using Aovias.Bootstrap.Execution;
 using Aovias.Bootstrap.Host;
 using Aovias.Configuration.Extensions;
+using Aovias.Configuration.Layout;
 using Aovias.Configuration.Settings;
 using Aovias.Release.Contracts.RemoteDeployment;
 using Microsoft.Extensions.Configuration;
@@ -379,7 +380,7 @@ internal sealed class BootstrapOptions
     public required string SshUser { get; init; }
     public string? SshKeyPath { get; init; }
     public string? SshPassword { get; init; }
-    public string ConfigRoot { get; init; } = "V:/DevelopmentRepo/V1.0/aovias-config";
+    public string ConfigRoot { get; init; } = "";
 
     public static BootstrapOptions Parse(string[] args)
     {
@@ -427,7 +428,25 @@ internal sealed class BootstrapOptions
             TargetHost = target,
             SshUser = sshUser,
             SshKeyPath = sshKey,
-            ConfigRoot = configRoot ?? Environment.GetEnvironmentVariable("AOVIAS_CONFIG_ROOT") ?? "V:/DevelopmentRepo/V1.0/aovias-config"
+            ConfigRoot = configRoot
+                ?? Environment.GetEnvironmentVariable("AOVIAS_CONFIG_ROOT")
+                ?? RepositoryLayoutAoviasConfigPaths.ResolveConfigRootDirectory(ResolveLocalPlatformRoot())
         };
+    }
+
+    private static string ResolveLocalPlatformRoot()
+    {
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+        while (current is not null)
+        {
+            if (RepositoryLayoutAoviasConfigPaths.ConfigDirectoryExistsAtRepositoryRoot(current.FullName))
+            {
+                return current.FullName;
+            }
+
+            current = current.Parent;
+        }
+
+        return AppContext.BaseDirectory;
     }
 }

@@ -222,7 +222,7 @@ public sealed class ConfigTemplateGeneratorTests
                 """
                 {
                   "Aovias": {
-                    "ConfigRoot": "V:/DevelopmentRepo/V1.0/aovias-config",
+                    "ConfigRoot": "AOVIAS.Infrastructure/aovias-config",
                     "ActiveProfile": "local",
                     "ProfilesDirectory": "profiles",
                     "SecretsDirectory": "secrets"

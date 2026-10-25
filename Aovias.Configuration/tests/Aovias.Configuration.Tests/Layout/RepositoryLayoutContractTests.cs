@@ -39,8 +39,8 @@ public sealed class RepositoryLayoutContractTests
               "solutions": [],
               "discovery": {
                 "current": {
-                  "platformRoot": { "requiredAll": ["aovias-config"], "requiredAny": ["ComplaincePlatform"] },
-                  "csmPlatformRoot": { "requiredAll": ["aovias-config", "Aovias.Runtime.Agent"], "requiredAny": [] },
+                  "platformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config"], "requiredAny": ["ComplaincePlatform"] },
+                  "csmPlatformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config", "Aovias.Runtime.Agent"], "requiredAny": [] },
                   "defaultApplicationRoots": ["../escape"],
                   "deployableProjectScanRoots": [],
                   "runtimeAgentProjectRelative": "Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Api/Aovias.Runtime.Agent.Api.csproj",
@@ -98,7 +98,7 @@ public sealed class RepositoryLayoutContractTests
     {
         var outer = CreateCurrentLayoutFixture();
         var inner = Path.Combine(outer, "nested");
-        Directory.CreateDirectory(Path.Combine(inner, "aovias-config"));
+        Directory.CreateDirectory(Path.Combine(inner, "AOVIAS.Infrastructure", "aovias-config"));
         Directory.CreateDirectory(Path.Combine(inner, "ComplaincePlatform"));
         var manifest = LoadMinimalManifest();
 
@@ -251,8 +251,8 @@ public sealed class RepositoryLayoutContractTests
               "solutions": [],
               "discovery": {
                 "current": {
-                  "platformRoot": { "requiredAll": ["aovias-config"], "requiredAny": ["ComplaincePlatform", "Aovias.Runtime.Agent"] },
-                  "csmPlatformRoot": { "requiredAll": ["aovias-config", "Aovias.Runtime.Agent"], "requiredAny": [] },
+                  "platformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config"], "requiredAny": ["ComplaincePlatform", "Aovias.Runtime.Agent"] },
+                  "csmPlatformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config", "Aovias.Runtime.Agent"], "requiredAny": [] },
                   "defaultApplicationRoots": ["ComplaincePlatform", "WebApp"],
                   "deployableProjectScanRoots": ["ComplaincePlatform", "Aovias.Runtime.Agent"],
                   "runtimeAgentProjectRelative": "Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Api/Aovias.Runtime.Agent.Api.csproj",
@@ -277,7 +277,7 @@ public sealed class RepositoryLayoutContractTests
     private static string CreateCurrentLayoutFixture()
     {
         var root = Path.Combine(Path.GetTempPath(), "aovias-current-layout-" + Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(Path.Combine(root, "aovias-config"));
+        Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Infrastructure", "aovias-config"));
         Directory.CreateDirectory(Path.Combine(root, "ComplaincePlatform"));
         Directory.CreateDirectory(Path.Combine(root, "WebApp"));
         Directory.CreateDirectory(Path.Combine(root, "ComplianceServiceManager", "bin", "Debug"));

@@ -1,4 +1,5 @@
 using Aovias.Configuration.Extensions;
+using Aovias.Configuration.Layout;
 using Aovias.Publishing.Contracts;
 using Aovias.Publishing.SDK;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +18,7 @@ var inspectOnly = args.Any(arg => arg.Equals("--inspect-only", StringComparison.
 var bootstrap = new ConfigurationBuilder()
     .AddInMemoryCollection(new Dictionary<string, string?>
     {
-        ["Aovias:ConfigRoot"] = Path.Combine(platformRoot, "aovias-config").Replace('\\', '/'),
+        ["Aovias:ConfigRoot"] = RepositoryLayoutAoviasConfigPaths.ResolveConfigRootDirectory(platformRoot).Replace('\\', '/'),
         ["Aovias:ProfilesDirectory"] = "profiles",
         ["Aovias:SecretsDirectory"] = "secrets",
         ["Aovias:ActiveProfile"] = profile
@@ -50,7 +51,11 @@ if (discoverOnly)
 }
 
 var publishingSettings = configuration.GetSection("Publishing").Get<Aovias.Configuration.Settings.PublishingSettings>();
-var outputDirectory = publishingSettings?.OutputFolder ?? Path.Combine(platformRoot, "aovias-config", "storage", "local", "packages");
+var outputDirectory = publishingSettings?.OutputFolder ?? Path.Combine(
+    RepositoryLayoutAoviasConfigPaths.ResolveConfigRootDirectory(platformRoot),
+    "storage",
+    "local",
+    "packages");
 
 var cliPreflight = !skipPreflight;
 
@@ -229,7 +234,7 @@ static string ResolvePlatformRoot()
     var current = new DirectoryInfo(AppContext.BaseDirectory);
     while (current is not null)
     {
-        if (Directory.Exists(Path.Combine(current.FullName, "aovias-config"))
+        if (RepositoryLayoutAoviasConfigPaths.ConfigDirectoryExistsAtRepositoryRoot(current.FullName)
             && Directory.Exists(Path.Combine(current.FullName, "ComplaincePlatform")))
         {
             return current.FullName;

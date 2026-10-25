@@ -121,7 +121,11 @@ public sealed class LoggingSettingsBinderTests
     [Fact]
     public void BindAndPrepare_loads_repository_demo_profile_schema()
     {
-        var configRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "..", "aovias-config"));
+        var configRoot = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory,
+            "..", "..", "..", "..", "..", "..",
+            "AOVIAS.Infrastructure",
+            "aovias-config"));
         var demoSettingsPath = Path.Combine(configRoot, "profiles", "demo", "settings.logging.json");
         if (!File.Exists(demoSettingsPath))
         {
