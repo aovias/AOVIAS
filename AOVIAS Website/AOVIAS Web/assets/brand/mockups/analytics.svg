@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" fill="none">
+  <rect width="640" height="400" rx="12" fill="#F8F9FB" stroke="#0B1220" stroke-opacity="0.2"/>
+  <rect x="16" y="16" width="140" height="368" rx="8" fill="#0B1220" fill-opacity="0.04" stroke="#0B1220" stroke-opacity="0.25"/>
+  <rect x="172" y="16" width="452" height="48" rx="8" fill="#0B1220" fill-opacity="0.04" stroke="#0B1220" stroke-opacity="0.25"/>
+  <rect x="172" y="80" width="220" height="140" rx="8" fill="#0B1220" fill-opacity="0.05" stroke="#0B1220" stroke-opacity="0.3"/>
+  <rect x="404" y="80" width="220" height="140" rx="8" fill="#0B1220" fill-opacity="0.05" stroke="#0B1220" stroke-opacity="0.3"/>
+  <rect x="172" y="236" width="452" height="148" rx="8" fill="#0B1220" fill-opacity="0.05" stroke="#0B1220" stroke-opacity="0.3"/>
+  <text x="32" y="48" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="600" fill="#0B1220">analytics</text>
+  <circle cx="210" cy="150" r="6" fill="#5EC8FF"/><circle cx="250" cy="150" r="6" stroke="#0B1220" stroke-width="1.5"/>
+  <path d="M216 150 H244" stroke="#0B1220" stroke-width="1.25" stroke-opacity="0.5"/>
+</svg>

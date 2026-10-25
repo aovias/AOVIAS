@@ -1,0 +1,21 @@
+{
+  "name": "@aovias/eslint-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./next": "./next.js"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.31.0",
+    "eslint": "^9.31.0",
+    "eslint-config-next": "^15.4.1",
+    "eslint-config-prettier": "^10.1.5",
+    "typescript-eslint": "^8.37.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9",
+    "typescript": "^5"
+  }
+}

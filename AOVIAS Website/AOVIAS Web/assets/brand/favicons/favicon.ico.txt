@@ -1,0 +1,1 @@
+Place favicon.ico from favicons/16-32-48 PNG set; SVG favicon preferred.

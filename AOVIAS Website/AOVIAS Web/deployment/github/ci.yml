@@ -1,0 +1,3 @@
+# Canonical CI workflow is mirrored to /.github/workflows/ci.yml
+# Edit .github/workflows/ci.yml (GitHub requires that path) and keep this copy in sync.
+# See repository root .github/workflows/ci.yml

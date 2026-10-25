@@ -1,0 +1,51 @@
+{
+  "name": "@aovias/website",
+  "version": "1.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack -p 3000",
+    "build": "next build",
+    "start": "node ./scripts/start-standalone.mjs",
+    "start:next": "next start -p 3000",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "analyze": "node ./scripts/analyze.mjs",
+    "lighthouse": "lhci autorun --config=lighthouserc.cjs",
+    "lighthouse:r1.4": "node ./scripts/lh-r1-4.mjs",
+    "qa:responsive": "node ./scripts/qa-responsive.mjs",
+    "qa:browsers": "node ./scripts/qa-browsers.mjs",
+    "budget:check": "node ../../scripts/check-performance-budget.mjs",
+    "seo:smoke": "node ./scripts/seo-smoke.mjs"
+  },
+  "dependencies": {
+    "@aovias/design-system": "*",
+    "@aovias/sdk": "*",
+    "@hookform/resolvers": "^5.4.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.23.6",
+    "lucide-react": "^1.25.0",
+    "next": "^15.4.1",
+    "next-themes": "^0.4.6",
+    "nodemailer": "^6.10.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-hook-form": "^7.82.0",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.0.5"
+  },
+  "devDependencies": {
+    "@aovias/eslint-config": "*",
+    "@aovias/typescript-config": "*",
+    "@lhci/cli": "^0.15.1",
+    "@next/bundle-analyzer": "^16.2.10",
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/node": "^22.16.5",
+    "@types/nodemailer": "^6.4.24",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "eslint": "^9.31.0",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.8.3"
+  }
+}

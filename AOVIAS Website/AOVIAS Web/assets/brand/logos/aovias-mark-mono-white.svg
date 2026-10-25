@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
+  <rect x="2" y="2" width="36" height="36" rx="8" fill="#FFFFFF" fill-opacity="0.05"/>
+  <rect x="2" y="2" width="36" height="36" rx="8" stroke="#FFFFFF" stroke-width="1.5" stroke-opacity="0.35"/>
+  <path d="M10 28 L20 10 L30 28" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/>
+  <defs>
+    <linearGradient id="starGrad" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#1E4FD8"/>
+      <stop offset="50%" stop-color="#5EC8FF"/>
+      <stop offset="100%" stop-color="#1E4FD8"/>
+    </linearGradient>
+  </defs>
+  <path d="M 20,14.6 L 21.583919189857866,19.416080810142134 L 26.4,21 L 21.583919189857866,22.583919189857866 L 20,27.4 L 18.416080810142134,22.583919189857866 L 13.6,21 L 18.416080810142134,19.416080810142134 Z" fill="url(#starGrad)"/>
+</svg>

@@ -1,0 +1,47 @@
+{
+  "$schema": "./hostinger.settings.schema.json",
+  "provider": "hostinger",
+  "displayName": "Hostinger Mail",
+  "smtp": {
+    "host": "smtp.hostinger.com",
+    "ports": {
+      "starttls": 587,
+      "ssl": 465
+    },
+    "recommended": {
+      "port": 587,
+      "secure": false,
+      "requireTls": true,
+      "authMethod": "LOGIN"
+    },
+    "sslAlternative": {
+      "port": 465,
+      "secure": true,
+      "requireTls": false
+    }
+  },
+  "imap": {
+    "host": "imap.hostinger.com",
+    "port": 993,
+    "secure": true
+  },
+  "defaults": {
+    "fromName": "AOVIAS Website",
+    "replyPolicy": "visitor-reply-to-on-internal",
+    "connectionTimeoutMs": 15000,
+    "socketTimeoutMs": 20000,
+    "greetingTimeoutMs": 10000
+  },
+  "retry": {
+    "maxAttempts": 3,
+    "initialDelayMs": 400,
+    "maxDelayMs": 4000,
+    "factor": 2
+  },
+  "notes": [
+    "Secrets (SMTP_USER, SMTP_PASSWORD, EMAIL_FROM, CONTACT_FORM_TO) live in environment variables only.",
+    "Never put passwords or API keys in this file.",
+    "Set EMAIL_PROVIDER=smtp and leave SMTP_HOST empty to inherit hostinger.settings.json smtp.host.",
+    "Prefer port 587 (STARTTLS). Use 465 (SSL) if STARTTLS is blocked."
+  ]
+}

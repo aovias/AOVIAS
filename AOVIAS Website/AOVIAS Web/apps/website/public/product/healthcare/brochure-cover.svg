@@ -1,0 +1,15 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="AOVIAS Command Healthcare Brochure">
+  <defs>
+    <linearGradient id="c" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#163056"/>
+      <stop offset="1" stop-color="#0a0e17"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="800" fill="url(#c)"/>
+  <rect x="40" y="40" width="520" height="720" rx="16" fill="none" stroke="#8fb3e0" stroke-opacity="0.25"/>
+  <text x="300" y="280" text-anchor="middle" fill="#f2f6fc" font-family="Segoe UI,sans-serif" font-size="28" font-weight="700">AOVIAS Command</text>
+  <text x="300" y="330" text-anchor="middle" fill="#93c5fd" font-family="Segoe UI,sans-serif" font-size="16">Healthcare Operations</text>
+  <text x="300" y="370" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI,sans-serif" font-size="14">Executive Brochure</text>
+  <rect x="220" y="420" width="160" height="4" rx="2" fill="#5a8fd0"/>
+  <text x="300" y="700" text-anchor="middle" fill="#64748b" font-family="Segoe UI,sans-serif" font-size="12">Placeholder cover — PDF forthcoming</text>
+</svg>

@@ -1,0 +1,317 @@
+/*
+  Semantic theme maps. Light is default; dark overrides semantics only.
+  Components consume aliases (background, primary, …) — never palette hex directly.
+  danger ≡ error for compatibility.
+*/
+
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+
+  /*
+    R1.DS.3.1 — official brand application.
+    Primary blue ~10–15% UI (CTA, links, active nav). Cyan reserved for AI domain.
+  */
+  --background: #e7eef7;
+  --surface: #f0f5fb;
+  --surface-elevated: #fafcfe;
+  --surface-subtle: #d5e3f3;
+  --surface-muted: #dfeaf7;
+  --surface-hero: #d7e5f6;
+  /* Soft blue band — deeper than --background so section rhythm is visible. */
+  --surface-section: #dbe7f6;
+  --muted: #dfeaf7;
+  --subtle: #d5e3f3;
+  --card: #fbfcfe;
+  --divider: color-mix(in srgb, var(--palette-primary-800) 11%, var(--palette-neutral-200));
+
+  /* ——— Ink ——— */
+  --foreground: var(--palette-neutral-950);
+  --muted-foreground: var(--palette-neutral-600);
+  --ink: var(--foreground);
+  --ink-muted: var(--muted-foreground);
+  --ink-inverse: var(--palette-neutral-0);
+  --card-foreground: var(--palette-neutral-950);
+
+  /* ——— Chrome ——— */
+  --border: color-mix(in srgb, var(--palette-primary-800) 14%, var(--palette-neutral-200));
+  --border-strong: var(--palette-neutral-300);
+  --ring: var(--palette-primary-500);
+  --overlay: rgba(10, 21, 32, 0.44);
+  /* Visible brand wash — was too faint / charcoal-adjacent */
+  --brand-atmosphere: color-mix(in srgb, var(--palette-primary-500) 28%, transparent);
+
+  /* ——— Brand ——— */
+  /* Primary CTAs: clear enterprise blue */
+  --primary: var(--palette-primary-600);
+  --primary-foreground: var(--palette-neutral-0);
+  --primary-muted: color-mix(in srgb, var(--palette-primary-500) 24%, var(--palette-neutral-50));
+  --primary-hover: var(--palette-primary-500);
+  --secondary: var(--palette-secondary-500);
+  --secondary-foreground: var(--palette-neutral-0);
+  --secondary-muted: color-mix(in srgb, var(--palette-secondary-400) 18%, var(--palette-neutral-50));
+  --accent: var(--palette-accent-500);
+  --accent-foreground: var(--palette-neutral-0);
+  --accent-muted: color-mix(in srgb, var(--palette-accent-400) 16%, var(--palette-neutral-50));
+  --supporting: var(--palette-supporting-500);
+  --supporting-foreground: var(--palette-neutral-0);
+
+  /* Diagram / eyebrow ink — saturated enough to read as color, not grey */
+  --illustration-ink: var(--palette-primary-500);
+
+  /* ——— Feedback (danger ≡ error) ——— */
+  --success: var(--palette-success-600);
+  --success-foreground: var(--palette-neutral-0);
+  --success-subtle: var(--palette-success-50);
+  --warning: var(--palette-warning-600);
+  --warning-foreground: var(--palette-neutral-0);
+  --warning-subtle: var(--palette-warning-50);
+  --error: var(--palette-error-600);
+  --error-foreground: var(--palette-neutral-0);
+  --error-subtle: var(--palette-error-50);
+  --danger: var(--error);
+  --danger-foreground: var(--error-foreground);
+  --danger-subtle: var(--error-subtle);
+  --info: var(--palette-info-600);
+  --info-foreground: var(--palette-neutral-0);
+  --info-subtle: var(--palette-info-50);
+
+  /* ——— Navigation ——— */
+  --nav-foreground: var(--palette-neutral-700);
+  --nav-foreground-hover: var(--palette-primary-600);
+  --nav-foreground-active: var(--palette-primary-600);
+  --nav-indicator: var(--palette-primary-500);
+  --nav-background: color-mix(in srgb, var(--surface-elevated) 90%, transparent);
+  --nav-mega-background: var(--surface-elevated);
+  --nav-footer-foreground: var(--palette-neutral-600);
+  --breadcrumb-foreground: var(--palette-neutral-600);
+  --breadcrumb-current: var(--palette-primary-600);
+
+  /* ——— Form ——— */
+  --input-background: var(--surface-elevated);
+  --input-border: var(--border);
+  --input-placeholder: var(--palette-neutral-400);
+  --input-helper: var(--muted-foreground);
+  --focus-ring: var(--ring);
+
+  /* ——— Domain accents (static catalog) ——— */
+  --product-platform: var(--palette-product-platform);
+  --product-command: var(--palette-product-command);
+  --product-studio: var(--palette-product-studio);
+  --product-future: var(--palette-product-future);
+  --tech-platform: var(--palette-tech-platform);
+  --tech-engineering: var(--palette-tech-engineering);
+  --tech-ai: var(--palette-tech-ai);
+  --tech-security: var(--palette-tech-security);
+  --tech-identity: var(--palette-tech-identity);
+  --tech-architecture: var(--palette-tech-architecture);
+  --industry-healthcare: var(--palette-industry-healthcare);
+  --industry-government: var(--palette-industry-government);
+  --industry-education: var(--palette-industry-education);
+  --industry-enterprise: var(--palette-industry-enterprise);
+  --industry-manufacturing: var(--palette-industry-manufacturing);
+  --industry-financial: var(--palette-industry-financial);
+  --trust-security: var(--palette-trust-security);
+  --trust-compliance: var(--palette-trust-compliance);
+  --trust-privacy: var(--palette-trust-privacy);
+  --trust-verified: var(--palette-trust-verified);
+
+  /* Active domain accent — AA-safe on light surfaces for small text */
+  --domain-accent: var(--palette-primary-600);
+
+  /* Depth via hairline + soft lift — not heavy drop shadows */
+  --ds-shadow-surface: 0 1px 2px rgba(20, 34, 50, 0.04),
+    0 0 0 1px color-mix(in srgb, var(--palette-primary-800) 6%, transparent);
+  --ds-shadow-raised: 0 4px 14px rgba(20, 34, 50, 0.07),
+    0 0 0 1px color-mix(in srgb, var(--palette-primary-800) 8%, transparent);
+  --ds-shadow-overlay: 0 12px 32px rgba(20, 34, 50, 0.1);
+  --ds-shadow-modal: 0 20px 44px rgba(20, 34, 50, 0.14);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Stepped navy charcoal — canvas darkest, cards one step up */
+  --background: #090d15;
+  --surface: #0f1522;
+  --surface-elevated: #151d2d;
+  --surface-subtle: #1a2436;
+  --surface-muted: #111828;
+  --surface-hero: #0b111d;
+  --surface-section: #0f1522;
+  --muted: #111828;
+  --subtle: #1a2436;
+  --card: #151d2d;
+  --divider: color-mix(in srgb, var(--palette-primary-200) 12%, var(--palette-neutral-800));
+
+  --foreground: #eef1f5;
+  --muted-foreground: var(--palette-neutral-400);
+  --ink: var(--foreground);
+  --ink-muted: var(--muted-foreground);
+  --ink-inverse: #090c11;
+  --card-foreground: #eef1f5;
+
+  --border: color-mix(in srgb, var(--palette-primary-200) 14%, var(--palette-neutral-800));
+  --border-strong: var(--palette-neutral-700);
+  --ring: var(--palette-primary-300);
+  --overlay: rgba(0, 0, 0, 0.58);
+  --brand-atmosphere: color-mix(in srgb, var(--palette-primary-400) 32%, transparent);
+
+  /* Chromatic blue CTAs in dark — avoid washed grey-blue */
+  --primary: var(--palette-primary-300);
+  --primary-foreground: var(--palette-primary-950);
+  --primary-muted: rgba(90, 143, 208, 0.22);
+  --primary-hover: var(--palette-primary-200);
+  --illustration-ink: var(--palette-primary-300);
+  --secondary: var(--palette-secondary-300);
+  --secondary-foreground: var(--palette-secondary-950);
+  --secondary-muted: rgba(163, 166, 208, 0.14);
+  --accent: var(--palette-accent-400);
+  --accent-foreground: var(--palette-accent-950);
+  --accent-muted: rgba(59, 176, 208, 0.12);
+  --supporting: var(--palette-supporting-400);
+  --supporting-foreground: var(--palette-supporting-950);
+
+  --success: var(--palette-success-500);
+  --success-foreground: var(--palette-neutral-1000);
+  --success-subtle: rgba(51, 145, 101, 0.16);
+  --warning: var(--palette-warning-500);
+  --warning-foreground: var(--palette-neutral-1000);
+  --warning-subtle: rgba(196, 138, 26, 0.16);
+  --error: var(--palette-error-500);
+  --error-foreground: var(--palette-neutral-1000);
+  --error-subtle: rgba(194, 59, 59, 0.16);
+  --danger: var(--error);
+  --danger-foreground: var(--error-foreground);
+  --danger-subtle: var(--error-subtle);
+  --info: var(--palette-info-500);
+  --info-foreground: var(--palette-neutral-1000);
+  --info-subtle: rgba(59, 110, 168, 0.16);
+
+  --nav-foreground: var(--palette-neutral-300);
+  --nav-foreground-hover: #eef1f5;
+  --nav-foreground-active: var(--palette-primary-200);
+  --nav-indicator: var(--palette-primary-300);
+  --nav-background: color-mix(in srgb, var(--surface-elevated) 90%, transparent);
+  --nav-mega-background: var(--surface-elevated);
+  --nav-footer-foreground: var(--palette-neutral-400);
+  --breadcrumb-foreground: var(--palette-neutral-400);
+  --breadcrumb-current: var(--palette-primary-200);
+
+  --input-background: var(--surface-elevated);
+  --input-border: var(--border);
+  --input-placeholder: var(--palette-neutral-500);
+  --input-helper: var(--muted-foreground);
+  --focus-ring: var(--ring);
+
+  /* Dark domain accents — same roles, lifted for contrast */
+  --product-platform: var(--palette-secondary-300);
+  --product-command: var(--palette-primary-200);
+  --product-studio: #a894c9;
+  --product-future: var(--palette-neutral-400);
+  --tech-platform: var(--palette-secondary-300);
+  --tech-engineering: var(--palette-primary-200);
+  --tech-ai: var(--palette-accent-400);
+  --tech-security: var(--palette-supporting-400);
+  --tech-identity: #3d9a9a;
+  --tech-architecture: #a894c9;
+  --industry-healthcare: var(--palette-supporting-400);
+  --industry-government: var(--palette-primary-200);
+  --industry-education: var(--palette-secondary-300);
+  --industry-enterprise: var(--palette-primary-300);
+  --industry-manufacturing: var(--palette-neutral-400);
+  --industry-financial: #4a9eab;
+  --trust-security: var(--palette-supporting-400);
+  --trust-compliance: var(--palette-supporting-300);
+  --trust-privacy: #3d9a9a;
+  --trust-verified: var(--palette-supporting-400);
+
+  --domain-accent: var(--palette-primary-300);
+
+  --ds-shadow-surface: 0 1px 2px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  --ds-shadow-raised: 0 4px 16px rgba(0, 0, 0, 0.36),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  --ds-shadow-overlay: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --ds-shadow-modal: 0 22px 48px rgba(0, 0, 0, 0.55);
+}
+
+/* Domain accent wiring — set on layout / page roots */
+[data-product='platform'] {
+  --domain-accent: var(--product-platform);
+}
+[data-product='command'] {
+  --domain-accent: var(--product-command);
+}
+[data-product='studio'] {
+  --domain-accent: var(--product-studio);
+}
+[data-product='future'] {
+  --domain-accent: var(--product-future);
+}
+
+[data-technology='platform'] {
+  --domain-accent: var(--tech-platform);
+}
+[data-technology='engineering'] {
+  --domain-accent: var(--tech-engineering);
+}
+[data-technology='ai'] {
+  --domain-accent: var(--tech-ai);
+}
+[data-technology='security'],
+[data-technology='trust'] {
+  --domain-accent: var(--tech-security);
+}
+[data-technology='identity'] {
+  --domain-accent: var(--tech-identity);
+}
+[data-technology='architecture'] {
+  --domain-accent: var(--tech-architecture);
+}
+
+[data-industry='healthcare'] {
+  --domain-accent: var(--industry-healthcare);
+}
+[data-industry='government'] {
+  --domain-accent: var(--industry-government);
+}
+[data-industry='education'] {
+  --domain-accent: var(--industry-education);
+}
+[data-industry='enterprise'] {
+  --domain-accent: var(--industry-enterprise);
+}
+[data-industry='manufacturing'] {
+  --domain-accent: var(--industry-manufacturing);
+}
+[data-industry='financial-services'] {
+  --domain-accent: var(--industry-financial);
+}
+
+/*
+  Category accent wiring (R1.VA.2) — card personality without page tinting.
+  Sets only --domain-accent so existing components inherit via `text-domain-accent`,
+  card top-accent hairlines, and icon tone.
+*/
+[data-accent='blue'] {
+  --domain-accent: var(--palette-primary-600);
+}
+[data-accent='indigo'] {
+  --domain-accent: var(--palette-secondary-600);
+}
+[data-accent='cyan'] {
+  --domain-accent: var(--palette-accent-600);
+}
+[data-accent='emerald'] {
+  --domain-accent: var(--palette-supporting-600);
+}
+[data-accent='purple'] {
+  --domain-accent: var(--palette-secondary-700);
+}
+[data-accent='slate'] {
+  --domain-accent: var(--palette-neutral-600);
+}
+[data-accent='premium'] {
+  --domain-accent: var(--palette-primary-600);
+}
