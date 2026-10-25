@@ -393,7 +393,8 @@ namespace ComplianceService.Infrastructure.Extensions
                 throw new InvalidOperationException("Connection string 'DefaultConnection' is required for Hangfire.");
             }
 
-            // Add Hangfire services
+            // Add Hangfire SQL storage. The processing server is optional so a verification host
+            // can share the database without a second Hangfire worker (Hangfire:DisableServer).
             services.AddHangfire(config =>
             {
                 config.UseSqlServerStorage(connectionString, new Hangfire.SqlServer.SqlServerStorageOptions
@@ -406,13 +407,15 @@ namespace ComplianceService.Infrastructure.Extensions
                 });
             });
 
-            // Add Hangfire server (processes background jobs)
-            services.AddHangfireServer(options =>
+            if (!configuration.GetValue("Hangfire:DisableServer", false))
             {
-                options.WorkerCount = Environment.ProcessorCount * 5;
-                options.ServerTimeout = TimeSpan.FromMinutes(4);
-                options.SchedulePollingInterval = TimeSpan.FromSeconds(15);
-            });
+                services.AddHangfireServer(options =>
+                {
+                    options.WorkerCount = Environment.ProcessorCount * 5;
+                    options.ServerTimeout = TimeSpan.FromMinutes(4);
+                    options.SchedulePollingInterval = TimeSpan.FromSeconds(15);
+                });
+            }
 
             return services;
         }

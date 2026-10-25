@@ -73,8 +73,37 @@ public sealed class DashboardProjectionPropagationTests
         Assert.Equal(1, builder.BuildCount);
         var projection = await db.DashboardProjections.SingleAsync();
         Assert.Equal(1, projection.TotalJourneysCount);
+        Assert.Equal(Org, projection.OrganizationId);
+        Assert.Equal(Hospital, projection.HospitalId);
+        Assert.Equal(Framework, projection.FrameworkId);
         Assert.Equal(message.Id, projection.LastProcessedOutboxMessageId);
         Assert.Contains("FrameworkEnrolled", projection.LastEventType);
+    }
+
+    [Fact]
+    public async Task FrameworkEnrolled_projection_key_uses_journey_organization_id_not_hospital_id()
+    {
+        await using var db = CreateDb();
+        db.ComplianceJourneys.Add(new ComplianceJourney(Hospital, Org, Hospital, Framework, 12, 0));
+        await db.SaveChangesAsync();
+
+        var engine = CreateEngine(db, new StubSnapshotBuilder());
+        var message = new OutboxMessage
+        {
+            Id = Guid.NewGuid(),
+            AggregateId = Hospital,
+            OccurredOn = DateTime.UtcNow,
+            Type = typeof(FrameworkEnrolledDomainEvent).FullName!,
+            Payload = JsonSerializer.Serialize(new FrameworkEnrolledDomainEvent(Hospital, Framework, Guid.NewGuid()))
+        };
+
+        await engine.ProcessOutboxMessageAsync(message);
+
+        var projection = await db.DashboardProjections.SingleAsync();
+        Assert.Equal(Org, projection.OrganizationId);
+        Assert.Equal(Hospital, projection.HospitalId);
+        Assert.Equal(Framework, projection.FrameworkId);
+        Assert.NotEqual(projection.HospitalId, projection.OrganizationId);
     }
 
     [Fact]
@@ -101,9 +130,9 @@ public sealed class DashboardProjectionPropagationTests
             EventId = Guid.NewGuid(),
             EntityId = Guid.NewGuid(),
             EntityType = nameof(ComplianceTask),
-            TenantId = Hospital,
+            TenantId = Org,
             EventType = ComplianceEventType.TaskOverdue,
-            Payload = JsonSerializer.Serialize(new { HospitalId = Hospital })
+            Payload = JsonSerializer.Serialize(new { HospitalId = Hospital, FrameworkId = Framework })
         };
         var message = new OutboxMessage
         {
@@ -119,6 +148,9 @@ public sealed class DashboardProjectionPropagationTests
 
         var projection = await db.DashboardProjections.SingleAsync();
         Assert.Equal(1, projection.OverdueTasksCount);
+        Assert.Equal(Org, projection.OrganizationId);
+        Assert.Equal(Hospital, projection.HospitalId);
+        Assert.Equal(Framework, projection.FrameworkId);
         Assert.Equal(message.Id, projection.LastProcessedOutboxMessageId);
     }
 
@@ -131,7 +163,7 @@ public sealed class DashboardProjectionPropagationTests
             EventId = Guid.NewGuid(),
             EntityId = Guid.NewGuid(),
             EntityType = nameof(ComplianceTask),
-            TenantId = Hospital,
+            TenantId = Org,
             EventType = ComplianceEventType.TaskOverdue,
             Payload = JsonSerializer.Serialize(new { HospitalId = Hospital })
         };
@@ -175,7 +207,7 @@ public sealed class DashboardProjectionPropagationTests
             EventId = Guid.NewGuid(),
             EntityId = Guid.NewGuid(),
             EntityType = nameof(ComplianceTask),
-            TenantId = Hospital,
+            TenantId = Org,
             EventType = ComplianceEventType.TaskOverdue,
             Payload = JsonSerializer.Serialize(new { HospitalId = Hospital })
         };

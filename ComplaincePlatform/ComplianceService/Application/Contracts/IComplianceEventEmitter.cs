@@ -4,6 +4,7 @@ namespace ComplianceService.Application.Contracts;
 
 public interface IComplianceEventEmitter
 {
+    /// <param name="tenantId">Organization tenant (OrganizationId). Never HospitalId.</param>
     Task EmitAsync(
         ComplianceEventType eventType,
         Guid entityId,
