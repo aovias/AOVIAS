@@ -173,7 +173,7 @@ public sealed class DashboardProjectionUpdater
                 on finding.ComplianceJourneyId equals journey.Id
             where finding.Scope == FindingScope.Audit
                   && !finding.IsResolved
-                  && journey.TenantId == organizationId
+                  && journey.OrganizationId == organizationId
                   && journey.HospitalId == scope.HospitalId
                   && (!frameworkId.HasValue || journey.FrameworkId == frameworkId.Value)
             select finding
@@ -207,7 +207,7 @@ public sealed class DashboardProjectionUpdater
             from history in _dbContext.ComplianceJourneyHistories.AsNoTracking()
             join journey in _dbContext.ComplianceJourneys.AsNoTracking()
                 on history.ComplianceJourneyId equals journey.Id
-            where journey.TenantId == organizationId
+            where journey.OrganizationId == organizationId
                   && journey.HospitalId == scope.HospitalId
                   && (!frameworkId.HasValue || journey.FrameworkId == frameworkId.Value)
             orderby history.ChangedAt descending
@@ -239,7 +239,7 @@ public sealed class DashboardProjectionUpdater
             query = query.Where(j => j.FrameworkId == frameworkId);
         }
 
-        return await query.Select(j => j.TenantId).FirstOrDefaultAsync(cancellationToken);
+        return await query.Select(j => j.OrganizationId).FirstOrDefaultAsync(cancellationToken);
     }
 
     private static bool IsTaskEvent(string type) =>

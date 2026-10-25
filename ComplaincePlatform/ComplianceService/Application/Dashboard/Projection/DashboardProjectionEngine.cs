@@ -1,3 +1,4 @@
+using ComplianceService.Application.Authorization;
 using ComplianceService.Application.Contracts;
 using ComplianceService.Application.DTOs;
 using ComplianceService.Application.Events;
@@ -160,7 +161,20 @@ public sealed class DashboardProjectionEngine : IDashboardProjectionEngine
             query = query.Where(j => j.FrameworkId == frameworkId);
         }
 
-        return await query.Select(j => j.TenantId).FirstOrDefaultAsync(cancellationToken);
+        var fromJourney = await query.Select(j => j.OrganizationId).FirstOrDefaultAsync(cancellationToken);
+        if (fromJourney != Guid.Empty)
+        {
+            return fromJourney;
+        }
+
+        var directory = scope.ServiceProvider.GetService<IHospitalDirectory>();
+        if (directory is null)
+        {
+            return Guid.Empty;
+        }
+
+        var lookup = await directory.GetHospitalAsync(hospitalId, cancellationToken);
+        return lookup.Hospital?.OrganizationId ?? Guid.Empty;
     }
 
     private static bool RequiresFullRebuild(string eventType)
