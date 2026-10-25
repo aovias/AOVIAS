@@ -231,7 +231,7 @@ Legend: **Conf.** = High / Medium / Low. **Deploy** = independently deployable a
 
 | Path | Tech | Destination | Conf. |
 |------|------|-------------|-------|
-| `AOVIAS Website/AOVIAS Web/` | Next.js/turbo monorepo (package.json workspace) | `AOVIAS.Website/` | High — separate CI under `.github/workflows/ci.yml` |
+| `AOVIAS.Website/` (was `AOVIAS Website/AOVIAS Web/`) | Next.js/turbo monorepo (package.json workspace) | `AOVIAS.Website/` | High — separate CI under `AOVIAS.Website/.github/workflows/ci.yml` |
 
 ### 5.7 ACCREDACONE
 
@@ -396,7 +396,7 @@ flowchart TB
 | `ComplaincePlatform/docker-compose.dev.yml` | `context: .`, service working_dir `/app/<Service>` |
 | `ComplaincePlatform/.github/workflows/platform-integrity.yml` | Relative paths `Gateway/`, `tests/Aovias.Platform.IntegrationTests/` |
 | `scripts/verify-build.sh` | `${REPO_ROOT}/Aovias.Platform.slnx` (L18) |
-| Website CI | Nested under `AOVIAS Website/AOVIAS Web/.github/` |
+| Website CI | Under `AOVIAS.Website/.github/workflows/ci.yml` (repo-root `working-directory` in workflow) |
 
 ### 9.5 Angular / Node
 

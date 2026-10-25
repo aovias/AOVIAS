@@ -145,10 +145,10 @@
       "id": "website",
       "displayName": "AOVIAS.Website",
       "owner": "AOVIAS.Website",
-      "migrationStatus": "nested-path",
+      "migrationStatus": "website-at-target",
       "paths": {
         "monorepoRoot": {
-          "current": "AOVIAS Website/AOVIAS Web",
+          "current": "AOVIAS.Website",
           "target": "AOVIAS.Website"
         }
       }
