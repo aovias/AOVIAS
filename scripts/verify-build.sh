@@ -15,7 +15,7 @@ set -euo pipefail
 
 CONFIGURATION="${1:-Release}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SOLUTION="${REPO_ROOT}/Aovias.Platform.slnx"
+SOLUTION="${REPO_ROOT}/AOVIAS.Studio/Aovias.Platform.slnx"
 
 if ! command -v dotnet >/dev/null 2>&1; then
   echo "ERROR: dotnet SDK not found on PATH. This check requires Runtime Verification" >&2

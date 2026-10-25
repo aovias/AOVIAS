@@ -15,7 +15,7 @@ set -euo pipefail
 
 CONFIGURATION="${1:-Release}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SOLUTION="${REPO_ROOT}/Aovias.Platform.slnx"
+SOLUTION="${REPO_ROOT}/AOVIAS.Studio/Aovias.Platform.slnx"
 RESULTS_DIR="${REPO_ROOT}/_build_out/test-results/$(date -u +%Y%m%dT%H%M%SZ)"
 
 if ! command -v dotnet >/dev/null 2>&1; then

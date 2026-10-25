@@ -15,14 +15,14 @@
 | **Credentials** | SSH username + (password or private key) for Machine B. A registration token already known to the platform (see step 5 — `EnvironmentRegistrationStore.SeedDefaultTokens`, check `Aovias.Runtime.Agent`'s configuration for what's seeded, or mint one per that store's own API if it exposes one). |
 | **Command Center** | A running instance of `Aovias.CommandCenter.Api` reachable from Machine B over HTTPS/HTTP, OR run Command Center itself on Machine A/B for this first test (`dotnet run --project Aovias.CommandCenter/src/Aovias.CommandCenter.Api`). |
 
-Run every command in this runbook from the repository root (`Aovias.Platform.slnx`'s directory) on Machine A unless a step explicitly says otherwise.
+Run every command in this runbook from the repository root (parent of `AOVIAS.Studio/Aovias.Platform.slnx`) on Machine A unless a step explicitly says otherwise.
 
 ---
 
 ## Stage 1 — Restore
 
 ```bash
-dotnet restore Aovias.Platform.slnx
+dotnet restore AOVIAS.Studio/Aovias.Platform.slnx
 ```
 
 **Pass criteria:** exits 0, no `NU1xxx` errors. **If it fails:** capture the full error — this is a Build-category defect per G1's classification, likely a package version issue M3.0's static analysis couldn't see (it only checked for *version drift across packages already referenced*, never resolved anything against a real feed).
@@ -30,7 +30,7 @@ dotnet restore Aovias.Platform.slnx
 ## Stage 2 — Build
 
 ```bash
-dotnet build Aovias.Platform.slnx --no-restore -c Release
+dotnet build AOVIAS.Studio/Aovias.Platform.slnx --no-restore -c Release
 ```
 
 **Pass criteria:** `Build succeeded.`, 0 Error(s). Warnings are acceptable but should be captured — M3.1's source audit found zero compile-blocking issues, so a clean build here would be the first real confirmation of that finding; any error here is the highest-priority thing to report back, with the exact `CSxxxx` code and file/line.
@@ -38,7 +38,7 @@ dotnet build Aovias.Platform.slnx --no-restore -c Release
 If your build machine is Windows and you also want the WPF leg:
 
 ```bash
-dotnet build ComplianceServiceManager/ComplianceServiceManager.slnx --no-restore -c Release
+dotnet build AOVIAS.Studio/ComplianceServiceManager/ComplianceServiceManager.slnx --no-restore -c Release
 ```
 
 (Requires the .NET Desktop workload; not required for the rest of this runbook, which only needs the server-side platform.)
@@ -46,7 +46,7 @@ dotnet build ComplianceServiceManager/ComplianceServiceManager.slnx --no-restore
 ## Stage 3 — Test
 
 ```bash
-dotnet test Aovias.Platform.slnx --no-build -c Release --logger "console;verbosity=normal"
+dotnet test AOVIAS.Studio/Aovias.Platform.slnx --no-build -c Release --logger "console;verbosity=normal"
 ```
 
 **Pass criteria:** all discovered tests pass. Per M3.2's source-level audit, 394 test methods (`[Fact]`/`[Theory]`) are expected across 5 projects (`Aovias.Bootstrap.Core.Tests`, `Aovias.Configuration.Tests`, `Aovias.DeploymentValidation.Tests`, `Aovias.Publishing.Core.Tests`, `Aovias.Publishing.Providers.DotNet.Tests`) — if the actual discovered count differs meaningfully from ~394, or any test fails, capture the exact test name(s) and failure message. A failure here is a Runtime-category defect (something only a real CLR catches) even though M3.2 found the test *logic* sound against current production code.
