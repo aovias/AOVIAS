@@ -32,6 +32,9 @@ jobs:
   guardrails:
     name: Architecture Guardrails & Contract Tests
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: AOVIAS.Command/ComplaincePlatform
     steps:
       - uses: actions/checkout@v4
 
@@ -74,6 +77,9 @@ jobs:
   build-verification:
     name: Build Verification
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: AOVIAS.Command/ComplaincePlatform
     steps:
       - uses: actions/checkout@v4
 

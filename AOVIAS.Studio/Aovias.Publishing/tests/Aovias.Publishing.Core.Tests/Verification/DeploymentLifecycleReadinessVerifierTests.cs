@@ -27,8 +27,8 @@ public sealed class DeploymentLifecycleReadinessVerifierTests
     public void BuildRepresentativePlan_produces_a_structurally_complete_plan_for_a_real_bundle()
     {
         var bundle = BuildRealBundle(
-            "ComplaincePlatform/AIOrchestratorService/deployment.metadata.json",
-            "ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj");
+            "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/deployment.metadata.json",
+            "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj");
 
         var plan = DeploymentLifecycleReadinessVerifier.BuildRepresentativePlan(bundle, out var failureReason);
 
@@ -41,8 +41,8 @@ public sealed class DeploymentLifecycleReadinessVerifierTests
     public void VerifyHealthGateReadiness_passes_when_plan_declares_health_gates()
     {
         var bundle = BuildRealBundle(
-            "ComplaincePlatform/AIOrchestratorService/deployment.metadata.json",
-            "ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj");
+            "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/deployment.metadata.json",
+            "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj");
         var plan = DeploymentLifecycleReadinessVerifier.BuildRepresentativePlan(bundle, out var failureReason);
 
         var status = DeploymentLifecycleReadinessVerifier.VerifyHealthGateReadiness(plan, failureReason);
@@ -55,8 +55,8 @@ public sealed class DeploymentLifecycleReadinessVerifierTests
     public void VerifyDeploymentCertificationReadiness_passes_when_plan_declares_certification_gates()
     {
         var bundle = BuildRealBundle(
-            "ComplaincePlatform/AIOrchestratorService/deployment.metadata.json",
-            "ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj");
+            "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/deployment.metadata.json",
+            "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj");
         var plan = DeploymentLifecycleReadinessVerifier.BuildRepresentativePlan(bundle, out var failureReason);
 
         var status = DeploymentLifecycleReadinessVerifier.VerifyDeploymentCertificationReadiness(plan, failureReason);
@@ -68,8 +68,8 @@ public sealed class DeploymentLifecycleReadinessVerifierTests
     public void VerifyRollbackReadiness_passes_when_plan_declares_rollback_checkpoints()
     {
         var bundle = BuildRealBundle(
-            "ComplaincePlatform/AIOrchestratorService/deployment.metadata.json",
-            "ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj");
+            "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/deployment.metadata.json",
+            "AOVIAS.Command/ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj");
         var plan = DeploymentLifecycleReadinessVerifier.BuildRepresentativePlan(bundle, out var failureReason);
 
         var status = DeploymentLifecycleReadinessVerifier.VerifyRollbackReadiness(plan, failureReason);

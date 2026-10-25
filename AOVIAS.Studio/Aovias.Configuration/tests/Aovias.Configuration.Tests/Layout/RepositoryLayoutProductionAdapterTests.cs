@@ -146,7 +146,7 @@ public sealed class RepositoryLayoutProductionAdapterTests
     {
         var root = Path.Combine(Path.GetTempPath(), "aovias-prod-adapter-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Infrastructure", "aovias-config"));
-        Directory.CreateDirectory(Path.Combine(root, "ComplaincePlatform"));
+        Directory.CreateDirectory(Path.Combine(root, "AOVIAS.Command", "ComplaincePlatform"));
         Directory.CreateDirectory(Path.Combine(root, "Aovias.Publishing", "bin"));
         return root;
     }
@@ -164,12 +164,12 @@ public sealed class RepositoryLayoutProductionAdapterTests
               "solutions": [],
               "discovery": {
                 "current": {
-                  "platformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config"], "requiredAny": ["ComplaincePlatform", "Aovias.Runtime.Agent"] },
-                  "csmPlatformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config", "Aovias.Runtime.Agent"], "requiredAny": [] },
-                  "defaultApplicationRoots": ["ComplaincePlatform", "WebApp"],
-                  "deployableProjectScanRoots": ["ComplaincePlatform", "Aovias.Runtime.Agent"],
-                  "runtimeAgentProjectRelative": "Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Api/Aovias.Runtime.Agent.Api.csproj",
-                  "webAppAngularManifestRelative": "WebApp/angular.json",
+                  "platformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config"], "requiredAny": ["AOVIAS.Command/ComplaincePlatform", "AOVIAS.Studio/Aovias.Runtime.Agent"] },
+                  "csmPlatformRoot": { "requiredAll": ["AOVIAS.Infrastructure/aovias-config", "AOVIAS.Studio/Aovias.Runtime.Agent"], "requiredAny": [] },
+                  "defaultApplicationRoots": ["AOVIAS.Command/ComplaincePlatform", "AOVIAS.Command/WebApp"],
+                  "deployableProjectScanRoots": ["AOVIAS.Command/ComplaincePlatform", "AOVIAS.Studio/Aovias.Runtime.Agent"],
+                  "runtimeAgentProjectRelative": "AOVIAS.Studio/Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Api/Aovias.Runtime.Agent.Api.csproj",
+                  "webAppAngularManifestRelative": "AOVIAS.Command/WebApp/angular.json",
                   "runtimeAgentDockerCopyRoots": []
                 },
                 "target": {

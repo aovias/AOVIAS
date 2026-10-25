@@ -34,7 +34,7 @@
   "policies": {
     "compliancePlatformFolderSpelling": "ComplaincePlatform",
     "knowledgeBaseOwner": "AOVIAS.Command",
-    "knowledgeBaseCurrentPath": "ComplaincePlatform/KnowledgeBase",
+    "knowledgeBaseCurrentPath": "AOVIAS.Command/ComplaincePlatform/KnowledgeBase",
     "accredaOne": {
       "status": "scaffold-on-disk",
       "targetRoot": "AOVIAS.AccredaOne",
@@ -47,14 +47,14 @@
       "id": "command",
       "displayName": "AOVIAS.Command",
       "owner": "AOVIAS.Command",
-      "migrationStatus": "at-repository-root",
+      "migrationStatus": "command-at-target",
       "paths": {
         "compliancePlatform": {
-          "current": "ComplaincePlatform",
-          "target": "AOVIAS.Command/CompliancePlatform"
+          "current": "AOVIAS.Command/ComplaincePlatform",
+          "target": "AOVIAS.Command/ComplaincePlatform"
         },
         "webApp": {
-          "current": "WebApp",
+          "current": "AOVIAS.Command/WebApp",
           "target": "AOVIAS.Command/WebApp"
         }
       }
@@ -176,7 +176,7 @@
   "solutions": [
     { "path": { "current": "AOVIAS.Studio/Aovias.Platform.slnx", "target": "AOVIAS.Studio/Aovias.Platform.slnx" }, "owner": "AOVIAS.Studio" },
     { "path": { "current": "AOVIAS.Studio/Aovias.PublishingEngine.slnx", "target": "AOVIAS.Studio/Aovias.PublishingEngine.slnx" }, "owner": "AOVIAS.Studio" },
-    { "path": { "current": "ComplaincePlatform/CompliancePlatform.slnx", "target": "AOVIAS.Command/CompliancePlatform/CompliancePlatform.slnx" }, "owner": "AOVIAS.Command" },
+    { "path": { "current": "AOVIAS.Command/ComplaincePlatform/CompliancePlatform.slnx", "target": "AOVIAS.Command/ComplaincePlatform/CompliancePlatform.slnx" }, "owner": "AOVIAS.Command" },
     { "path": { "current": "AOVIAS.Studio/ComplianceServiceManager/ComplianceServiceManager.slnx", "target": "AOVIAS.Studio/ComplianceServiceManager/ComplianceServiceManager.slnx" }, "owner": "AOVIAS.Studio" },
     { "path": { "current": "AOVIAS.Studio/Aovias.CommandCenter/Aovias.CommandCenter.slnx", "target": "AOVIAS.Studio/Aovias.CommandCenter/Aovias.CommandCenter.slnx" }, "owner": "AOVIAS.Studio" },
     { "path": { "current": "AOVIAS.Studio/Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx", "target": "AOVIAS.Studio/Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx" }, "owner": "AOVIAS.Studio" },
@@ -188,16 +188,16 @@
     "current": {
       "platformRoot": {
         "requiredAll": ["AOVIAS.Infrastructure/aovias-config"],
-        "requiredAny": ["ComplaincePlatform", "AOVIAS.Studio/Aovias.Runtime.Agent"]
+        "requiredAny": ["AOVIAS.Command/ComplaincePlatform", "AOVIAS.Studio/Aovias.Runtime.Agent"]
       },
       "csmPlatformRoot": {
         "requiredAll": ["AOVIAS.Infrastructure/aovias-config", "AOVIAS.Studio/Aovias.Runtime.Agent"],
         "requiredAny": []
       },
-      "defaultApplicationRoots": ["ComplaincePlatform", "WebApp"],
-      "deployableProjectScanRoots": ["ComplaincePlatform", "AOVIAS.Studio/Aovias.Runtime.Agent"],
+      "defaultApplicationRoots": ["AOVIAS.Command/ComplaincePlatform", "AOVIAS.Command/WebApp"],
+      "deployableProjectScanRoots": ["AOVIAS.Command/ComplaincePlatform", "AOVIAS.Studio/Aovias.Runtime.Agent"],
       "runtimeAgentProjectRelative": "AOVIAS.Studio/Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Api/Aovias.Runtime.Agent.Api.csproj",
-      "webAppAngularManifestRelative": "WebApp/angular.json",
+      "webAppAngularManifestRelative": "AOVIAS.Command/WebApp/angular.json",
       "runtimeAgentDockerCopyRoots": [
         "AOVIAS.Studio/Aovias.Configuration",
         "AOVIAS.Studio/Aovias.Deployment.Contracts",
@@ -239,7 +239,7 @@
     }
   },
   "compatibilityConstraints": [
-    "Publishing PlatformRootResolver and CSM RootPathResolver.ResolvePlatformRoot use RepositoryLayoutProductionAdapter with the Current profile and discovery.current markers (Publishing: AOVIAS.Infrastructure/aovias-config plus ComplaincePlatform or AOVIAS.Studio/Aovias.Runtime.Agent; CSM platform root: AOVIAS.Infrastructure/aovias-config and AOVIAS.Studio/Aovias.Runtime.Agent). Legacy fallback accepts the infrastructure path or the pre-W1 root aovias-config directory during transition. When repository-layout.json is missing, invalid, or markers do not match, legacy directory walks apply. Other path resolvers and tooling are not manifest-driven.",
+    "Publishing PlatformRootResolver and CSM RootPathResolver.ResolvePlatformRoot use RepositoryLayoutProductionAdapter with the Current profile and discovery.current markers (Publishing: AOVIAS.Infrastructure/aovias-config plus AOVIAS.Command/ComplaincePlatform or AOVIAS.Studio/Aovias.Runtime.Agent; CSM platform root: AOVIAS.Infrastructure/aovias-config and AOVIAS.Studio/Aovias.Runtime.Agent). Legacy fallback accepts the infrastructure path, pre-W4 root ComplaincePlatform/WebApp folders, or the pre-W1 root aovias-config directory during transition. When repository-layout.json is missing, invalid, or markers do not match, legacy directory walks apply. Other path resolvers and tooling are not manifest-driven.",
     "ComplaincePlatform spelling must be preserved until a separate reviewed rename.",
     "Git worktree paths (AOVIAS, AOVIAS.Cursor, AOVIAS.Claude) are independent of product folder layout.",
     "Command csproj graph has no ProjectReference to Aovias.* at baseline HEAD."

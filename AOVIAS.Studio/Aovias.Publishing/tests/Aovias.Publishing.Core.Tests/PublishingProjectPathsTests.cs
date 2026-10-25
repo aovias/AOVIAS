@@ -12,6 +12,7 @@ public sealed class PublishingProjectPathsTests
     {
         var webAppRoot = Path.Combine(
             PlatformRootResolver.Resolve(null),
+            "AOVIAS.Command",
             "WebApp");
 
         var angularJson = Path.Combine(webAppRoot, "angular.json");
@@ -28,6 +29,7 @@ public sealed class PublishingProjectPathsTests
     {
         var webAppRoot = Path.Combine(
             PlatformRootResolver.Resolve(null),
+            "AOVIAS.Command",
             "WebApp");
         var angularJson = Path.Combine(webAppRoot, "angular.json");
         if (!File.Exists(angularJson))

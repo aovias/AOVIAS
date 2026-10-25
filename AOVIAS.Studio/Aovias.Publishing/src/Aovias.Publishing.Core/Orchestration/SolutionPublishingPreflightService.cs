@@ -835,7 +835,8 @@ public sealed class SolutionPublishingPreflightService : ISolutionPublishingPref
                 candidates.Add(Path.Combine(current.FullName, "Aovias.Runtime.Agent", "Dockerfile"));
                 candidates.Add(Path.Combine(current.FullName, "Dockerfile"));
                 if (RepositoryLayoutAoviasConfigPaths.ConfigDirectoryExistsAtRepositoryRoot(current.FullName)
-                    && Directory.Exists(Path.Combine(current.FullName, "ComplaincePlatform")))
+                    && (Directory.Exists(Path.Combine(current.FullName, "AOVIAS.Command", "ComplaincePlatform"))
+                        || Directory.Exists(Path.Combine(current.FullName, "ComplaincePlatform"))))
                 {
                     break;
                 }

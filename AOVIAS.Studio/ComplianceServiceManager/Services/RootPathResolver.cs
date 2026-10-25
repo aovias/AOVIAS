@@ -12,16 +12,22 @@ public static class RootPathResolver
 
         while (current is not null)
         {
-            var candidate = Path.Combine(current.FullName, "ComplaincePlatform");
-            if (Directory.Exists(candidate))
+            var commandCandidate = Path.Combine(current.FullName, "AOVIAS.Command", "ComplaincePlatform");
+            if (Directory.Exists(commandCandidate))
             {
-                return candidate;
+                return commandCandidate;
+            }
+
+            var legacyCandidate = Path.Combine(current.FullName, "ComplaincePlatform");
+            if (Directory.Exists(legacyCandidate))
+            {
+                return legacyCandidate;
             }
 
             current = current.Parent;
         }
 
-        return Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "ComplaincePlatform"));
+        return Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "AOVIAS.Command", "ComplaincePlatform"));
     }
     public static string ResolveWebAppRoot()
     {
@@ -30,16 +36,22 @@ public static class RootPathResolver
 
         while (current is not null)
         {
-            var candidate = Path.Combine(current.FullName, "WebApp");
-            if (Directory.Exists(candidate))
+            var commandCandidate = Path.Combine(current.FullName, "AOVIAS.Command", "WebApp");
+            if (Directory.Exists(commandCandidate))
             {
-                return candidate;
+                return commandCandidate;
+            }
+
+            var legacyCandidate = Path.Combine(current.FullName, "WebApp");
+            if (Directory.Exists(legacyCandidate))
+            {
+                return legacyCandidate;
             }
 
             current = current.Parent;
         }
 
-        return Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "WebApp"));
+        return Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "AOVIAS.Command", "WebApp"));
     }
 
     public static string ResolvePlatformRoot()
