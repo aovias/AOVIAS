@@ -37,6 +37,8 @@ Desktop.ini
 !ComplianceServiceManager/Contracts/Release/**
 !ComplianceServiceManager/Services/Release/
 !ComplianceServiceManager/Services/Release/**
+!AOVIAS.Website/docs/release/
+!AOVIAS.Website/docs/release/**
 _build_out/
 _build_verify_*/
 artifacts/
