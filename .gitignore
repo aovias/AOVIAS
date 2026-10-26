@@ -73,6 +73,7 @@ __screenshots__/
 .env
 .env.*
 !.env.example
+!AOVIAS.Website/deployment/environments/.env.*.example
 **/appsettings.Local.json
 **/appsettings.*.Local.json
 **/secrets/
