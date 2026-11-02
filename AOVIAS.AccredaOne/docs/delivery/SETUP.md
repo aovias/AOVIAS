@@ -224,6 +224,14 @@ Persistence__ConnectionString=<from local secret store when authorized>
 
 Live database connectivity remains **disabled** unless a future increment explicitly enables `Persistence__EnableConnectivity=true` with approved infrastructure.
 
+### DEV-05 — Automated checks (CI)
+
+GitHub Actions workflow (repository root): `.github/workflows/accredaone-quality.yml`
+
+Triggers: pull requests and pushes to `main` when `AOVIAS.AccredaOne/**` or the workflow file changes; manual `workflow_dispatch`.
+
+Local commands matching CI are listed in [DEV-05-AUTOMATED-CHECKS-IMPLEMENTATION-REPORT.md](DEV-05-AUTOMATED-CHECKS-IMPLEMENTATION-REPORT.md). npm audit uses a time-bounded PostCSS exception through **2026-12-02** (see [../security/DEV-03-POSTCSS-TEMPORARY-RISK-ACCEPTANCE.md](../security/DEV-03-POSTCSS-TEMPORARY-RISK-ACCEPTANCE.md)).
+
 ## What this setup does not include
 
 - Production application deployment or VPS Compose deployment (see DEV-02 closeout)
