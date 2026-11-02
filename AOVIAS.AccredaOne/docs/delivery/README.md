@@ -13,7 +13,11 @@ Programme roadmap and gates: **DEV-PLAN-01** (Confluence page 491848).
 | `test-plans/` | Test plans (`TP-NNNN`). |
 | `test-reports/` | Test reports (`TR-NNNN`). |
 
-**DEV-01:** Git ownership reconciliation is complete (uncommitted parent index changes remain outside this repo). Governance synchronization Phase 2 updated local indexes and gates (2026-11-02). **DEV-02 has not started.**
+**DEV-01:** Git ownership reconciliation is complete (uncommitted parent index changes remain outside this repo). Governance synchronization Phase 2 updated local indexes and gates (2026-11-02).
+
+**DEV-02 / DEV-03 / DEV-04:** Local engineering foundation (toolchain pins, application shell, API foundation, persistence configuration) is documented under `docs/delivery/` and `docs/architecture/`. DEV-04 is published on canonical `main` (see DEV-04 report).
+
+**DEV-05:** Automated checks — **proposal only** ([DEV-05-AUTOMATED-CHECKS-PROPOSAL.md](DEV-05-AUTOMATED-CHECKS-PROPOSAL.md)); **not implemented**.
 
 Create tasks, test plans, and reports from `templates/` and register identifiers when assigned.
 
