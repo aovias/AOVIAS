@@ -1,0 +1,15 @@
+{
+  "packId": "dev-06a-synthetic-fixture-pack",
+  "classification": "synthetic",
+  "provenance": "AccredaOne DEV-06A fictional test data only — not accreditation content",
+  "expectedCounts": {
+    "frameworksTotal": 3,
+    "frameworksEligible": 2,
+    "frameworksIneligible": 1,
+    "sourceInstruments": 2,
+    "requirementsCurrentPerEligibleFramework": 4,
+    "frameworkVersionRecords": 3,
+    "explanations": 2,
+    "queryScenarios": 4
+  }
+}

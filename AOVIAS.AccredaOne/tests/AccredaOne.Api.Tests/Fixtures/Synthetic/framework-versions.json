@@ -1,0 +1,26 @@
+[
+  {
+    "id": "SYN-VER-NOAF-HIST-001",
+    "frameworkId": "SYN-FW-NOAF-001",
+    "versionLabel": "NOAF-2024-SYN-HIST",
+    "versionStatus": "historical",
+    "classification": "synthetic",
+    "provenance": "Fictional historical NOAF version for integrity tests"
+  },
+  {
+    "id": "SYN-VER-NOAF-CURR-001",
+    "frameworkId": "SYN-FW-NOAF-001",
+    "versionLabel": "NOAF-2026-SYN-CURR",
+    "versionStatus": "current",
+    "classification": "synthetic",
+    "provenance": "Fictional current NOAF version marker"
+  },
+  {
+    "id": "SYN-VER-NOAF-UNVER-001",
+    "frameworkId": "SYN-FW-NOAF-001",
+    "versionLabel": "NOAF-2027-SYN-CANDIDATE",
+    "versionStatus": "unverified_publication_candidate",
+    "classification": "synthetic",
+    "provenance": "Fictional unverified publication candidate — not eligible as current"
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "id": "SYN-REQ-NOAF-001",
+    "frameworkId": "SYN-FW-NOAF-001",
+    "sourceInstrumentId": "SYN-SRC-NOAF-001",
+    "label": "NOAF synthetic requirement record one",
+    "versionStatus": "current",
+    "classification": "synthetic",
+    "provenance": "Fictional requirement text placeholder"
+  },
+  {
+    "id": "SYN-REQ-NOAF-002",
+    "frameworkId": "SYN-FW-NOAF-001",
+    "sourceInstrumentId": "SYN-SRC-NOAF-001",
+    "label": "NOAF synthetic requirement record two",
+    "versionStatus": "current",
+    "classification": "synthetic",
+    "provenance": "Fictional requirement text placeholder"
+  },
+  {
+    "id": "SYN-REQ-NOAF-003",
+    "frameworkId": "SYN-FW-NOAF-001",
+    "sourceInstrumentId": "SYN-SRC-NOAF-001",
+    "label": "NOAF synthetic requirement record three",
+    "versionStatus": "current",
+    "classification": "synthetic",
+    "provenance": "Fictional requirement text placeholder"
+  },
+  {
+    "id": "SYN-REQ-NOAF-004",
+    "frameworkId": "SYN-FW-NOAF-001",
+    "sourceInstrumentId": "SYN-SRC-NOAF-001",
+    "label": "NOAF synthetic requirement record four",
+    "versionStatus": "current",
+    "classification": "synthetic",
+    "provenance": "Fictional requirement text placeholder"
+  },
+  {
+    "id": "SYN-REQ-MCQF-001",
+    "frameworkId": "SYN-FW-MCQF-001",
+    "sourceInstrumentId": "SYN-SRC-MCQF-001",
+    "label": "MCQF synthetic requirement record one",
+    "versionStatus": "current",
+    "classification": "synthetic",
+    "provenance": "Fictional requirement text placeholder"
+  },
+  {
+    "id": "SYN-REQ-MCQF-002",
+    "frameworkId": "SYN-FW-MCQF-001",
+    "sourceInstrumentId": "SYN-SRC-MCQF-001",
+    "label": "MCQF synthetic requirement record two",
+    "versionStatus": "current",
+    "classification": "synthetic",
+    "provenance": "Fictional requirement text placeholder"
+  },
+  {
+    "id": "SYN-REQ-MCQF-003",
+    "frameworkId": "SYN-FW-MCQF-001",
+    "sourceInstrumentId": "SYN-SRC-MCQF-001",
+    "label": "MCQF synthetic requirement record three",
+    "versionStatus": "current",
+    "classification": "synthetic",
+    "provenance": "Fictional requirement text placeholder"
+  },
+  {
+    "id": "SYN-REQ-MCQF-004",
+    "frameworkId": "SYN-FW-MCQF-001",
+    "sourceInstrumentId": "SYN-SRC-MCQF-001",
+    "label": "MCQF synthetic requirement record four",
+    "versionStatus": "current",
+    "classification": "synthetic",
+    "provenance": "Fictional requirement text placeholder"
+  }
+]
