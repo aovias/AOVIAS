@@ -2,9 +2,9 @@
 
 Date: 2026-11-02
 
-**Status:** Implemented on task branch `agent/cursor/accredaone-dev05-automated-checks` (not merged to `main` unless separately authorized).
+**Status:** Published on canonical `main` at merge commit **`070fb5b357d0efb86a3a4d6dc871bc4f4d1f5436`** (implementation commit **`3658686`**). Initial remote run failed on invalid action SHAs; see [DEV-05R-CI-REMEDIATION-REPORT.md](DEV-05R-CI-REMEDIATION-REPORT.md).
 
-**Baseline:** `c667e34d8414dba5699356cb655e0d9d41eb619e`
+**Baseline (DEV-05):** `c667e34d8414dba5699356cb655e0d9d41eb619e`
 
 This increment does not authorize Phase 1, production deployment, or live PostgreSQL connectivity.
 
@@ -126,7 +126,7 @@ node --test AOVIAS.AccredaOne/scripts/ci/npm-audit-gate.test.mjs
 | Release `dotnet test` | **20/20** pass |
 | Frontend lint/build | Pass (pre-DEV-05 baseline) |
 
-**GitHub Actions:** Not executed in this task; validate on first PR/`main` push after merge.
+**GitHub Actions:** First runs on **`070fb5b`** failed at job setup (invalid pinned action SHAs). Remediation tracked in DEV-05R; remote green status **pending** after fix is published.
 
 ## 11. Known limitations
 
