@@ -209,7 +209,20 @@ npm run lint
 npm run build
 ```
 
-API routes in this increment: `GET /health`, `GET /ready`, `GET /api/v1/foundation`. Development OpenAPI: `GET /openapi/v1.json`. PostgreSQL is not connected. Configuration uses the `AccredaOne` section and environment variables such as `AccredaOne__ApiVersion`. See [../architecture/APPLICATION-FOUNDATION.md](../architecture/APPLICATION-FOUNDATION.md).
+API routes in this increment: `GET /health`, `GET /ready`, `GET /api/v1/foundation`. Development OpenAPI: `GET /openapi/v1.json`. PostgreSQL is not connected by default. Configuration uses the `AccredaOne` section and environment variables such as `AccredaOne__ApiVersion`. See [../architecture/APPLICATION-FOUNDATION.md](../architecture/APPLICATION-FOUNDATION.md).
+
+### DEV-04 — Persistence foundation commands
+
+Same backend and frontend commands as DEV-03 increment 1. Additional documentation: [../architecture/PERSISTENCE-FOUNDATION.md](../architecture/PERSISTENCE-FOUNDATION.md) and [DEV-04-PERSISTENCE-FOUNDATION-REPORT.md](DEV-04-PERSISTENCE-FOUNDATION-REPORT.md).
+
+Optional persistence settings (placeholders only; do not commit secrets):
+
+```text
+Persistence__EnableConnectivity=false
+Persistence__ConnectionString=<from local secret store when authorized>
+```
+
+Live database connectivity remains **disabled** unless a future increment explicitly enables `Persistence__EnableConnectivity=true` with approved infrastructure.
 
 ## What this setup does not include
 

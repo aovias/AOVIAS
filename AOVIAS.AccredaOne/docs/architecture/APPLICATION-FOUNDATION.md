@@ -12,7 +12,7 @@ This note describes the engineering foundation inside `application/`. It does no
 | `application/backend` | One ASP.NET Core API process with health, readiness, a versioned foundation route, problem responses, and development OpenAPI |
 | `tests/AccredaOne.Api.Tests` | Integration tests for those API routes |
 
-PostgreSQL 18 remains the approved database **direction**. This increment does **not** open a database connection.
+PostgreSQL 18 remains the approved database **direction**. DEV-03 did **not** open a database connection. DEV-04 adds configuration and readiness semantics only; see [PERSISTENCE-FOUNDATION.md](PERSISTENCE-FOUNDATION.md).
 
 ## API shape
 
