@@ -126,3 +126,16 @@ Full record:
 - [../security/DEV-03-POSTCSS-TEMPORARY-RISK-ACCEPTANCE.md](../security/DEV-03-POSTCSS-TEMPORARY-RISK-ACCEPTANCE.md)
 
 This is **risk acceptance, not remediation**; `npm audit` findings remain open. This is **not** production security clearance. **G1** NOT PASSED; **Phase 1** NOT AUTHORIZED; **DEV-02** **PARTIAL**.
+
+---
+
+## Addendum — Engineering increment 1 (2026-11-02)
+
+The historical sections above remain the record of the first scaffold and the PostCSS acceptance. Increment 1 extends that scaffold:
+
+- Frontend application shell with design tokens, header, sidebar, workspace, and loading / empty / error states. Content is synthetic.
+- API foundation: configuration section, problem details, JSON console logs, `/health`, `/ready`, `/api/v1/foundation`, and development OpenAPI.
+- Tests cover health, readiness, the versioned route, unknown routes, and the development OpenAPI document.
+- Architecture note: [../architecture/APPLICATION-FOUNDATION.md](../architecture/APPLICATION-FOUNDATION.md).
+
+PostgreSQL is still not connected. No authentication, evidence upload, scoring, or accreditation decisions were added. **G1** remains **NOT PASSED**. **Phase 1** remains **NOT AUTHORIZED**. The PostCSS exception is unchanged.

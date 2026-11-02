@@ -28,4 +28,4 @@ Approved Confluence documentation does **not** by itself authorize code under `a
 - Do not copy AOVIAS Command code or database structures here.
 - Adding production code requires a human update to governance gates (for example Phase 1 authorized and first development slice approved), aligned Confluence evidence, and traceability citations — not inference from approved direction alone.
 
-Until Phase 1 and the first development slice are approved beyond scaffolding, treat `frontend/` and `backend/` as **reversible DEV-03 placeholders** only — not authorized product implementation.
+Until Phase 1 and the first development slice are approved beyond scaffolding, treat `frontend/` and `backend/` as **DEV-03 engineering foundation** only — not authorized product implementation. Increment 1 adds the application shell and API foundation described in [../docs/architecture/APPLICATION-FOUNDATION.md](../docs/architecture/APPLICATION-FOUNDATION.md).

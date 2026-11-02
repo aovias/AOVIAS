@@ -195,6 +195,22 @@ npm run dev
 
 Database connection, VPS deployment, and production configuration are **not** included.
 
+### DEV-03 increment 1 — application foundation commands
+
+Same projects as above. Additional local checks:
+
+```powershell
+# From AOVIAS.AccredaOne
+dotnet test tests/AccredaOne.Api.Tests/AccredaOne.Api.Tests.csproj
+
+cd application/frontend
+npm ci
+npm run lint
+npm run build
+```
+
+API routes in this increment: `GET /health`, `GET /ready`, `GET /api/v1/foundation`. Development OpenAPI: `GET /openapi/v1.json`. PostgreSQL is not connected. Configuration uses the `AccredaOne` section and environment variables such as `AccredaOne__ApiVersion`. See [../architecture/APPLICATION-FOUNDATION.md](../architecture/APPLICATION-FOUNDATION.md).
+
 ## What this setup does not include
 
 - Production application deployment or VPS Compose deployment (see DEV-02 closeout)

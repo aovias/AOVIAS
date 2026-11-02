@@ -1,42 +1,308 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --ao-ink: #1c2834;
+  --ao-ink-soft: #3e4c59;
+  --ao-muted: #5c6b73;
+  --ao-line: #d5dedb;
+  --ao-canvas: #eef3f1;
+  --ao-surface: #ffffff;
+  --ao-surface-muted: #f7faf9;
+  --ao-accent: #0f6e6b;
+  --ao-accent-strong: #0b5553;
+  --ao-accent-soft: #e5f3f2;
+  --ao-danger: #8d3a3a;
+  --ao-danger-soft: #f8ecec;
+  --ao-warning: #8a5a12;
+  --ao-warning-soft: #f8f1e4;
+  --ao-shadow: 0 1px 2px rgba(28, 40, 52, 0.06);
+  --ao-radius: 12px;
+  --ao-header: 64px;
+  --ao-sidebar: 248px;
+  --ao-space-1: 4px;
+  --ao-space-2: 8px;
+  --ao-space-3: 12px;
+  --ao-space-4: 16px;
+  --ao-space-5: 24px;
+  --ao-space-6: 32px;
+  --ao-space-7: 48px;
+  --ao-font: var(--font-geist-sans), "Segoe UI", sans-serif;
+  --ao-mono: var(--font-geist-mono), Consolas, monospace;
+  color-scheme: light;
 }
 
 * {
   box-sizing: border-box;
-  padding: 0;
+}
+
+html,
+body {
   margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: var(--ao-canvas);
+  color: var(--ao-ink);
+  font-family: var(--ao-font);
 }
 
 a {
   color: inherit;
-  text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+button,
+input {
+  font: inherit;
+}
+
+.ao-shell {
+  min-height: 100vh;
+}
+
+.ao-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--ao-space-4);
+  height: var(--ao-header);
+  padding: 0 var(--ao-space-5);
+  background: var(--ao-surface);
+  border-bottom: 1px solid var(--ao-line);
+}
+
+.ao-menu {
+  display: none;
+  border: 1px solid var(--ao-line);
+  background: var(--ao-surface);
+  color: var(--ao-ink);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.ao-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ao-brand strong {
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+
+.ao-brand span {
+  color: var(--ao-muted);
+  font-size: 0.78rem;
+}
+
+.ao-header-note {
+  margin-left: auto;
+  color: var(--ao-muted);
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+.ao-body {
+  display: grid;
+  grid-template-columns: var(--ao-sidebar) minmax(0, 1fr);
+  min-height: calc(100vh - var(--ao-header));
+}
+
+.ao-sidebar {
+  background: var(--ao-surface);
+  border-right: 1px solid var(--ao-line);
+  padding: var(--ao-space-5) var(--ao-space-4);
+}
+
+.ao-sidebar p {
+  margin: 0 0 var(--ao-space-4);
+  color: var(--ao-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ao-sidebar nav {
+  display: grid;
+  gap: var(--ao-space-2);
+}
+
+.ao-sidebar a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ao-ink-soft);
+}
+
+.ao-sidebar a:hover,
+.ao-sidebar a:focus-visible {
+  background: var(--ao-accent-soft);
+  color: var(--ao-accent-strong);
+  outline: none;
+}
+
+.ao-main {
+  padding: var(--ao-space-6);
+}
+
+.ao-kicker {
+  margin: 0 0 var(--ao-space-2);
+  color: var(--ao-accent);
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ao-main h1 {
+  margin: 0 0 var(--ao-space-3);
+  font-size: clamp(1.7rem, 2vw, 2.2rem);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.ao-lead {
+  max-width: 68ch;
+  margin: 0 0 var(--ao-space-5);
+  color: var(--ao-ink-soft);
+  line-height: 1.55;
+}
+
+.ao-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ao-space-4);
+  margin-bottom: var(--ao-space-6);
+}
+
+.ao-card,
+.ao-panel {
+  background: var(--ao-surface);
+  border: 1px solid var(--ao-line);
+  border-radius: var(--ao-radius);
+  box-shadow: var(--ao-shadow);
+}
+
+.ao-card {
+  padding: var(--ao-space-4);
+}
+
+.ao-card h2,
+.ao-panel h2 {
+  margin: 0 0 var(--ao-space-2);
+  font-size: 1rem;
+}
+
+.ao-card p,
+.ao-panel p {
+  margin: 0;
+  color: var(--ao-ink-soft);
+  line-height: 1.5;
+}
+
+.ao-label {
+  display: inline-block;
+  margin-bottom: var(--ao-space-3);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--ao-accent-soft);
+  color: var(--ao-accent-strong);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.ao-panel {
+  padding: var(--ao-space-5);
+  margin-bottom: var(--ao-space-5);
+}
+
+.ao-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ao-space-2);
+  margin: var(--ao-space-4) 0;
+}
+
+.ao-toolbar button {
+  border: 1px solid var(--ao-line);
+  background: var(--ao-surface-muted);
+  color: var(--ao-ink);
+  border-radius: 999px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.ao-toolbar button[aria-pressed="true"] {
+  background: var(--ao-accent);
+  border-color: var(--ao-accent);
+  color: white;
+}
+
+.ao-state {
+  min-height: 140px;
+  padding: var(--ao-space-4);
+  border-radius: 10px;
+  background: var(--ao-surface-muted);
+  border: 1px dashed var(--ao-line);
+}
+
+.ao-state h3 {
+  margin: 0 0 var(--ao-space-2);
+  font-size: 1rem;
+}
+
+.ao-state p {
+  margin: 0;
+}
+
+.ao-state-error {
+  background: var(--ao-danger-soft);
+  border-color: #e4c8c8;
+  color: var(--ao-danger);
+}
+
+.ao-state-loading {
+  background: var(--ao-warning-soft);
+  border-color: #ead7b4;
+  color: var(--ao-warning);
+}
+
+.ao-footnote {
+  margin-top: var(--ao-space-5);
+  color: var(--ao-muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 960px) {
+  .ao-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ao-header-note {
+    display: none;
+  }
+
+  .ao-menu {
+    display: inline-flex;
+  }
+
+  .ao-body {
+    grid-template-columns: 1fr;
+  }
+
+  .ao-sidebar {
+    display: none;
+    border-right: 0;
+    border-bottom: 1px solid var(--ao-line);
+  }
+
+  .ao-sidebar.ao-sidebar-open {
+    display: block;
+  }
+
+  .ao-main {
+    padding: var(--ao-space-5) var(--ao-space-4);
   }
 }
