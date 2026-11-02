@@ -1,4 +1,5 @@
 using AccredaOne.Api.Configuration;
+using AccredaOne.Api.Persistence;
 using Microsoft.Extensions.Options;
 
 namespace AccredaOne.Api.Foundation;
@@ -18,9 +19,13 @@ public static class FoundationEndpoints
             });
         });
 
-        app.MapGet("/ready", (IOptions<AccredaOneApiOptions> options) =>
+        app.MapGet("/ready", async (
+            IOptions<AccredaOneApiOptions> options,
+            IPersistenceReadinessEvaluator readiness,
+            CancellationToken cancellationToken) =>
         {
             var settings = options.Value;
+            var databaseStatus = await readiness.GetDatabaseReadinessStatusAsync(cancellationToken);
             return Results.Ok(new
             {
                 status = "Ready",
@@ -28,7 +33,7 @@ public static class FoundationEndpoints
                 checks = new[]
                 {
                     new { name = "configuration", status = "pass" },
-                    new { name = "database", status = "not_configured" }
+                    new { name = "database", status = databaseStatus }
                 }
             });
         });

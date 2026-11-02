@@ -13,4 +13,6 @@ Unresolved topology, service, provider, package-version and verification items r
 
 The local engineering foundation (application shell and API shape, not Phase 1 product implementation) is described in [APPLICATION-FOUNDATION.md](APPLICATION-FOUNDATION.md).
 
+PostgreSQL persistence integration (configuration and readiness only; no live database in default mode) is described in [PERSISTENCE-FOUNDATION.md](PERSISTENCE-FOUNDATION.md).
+
 Do not describe an AOVIAS Command integration as the AccredaOne architecture.

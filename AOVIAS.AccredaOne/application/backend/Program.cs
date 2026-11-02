@@ -1,12 +1,14 @@
 using System.Text.Json;
 using AccredaOne.Api.Configuration;
 using AccredaOne.Api.Foundation;
+using AccredaOne.Api.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
 builder.Services.Configure<AccredaOneApiOptions>(
     builder.Configuration.GetSection(AccredaOneApiOptions.SectionName));
+builder.Services.AddAccredaOnePersistence(builder.Configuration);
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
