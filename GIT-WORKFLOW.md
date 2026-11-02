@@ -92,7 +92,7 @@ git commit -m "message" -- path\to\intended\file
 Before every push:
 
 1. Confirm the repository is canonical Main: `V:\DevelopmentRepo\AOVIAS`.
-2. Confirm `origin` URL and owner. The approved parent remote is the private GitHub repository `AOVIAS/AOVIAS` (organization `AOVIAS`, not a personal substitute).
+2. Confirm `origin` URL and owner. The approved parent remote is `https://github.com/aovias/AOVIAS.git` (GitHub account `aovias`, repository `AOVIAS`).
 3. Confirm the branch to push is `main`.
 4. Compare local and remote history. Do not push if the remote has unrelated initialized history (for example a generated README on an otherwise empty repo) until that is resolved without rewriting local history.
 5. Confirm the commits being published contain no secrets or unintended files.
@@ -175,10 +175,10 @@ Use this list before integration or publication. Prefer the existing read-only s
 
 | Item | Value |
 | --- | --- |
-| Owner | GitHub organization `AOVIAS` |
+| Owner | GitHub account `aovias` |
 | Repository | `AOVIAS` |
 | Visibility | Private |
 | Default branch | `main` |
-| Remote (canonical Main only) | `https://github.com/AOVIAS/AOVIAS.git` |
+| Remote (canonical Main only) | `https://github.com/aovias/AOVIAS.git` |
 
-Do not create or push this repository under a personal account if the organization is missing. Create the organization first, then the empty private repository (no generated README, license, or `.gitignore`), then push existing `main`.
+Do not publish agent branches. Do not initialize the remote with a generated README, license, or `.gitignore` that conflicts with existing `main` history.
