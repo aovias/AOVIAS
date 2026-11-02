@@ -17,7 +17,7 @@ Programme roadmap and gates: **DEV-PLAN-01** (Confluence page 491848).
 
 **DEV-02 / DEV-03 / DEV-04:** Local engineering foundation (toolchain pins, application shell, API foundation, persistence configuration) is documented under `docs/delivery/` and `docs/architecture/`. DEV-04 is published on canonical `main` (see DEV-04 report).
 
-**DEV-05:** Automated checks — implemented on task branch `agent/cursor/accredaone-dev05-automated-checks` ([DEV-05-AUTOMATED-CHECKS-IMPLEMENTATION-REPORT.md](DEV-05-AUTOMATED-CHECKS-IMPLEMENTATION-REPORT.md)); proposal: [DEV-05-AUTOMATED-CHECKS-PROPOSAL.md](DEV-05-AUTOMATED-CHECKS-PROPOSAL.md). Not merged to canonical `main` until separately authorized.
+**DEV-05:** Automated checks — published on `main` @ **`070fb5b`** ([DEV-05-AUTOMATED-CHECKS-IMPLEMENTATION-REPORT.md](DEV-05-AUTOMATED-CHECKS-IMPLEMENTATION-REPORT.md)). **DEV-05R:** CI remediation for failed first run ([DEV-05R-CI-REMEDIATION-REPORT.md](DEV-05R-CI-REMEDIATION-REPORT.md)) — on task branch until merged. Proposal: [DEV-05-AUTOMATED-CHECKS-PROPOSAL.md](DEV-05-AUTOMATED-CHECKS-PROPOSAL.md).
 
 Create tasks, test plans, and reports from `templates/` and register identifiers when assigned.
 
