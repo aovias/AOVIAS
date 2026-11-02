@@ -11,4 +11,6 @@
 
 Unresolved topology, service, provider, package-version and verification items remain open per ADRs and DOC-21. See [../traceability/CONFLUENCE-INDEX.md](../traceability/CONFLUENCE-INDEX.md).
 
+The local engineering foundation (application shell and API shape, not Phase 1 product implementation) is described in [APPLICATION-FOUNDATION.md](APPLICATION-FOUNDATION.md).
+
 Do not describe an AOVIAS Command integration as the AccredaOne architecture.
