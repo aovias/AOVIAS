@@ -6,6 +6,8 @@ Agents work independently. `main` remains stable. Every meaningful change is com
 
 **Completion rule:** An agent's work is not considered complete until it exists in a Git commit.
 
+**Canonical Git workflow:** Development stays in the Cursor or Claude worktree. Reviewed work is integrated on canonical `main` in `V:\DevelopmentRepo\AOVIAS`. Only that `main` branch is pushed to GitHub. Do not publish agent branches. Nested repositories (AccredaOne) keep their own history and are not committed into the parent tree. Full rules: [GIT-WORKFLOW.md](GIT-WORKFLOW.md).
+
 ---
 
 ## Repository Structure
