@@ -1,0 +1,104 @@
+# AccredaOne engineering quality — backend, frontend, dependency audits.
+# actions/checkout@v4.2.2 — https://github.com/actions/checkout/releases/tag/v4.2.2
+# actions/setup-dotnet@v4.1.0 — https://github.com/actions/setup-dotnet/releases/tag/v4.1.0
+# actions/setup-node@v4.1.0 — https://github.com/actions/setup-node/releases/tag/v4.1.0
+
+name: AccredaOne quality
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "AOVIAS.AccredaOne/**"
+      - ".github/workflows/accredaone-quality.yml"
+  push:
+    branches: [main]
+    paths:
+      - "AOVIAS.AccredaOne/**"
+      - ".github/workflows/accredaone-quality.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: accredaone-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ACCREDAONE_ROOT: AOVIAS.AccredaOne
+  API_PROJECT: AOVIAS.AccredaOne/application/backend/AccredaOne.Api.csproj
+  TEST_PROJECT: AOVIAS.AccredaOne/tests/AccredaOne.Api.Tests/AccredaOne.Api.Tests.csproj
+  FRONTEND_DIR: AOVIAS.AccredaOne/application/frontend
+
+jobs:
+  accredaone-backend:
+    name: Backend · .NET build and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b163ea8cb88a7dcfb1e1a2921cd # v4.2.2
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@67a357865f41c067b1772bd8ea6631c885250225 # v4.1.0
+        with:
+          global-json-path: AOVIAS.AccredaOne/global.json
+
+      - name: Setup Node.js (audit scripts)
+        uses: actions/setup-node@39370e3970a52506810543d2bf669be0fad14875 # v4.1.0
+        with:
+          node-version-file: AOVIAS.AccredaOne/.nvmrc
+
+      - name: Restore backend and tests
+        run: dotnet restore "${{ env.TEST_PROJECT }}"
+
+      - name: Build tests (Release)
+        run: dotnet build "${{ env.TEST_PROJECT }}" -c Release --no-restore
+
+      - name: Test API (Release)
+        run: dotnet test "${{ env.TEST_PROJECT }}" -c Release --no-build --verbosity normal
+
+      - name: NuGet vulnerability audit
+        run: node AOVIAS.AccredaOne/scripts/ci/nuget-audit-gate.mjs "${{ env.API_PROJECT }}"
+
+  accredaone-frontend:
+    name: Frontend · lint and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    defaults:
+      run:
+        working-directory: AOVIAS.AccredaOne/application/frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b163ea8cb88a7dcfb1e1a2921cd # v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a52506810543d2bf669be0fad14875 # v4.1.0
+        with:
+          node-version-file: AOVIAS.AccredaOne/.nvmrc
+          cache: npm
+          cache-dependency-path: AOVIAS.AccredaOne/application/frontend/package-lock.json
+
+      - name: Install dependencies (npm ci)
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Production build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npm run build
+
+      - name: npm audit (report)
+        run: npm audit || true
+
+      - name: npm audit gate
+        run: |
+          set -euo pipefail
+          npm audit --json > "${RUNNER_TEMP}/accredaone-npm-audit.json" || true
+          node ../../scripts/ci/npm-audit-gate.mjs "${RUNNER_TEMP}/accredaone-npm-audit.json" ../../scripts/ci/npm-audit-policy.json

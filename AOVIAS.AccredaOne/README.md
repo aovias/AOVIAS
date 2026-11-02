@@ -33,7 +33,7 @@ Read [GOVERNANCE-STATUS.md](GOVERNANCE-STATUS.md) before any other work. Agents 
 | `docs/architecture/` | Architecture area; canonical ADRs in Confluence. |
 | `docs/security/` | Security and identity pointers; **CI-01/CI-02** are draft in Confluence. |
 | `docs/content-governance/` | Content rights and source-use rules. |
-| `docs/delivery/` | Setup, tasks, test plans, reports, DEV-01 synchronization report. |
+| `docs/delivery/` | Setup, tasks, test plans, reports, DEV delivery records. |
 | `docs/traceability/` | Confluence index, register, and citation convention. |
 | `templates/` | Record templates. Copying a template does not approve it. |
 | `prototypes/` | Controlled experiments within the synthetic-data boundary only. |
@@ -53,7 +53,8 @@ These three areas stay separate:
 4. [Confluence index](docs/traceability/CONFLUENCE-INDEX.md)
 5. [Traceability register](docs/traceability/REGISTER.md)
 6. [Setup](docs/delivery/SETUP.md)
-7. [Foundation Sprint 0 report](docs/delivery/FOUNDATION-SPRINT-0-REPORT.md)
+7. [DEV-05 automated checks (CI)](docs/delivery/DEV-05-AUTOMATED-CHECKS-IMPLEMENTATION-REPORT.md) — workflow at repository root `.github/workflows/accredaone-quality.yml`
+8. [Foundation Sprint 0 report](docs/delivery/FOUNDATION-SPRINT-0-REPORT.md)
 
 ## Current authority
 
