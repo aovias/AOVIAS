@@ -1,0 +1,349 @@
+﻿{
+    "solution_project_counts":  {
+                                    "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx":  14,
+                                    "ComplaincePlatform/CompliancePlatform.slnx":  36,
+                                    "Aovias.PublishingEngine.slnx":  14,
+                                    "Aovias.Release/Aovias.Release.slnx":  10,
+                                    "ComplianceServiceManager/ComplianceServiceManager.slnx":  2,
+                                    "Aovias.Publishing/Aovias.Publishing.slnx":  10,
+                                    "Aovias.Orchestration/Aovias.Orchestration.slnx":  3,
+                                    "Aovias.CommandCenter/Aovias.CommandCenter.slnx":  6,
+                                    "Aovias.Platform.slnx":  38
+                                },
+    "slnx_count":  9,
+    "csproj_count":  87,
+    "membership":  {
+                       "Aovias.CommandCenter/src/Aovias.CommandCenter.Api/Aovias.CommandCenter.Api.csproj":  [
+                                                                                                                 "Aovias.Platform.slnx",
+                                                                                                                 "Aovias.CommandCenter/Aovias.CommandCenter.slnx"
+                                                                                                             ],
+                       "ComplaincePlatform/EnterpriseDirectoryService/EnterpriseDirectoryService.csproj":  [
+                                                                                                               "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                           ],
+                       "Aovias.Release/src/Aovias.PackageBuilder/Aovias.PackageBuilder.csproj":  [
+                                                                                                     "Aovias.Platform.slnx",
+                                                                                                     "Aovias.Release/Aovias.Release.slnx"
+                                                                                                 ],
+                       "ComplaincePlatform/WorkforceIntelligenceService.Tests/WorkforceIntelligenceService.Tests.csproj":  [
+                                                                                                                               "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                                           ],
+                       "Aovias.DesignSystem/Aovias.DesignSystem.csproj":  [
+                                                                              "ComplianceServiceManager/ComplianceServiceManager.slnx"
+                                                                          ],
+                       "ComplaincePlatform/DemoDataSeeder/DemoDataSeeder.csproj":  [
+
+                                                                                   ],
+                       "Aovias.Orchestration/src/Aovias.Orchestration/Aovias.Orchestration.csproj":  [
+                                                                                                         "Aovias.Platform.slnx",
+                                                                                                         "Aovias.Orchestration/Aovias.Orchestration.slnx",
+                                                                                                         "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                                                     ],
+                       "ComplaincePlatform/tests/ComplianceStub/ComplianceStub.csproj":  [
+
+                                                                                         ],
+                       "ComplaincePlatform/ProfessionalService.Tests/ProfessionalService.Tests.csproj":  [
+                                                                                                             "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                         ],
+                       "Aovias.Bootstrap/src/Aovias.Bootstrap.Core/Aovias.Bootstrap.Core.csproj":  [
+                                                                                                       "Aovias.Platform.slnx"
+                                                                                                   ],
+                       "ComplaincePlatform/Compliance.MasterData/Compliance.MasterData.csproj":  [
+                                                                                                     "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                 ],
+                       "ComplaincePlatform/GovernanceService/GovernanceService.csproj":  [
+                                                                                             "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                         ],
+                       "Aovias.Runtime.Agent/tests/Aovias.Runtime.Agent.Infrastructure.Tests/Aovias.Runtime.Agent.Infrastructure.Tests.csproj":  [
+                                                                                                                                                     "Aovias.Platform.slnx",
+                                                                                                                                                     "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                                                                                                 ],
+                       "Aovias.Bootstrap/src/Aovias.Bootstrap.Execution/Aovias.Bootstrap.Execution.csproj":  [
+                                                                                                                 "Aovias.Platform.slnx"
+                                                                                                             ],
+                       "ComplaincePlatform/AccessGovernanceService.Tests/AccessGovernanceService.Tests.csproj":  [
+                                                                                                                     "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                                 ],
+                       "Aovias.Bootstrap/src/Aovias.Bootstrap.Contracts/Aovias.Bootstrap.Contracts.csproj":  [
+                                                                                                                 "Aovias.Platform.slnx"
+                                                                                                             ],
+                       "ComplaincePlatform/_tmp_phase_probe/Probe.csproj":  [
+
+                                                                            ],
+                       "ComplaincePlatform/tests/Gateway.UnitTests/Gateway.UnitTests.csproj":  [
+
+                                                                                               ],
+                       "ComplaincePlatform/OutboxRelayWorker/OutboxRelayWorker.csproj":  [
+                                                                                             "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                         ],
+                       "ComplaincePlatform/IdentityService/IdentityService.csproj":  [
+                                                                                         "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                     ],
+                       "Aovias.Release/src/Aovias.Release.Contracts/Aovias.Release.Contracts.csproj":  [
+                                                                                                           "Aovias.Platform.slnx",
+                                                                                                           "Aovias.CommandCenter/Aovias.CommandCenter.slnx",
+                                                                                                           "Aovias.Release/Aovias.Release.slnx",
+                                                                                                           "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                                                       ],
+                       "ComplaincePlatform/AccessGovernanceService/AccessGovernanceService.csproj":  [
+                                                                                                         "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                     ],
+                       "Aovias.Release/src/Aovias.Release.SDK/Aovias.Release.SDK.csproj":  [
+                                                                                               "Aovias.Platform.slnx",
+                                                                                               "Aovias.CommandCenter/Aovias.CommandCenter.slnx",
+                                                                                               "Aovias.Release/Aovias.Release.slnx"
+                                                                                           ],
+                       "Aovias.Runtime.Agent/src/Aovias.Runtime.SDK/Aovias.Runtime.SDK.csproj":  [
+                                                                                                     "Aovias.Platform.slnx",
+                                                                                                     "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                                                 ],
+                       "ComplaincePlatform/PersonService/PersonService.csproj":  [
+                                                                                     "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                 ],
+                       "ComplaincePlatform/ProfessionalService/ProfessionalService.csproj":  [
+                                                                                                 "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                             ],
+                       "ComplaincePlatform/GovernanceService.Tests/GovernanceService.Tests.csproj":  [
+                                                                                                         "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                     ],
+                       "ComplianceServiceManager.Tests/ComplianceServiceManager.Tests.csproj":  [
+
+                                                                                                ],
+                       "ComplaincePlatform/WorkforceIntelligenceService/WorkforceIntelligenceService.csproj":  [
+                                                                                                                   "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                               ],
+                       "ComplaincePlatform/Shared.Infrastructure/Shared.Infrastructure.csproj":  [
+                                                                                                     "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                 ],
+                       "ComplaincePlatform/Shared.Logging/Shared.Logging.csproj":  [
+                                                                                       "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                   ],
+                       "ComplaincePlatform/Shared.Authorization/Shared.Authorization.csproj":  [
+
+                                                                                               ],
+                       "ComplaincePlatform/tests/Shared.Infrastructure.Tests/Shared.Infrastructure.Tests.csproj":  [
+
+                                                                                                                   ],
+                       "Aovias.DeploymentValidation/Aovias.DeploymentValidation.csproj":  [
+                                                                                              "Aovias.Platform.slnx",
+                                                                                              "Aovias.PublishingEngine.slnx"
+                                                                                          ],
+                       "Aovias.DeploymentValidation/tests/Aovias.DeploymentValidation.Tests/Aovias.DeploymentValidation.Tests.csproj":  [
+                                                                                                                                            "Aovias.Platform.slnx",
+                                                                                                                                            "Aovias.PublishingEngine.slnx"
+                                                                                                                                        ],
+                       "ComplaincePlatform/WorkforceService/WorkforceService.csproj":  [
+                                                                                           "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                       ],
+                       "Aovias.Publishing/src/Aovias.Publishing.Core/Aovias.Publishing.Core.csproj":  [
+                                                                                                          "Aovias.Platform.slnx",
+                                                                                                          "Aovias.PublishingEngine.slnx",
+                                                                                                          "Aovias.Publishing/Aovias.Publishing.slnx",
+                                                                                                          "Aovias.Release/Aovias.Release.slnx"
+                                                                                                      ],
+                       "Aovias.Publishing/src/Aovias.Publishing.Contracts/Aovias.Publishing.Contracts.csproj":  [
+                                                                                                                    "Aovias.Platform.slnx",
+                                                                                                                    "Aovias.PublishingEngine.slnx",
+                                                                                                                    "Aovias.Publishing/Aovias.Publishing.slnx",
+                                                                                                                    "Aovias.Release/Aovias.Release.slnx"
+                                                                                                                ],
+                       "Aovias.Publishing/src/Aovias.Publishing.Providers.Static/Aovias.Publishing.Providers.Static.csproj":  [
+                                                                                                                                  "Aovias.Platform.slnx",
+                                                                                                                                  "Aovias.PublishingEngine.slnx",
+                                                                                                                                  "Aovias.Publishing/Aovias.Publishing.slnx"
+                                                                                                                              ],
+                       "ComplaincePlatform/ComplianceService.Tests/ComplianceService.Tests.csproj":  [
+                                                                                                         "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                     ],
+                       "ComplaincePlatform/AIOrchestratorService/AIOrchestratorService.csproj":  [
+                                                                                                     "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                 ],
+                       "ComplaincePlatform/IntegrationService.Tests/IntegrationService.Tests.csproj":  [
+                                                                                                           "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                       ],
+                       "ComplianceServiceManager.Operations.Tests/ComplianceServiceManager.Operations.Tests.csproj":  [
+                                                                                                                          "Aovias.Platform.slnx"
+                                                                                                                      ],
+                       "ComplaincePlatform/tests/D0RuntimeVerifier/D0RuntimeVerifier.csproj":  [
+
+                                                                                               ],
+                       "Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Api/Aovias.Runtime.Agent.Api.csproj":  [
+                                                                                                                 "Aovias.Platform.slnx",
+                                                                                                                 "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                                                             ],
+                       "Aovias.CommandCenter/src/Aovias.CommandCenter.Infrastructure/Aovias.CommandCenter.Infrastructure.csproj":  [
+                                                                                                                                       "Aovias.Platform.slnx",
+                                                                                                                                       "Aovias.CommandCenter/Aovias.CommandCenter.slnx"
+                                                                                                                                   ],
+                       "Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Domain/Aovias.Runtime.Agent.Domain.csproj":  [
+                                                                                                                       "Aovias.Platform.slnx",
+                                                                                                                       "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                                                                   ],
+                       "Aovias.Runtime.Agent/src/Aovias.Runtime.Contracts/Aovias.Runtime.Contracts.csproj":  [
+                                                                                                                 "Aovias.Platform.slnx",
+                                                                                                                 "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                                                             ],
+                       "Aovias.Deployment.Contracts/Aovias.Deployment.Contracts.csproj":  [
+                                                                                              "Aovias.Platform.slnx",
+                                                                                              "Aovias.PublishingEngine.slnx",
+                                                                                              "Aovias.CommandCenter/Aovias.CommandCenter.slnx",
+                                                                                              "Aovias.Release/Aovias.Release.slnx",
+                                                                                              "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                                          ],
+                       "Aovias.Configuration/tests/Aovias.Configuration.Tests/Aovias.Configuration.Tests.csproj":  [
+                                                                                                                       "Aovias.Platform.slnx",
+                                                                                                                       "Aovias.PublishingEngine.slnx"
+                                                                                                                   ],
+                       "Aovias.Bootstrap/src/Aovias.Bootstrap.Host/Aovias.Bootstrap.Host.csproj":  [
+                                                                                                       "Aovias.Platform.slnx"
+                                                                                                   ],
+                       "ComplaincePlatform/CommunicationService/CommunicationService.csproj":  [
+                                                                                                   "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                               ],
+                       "ComplaincePlatform/PersonService.Tests/PersonService.Tests.csproj":  [
+                                                                                                 "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                             ],
+                       "AOVIAS.Infrastructure/tools/PublishAllServices/PublishAllServices.csproj":  [
+                                                                                                        "Aovias.Platform.slnx"
+                                                                                                    ],
+                       "ComplaincePlatform/ComplianceService/ComplianceService.csproj":  [
+                                                                                             "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                         ],
+                       "Aovias.Orchestration/src/Aovias.Platform.Core/Aovias.Platform.Core.csproj":  [
+                                                                                                         "Aovias.Platform.slnx",
+                                                                                                         "Aovias.PublishingEngine.slnx",
+                                                                                                         "Aovias.Orchestration/Aovias.Orchestration.slnx",
+                                                                                                         "Aovias.Publishing/Aovias.Publishing.slnx",
+                                                                                                         "Aovias.Release/Aovias.Release.slnx",
+                                                                                                         "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                                                     ],
+                       "ComplaincePlatform/IntegrationService/IntegrationService.csproj":  [
+                                                                                               "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                           ],
+                       "Aovias.Publishing/src/Aovias.Publishing.SDK/Aovias.Publishing.SDK.csproj":  [
+                                                                                                        "Aovias.Platform.slnx",
+                                                                                                        "Aovias.PublishingEngine.slnx",
+                                                                                                        "Aovias.Publishing/Aovias.Publishing.slnx"
+                                                                                                    ],
+                       "ComplianceServiceManager/ComplianceServiceManager.csproj":  [
+                                                                                        "ComplianceServiceManager/ComplianceServiceManager.slnx"
+                                                                                    ],
+                       "Aovias.Bootstrap/tests/Aovias.Bootstrap.Core.Tests/Aovias.Bootstrap.Core.Tests.csproj":  [
+                                                                                                                     "Aovias.Platform.slnx"
+                                                                                                                 ],
+                       "ComplaincePlatform/OrganizationService.Tests/OrganizationService.Tests.csproj":  [
+                                                                                                             "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                         ],
+                       "Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Application/Aovias.Runtime.Agent.Application.csproj":  [
+                                                                                                                                 "Aovias.Platform.slnx",
+                                                                                                                                 "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                                                                             ],
+                       "ComplaincePlatform/WorkforceService.Tests/WorkforceService.Tests.csproj":  [
+                                                                                                       "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                   ],
+                       "Aovias.Publishing/src/Aovias.Publishing.Providers.Angular/Aovias.Publishing.Providers.Angular.csproj":  [
+                                                                                                                                    "Aovias.Platform.slnx",
+                                                                                                                                    "Aovias.PublishingEngine.slnx",
+                                                                                                                                    "Aovias.Publishing/Aovias.Publishing.slnx"
+                                                                                                                                ],
+                       "ComplaincePlatform/AIOrchestratorService.Tests/AIOrchestratorService.Tests.csproj":  [
+
+                                                                                                             ],
+                       "Aovias.Orchestration/src/Aovias.Orchestration.Contracts/Aovias.Orchestration.Contracts.csproj":  [
+                                                                                                                             "Aovias.Platform.slnx",
+                                                                                                                             "Aovias.Orchestration/Aovias.Orchestration.slnx",
+                                                                                                                             "Aovias.Release/Aovias.Release.slnx",
+                                                                                                                             "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                                                                         ],
+                       "ComplaincePlatform/KnowledgeBase/KnowledgeBase.csproj":  [
+                                                                                     "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                 ],
+                       "ComplaincePlatform/EnterpriseDirectoryService.Tests/EnterpriseDirectoryService.Tests.csproj":  [
+                                                                                                                           "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                                       ],
+                       "ComplaincePlatform/OrganizationService/OrganizationService.csproj":  [
+                                                                                                 "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                             ],
+                       "Aovias.Runtime.Agent/src/Aovias.Runtime.Agent.Infrastructure/Aovias.Runtime.Agent.Infrastructure.csproj":  [
+                                                                                                                                       "Aovias.Platform.slnx",
+                                                                                                                                       "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                                                                                   ],
+                       "ComplaincePlatform/Shared.Communication/Shared.Communication.csproj":  [
+                                                                                                   "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                               ],
+                       "Aovias.Publishing/src/Aovias.Publishing.Providers.DotNet/Aovias.Publishing.Providers.DotNet.csproj":  [
+                                                                                                                                  "Aovias.Platform.slnx",
+                                                                                                                                  "Aovias.PublishingEngine.slnx",
+                                                                                                                                  "Aovias.Publishing/Aovias.Publishing.slnx"
+                                                                                                                              ],
+                       "ComplaincePlatform/tests/Aovias.Platform.IntegrationTests/Aovias.Platform.IntegrationTests.csproj":  [
+
+                                                                                                                             ],
+                       "Aovias.Release/src/Aovias.ReleaseManager/Aovias.ReleaseManager.csproj":  [
+                                                                                                     "Aovias.Platform.slnx",
+                                                                                                     "Aovias.Release/Aovias.Release.slnx",
+                                                                                                     "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                                                 ],
+                       "ComplaincePlatform/Shared.Governance/Shared.Governance.csproj":  [
+                                                                                             "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                         ],
+                       "ComplaincePlatform/CommunicationService.Tests/CommunicationService.Tests.csproj":  [
+                                                                                                               "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                           ],
+                       "Aovias.Publishing/tests/Aovias.Publishing.Core.Tests/Aovias.Publishing.Core.Tests.csproj":  [
+                                                                                                                        "Aovias.Platform.slnx",
+                                                                                                                        "Aovias.PublishingEngine.slnx",
+                                                                                                                        "Aovias.Publishing/Aovias.Publishing.slnx"
+                                                                                                                    ],
+                       "Aovias.Publishing/tests/Aovias.Publishing.Providers.DotNet.Tests/Aovias.Publishing.Providers.DotNet.Tests.csproj":  [
+                                                                                                                                                "Aovias.Platform.slnx",
+                                                                                                                                                "Aovias.PublishingEngine.slnx",
+                                                                                                                                                "Aovias.Publishing/Aovias.Publishing.slnx"
+                                                                                                                                            ],
+                       "ComplaincePlatform/AuditService/AuditService.csproj":  [
+                                                                                   "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                               ],
+                       "Aovias.Configuration/Aovias.Configuration.csproj":  [
+                                                                                "Aovias.Platform.slnx",
+                                                                                "Aovias.PublishingEngine.slnx",
+                                                                                "Aovias.CommandCenter/Aovias.CommandCenter.slnx",
+                                                                                "Aovias.Publishing/Aovias.Publishing.slnx",
+                                                                                "Aovias.Release/Aovias.Release.slnx",
+                                                                                "Aovias.Runtime.Agent/Aovias.Runtime.Agent.slnx"
+                                                                            ],
+                       "ComplaincePlatform/Knowledgebase.Tests/Knowledgebase.Tests.csproj":  [
+                                                                                                 "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                             ],
+                       "ComplaincePlatform/Gateway/Gateway.csproj":  [
+                                                                         "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                     ],
+                       "ComplaincePlatform/Platform.Dashboard/Platform.Dashboard.csproj":  [
+                                                                                               "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                           ],
+                       "AOVIAS.Infrastructure/tools/PublishRuntimeAgent/PublishRuntimeAgent.csproj":  [
+                                                                                                          "Aovias.Platform.slnx"
+                                                                                                      ],
+                       "ComplaincePlatform/IdentityService.Tests/IdentityService.Tests.csproj":  [
+                                                                                                     "ComplaincePlatform/CompliancePlatform.slnx"
+                                                                                                 ],
+                       "ComplianceServiceManager.Operations/ComplianceServiceManager.Operations.csproj":  [
+                                                                                                              "Aovias.Platform.slnx"
+                                                                                                          ],
+                       "ComplaincePlatform/AIOrchestratorService/D0RuntimeVerifier/D0RuntimeVerifier.csproj":  [
+
+                                                                                                               ]
+                   },
+    "orphan_count":  11,
+    "orphans":  [
+                    "ComplaincePlatform/_tmp_phase_probe/Probe.csproj",
+                    "ComplaincePlatform/AIOrchestratorService.Tests/AIOrchestratorService.Tests.csproj",
+                    "ComplaincePlatform/AIOrchestratorService/D0RuntimeVerifier/D0RuntimeVerifier.csproj",
+                    "ComplaincePlatform/DemoDataSeeder/DemoDataSeeder.csproj",
+                    "ComplaincePlatform/Shared.Authorization/Shared.Authorization.csproj",
+                    "ComplaincePlatform/tests/Aovias.Platform.IntegrationTests/Aovias.Platform.IntegrationTests.csproj",
+                    "ComplaincePlatform/tests/ComplianceStub/ComplianceStub.csproj",
+                    "ComplaincePlatform/tests/D0RuntimeVerifier/D0RuntimeVerifier.csproj",
+                    "ComplaincePlatform/tests/Gateway.UnitTests/Gateway.UnitTests.csproj",
+                    "ComplaincePlatform/tests/Shared.Infrastructure.Tests/Shared.Infrastructure.Tests.csproj",
+                    "ComplianceServiceManager.Tests/ComplianceServiceManager.Tests.csproj"
+                ]
+}

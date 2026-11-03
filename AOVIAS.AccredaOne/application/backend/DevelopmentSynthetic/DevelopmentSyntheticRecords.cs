@@ -41,6 +41,18 @@ public sealed class DevelopmentSyntheticSourceRecord
     public required string ContentKind { get; init; }
 }
 
+/// <summary>
+/// Synthetic applicability for development datasets. Disclaimer must state this is not an official determination.
+/// </summary>
+public sealed class DevelopmentSyntheticRequirementApplicabilityRecord
+{
+    public required string Summary { get; init; }
+
+    public IReadOnlyList<string> ContextTags { get; init; } = [];
+
+    public required string Disclaimer { get; init; }
+}
+
 public sealed class DevelopmentSyntheticRequirementRecord
 {
     public required string Id { get; init; }
@@ -58,6 +70,10 @@ public sealed class DevelopmentSyntheticRequirementRecord
     public required string Classification { get; init; }
 
     public required string Provenance { get; init; }
+
+    public string? RequirementText { get; init; }
+
+    public DevelopmentSyntheticRequirementApplicabilityRecord? Applicability { get; init; }
 }
 
 public sealed class DevelopmentSyntheticExplanationRecord
