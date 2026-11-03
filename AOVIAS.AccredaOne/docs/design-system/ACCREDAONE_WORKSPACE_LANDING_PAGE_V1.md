@@ -45,9 +45,36 @@ No invented counts, requirements, or publisher claims.
 
 ## Sponsored content boundaries
 
-- Component: `SponsoredContent` — renders **only** when `placements.length > 0`.
-- Source: `lib/workspace/sponsoredContent.ts` (currently empty array).
-- No advertising backend, no fictional sponsors, explicit “Sponsored” labelling when shown.
+Presentation-only sponsored educational placements — not an advertising platform, CMS, or analytics surface.
+
+- **Component:** `SponsoredContent` — renders **only** when at least one **valid** placement remains after configuration validation.
+- **Source:** `lib/workspace/sponsoredContent.ts` — `SPONSORED_PLACEMENTS` (currently an empty array; no committed example sponsors).
+- **Empty configuration:** When the configured list is empty or every row fails validation, the component returns `null` (no section, card, link, or reserved whitespace in the layout).
+
+### Required placement fields
+
+Each placement must include non-empty strings (after trim) for:
+
+- `id` (unique among valid rows; duplicates after the first valid occurrence are ignored)
+- `title`
+- `description`
+- `advertiser`
+
+### Optional destination
+
+- `href` is optional.
+- When present, it must be an absolute `http:` or `https:` URL. Malformed URLs and unsafe schemes (for example `javascript:` or `data:`) are rejected; no link is rendered for an absent or invalid destination.
+
+### Identification and separation
+
+- Section kicker **Sponsored**, heading **Sponsored educational resources**, and lead disclaimer state that content is separated from authoritative accreditation knowledge and is not an endorsement by accreditation bodies.
+- Every displayed card carries a visible **Sponsored** label using the dedicated `.ao-sponsored-label` treatment (neutral/muted tokens — not framework availability or “Sample content” badges).
+- Compact card structure: sponsored label, title, description, advertiser identity, optional “Learn more” link when a valid `href` exists.
+- No official accreditation logos, certification badges, or authority claims in sponsored UI.
+
+### Out of scope (deferred)
+
+No advertising backend, billing, campaigns, targeting, or committed fictional sponsor data in the repository.
 
 ## Responsive behaviour
 

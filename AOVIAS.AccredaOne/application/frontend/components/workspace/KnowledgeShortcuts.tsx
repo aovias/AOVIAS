@@ -1,4 +1,5 @@
 import { Compass, LayoutDashboard } from "lucide-react";
+import { WorkspaceSectionHeader } from "../shared/WorkspaceSectionHeader";
 
 const SHORTCUTS = [
   {
@@ -18,14 +19,12 @@ const SHORTCUTS = [
 export function KnowledgeShortcuts() {
   return (
     <section className="ao-workspace-section" aria-labelledby="shortcuts-heading">
-      <header className="ao-workspace-section-header">
-        <p className="ao-kicker">Continue your journey</p>
-        <h2 id="shortcuts-heading">Continue your knowledge journey</h2>
-        <p className="ao-workspace-section-lead">
-          Shortcuts to implemented workspace destinations. Saved knowledge and a separate library
-          catalogue are not available in this increment.
-        </p>
-      </header>
+      <WorkspaceSectionHeader
+        kicker="Continue your journey"
+        headingId="shortcuts-heading"
+        heading="Continue your knowledge journey"
+        description="Shortcuts to implemented workspace destinations. Saved knowledge and a separate library catalogue are not available in this increment."
+      />
       <div className="ao-workspace-grid ao-workspace-grid-2">
         {SHORTCUTS.map((item) => {
           const Icon = item.icon;

@@ -1,16 +1,15 @@
+import { WorkspaceSectionHeader } from "../shared/WorkspaceSectionHeader";
 import { FEATURED_RESOURCES } from "../../lib/workspace/featuredResources";
 
 export function FeaturedResources() {
   return (
     <section className="ao-workspace-section" aria-labelledby="featured-heading">
-      <header className="ao-workspace-section-header">
-        <p className="ao-kicker">Learning resources</p>
-        <h2 id="featured-heading">Featured knowledge &amp; learning resources</h2>
-        <p className="ao-workspace-section-lead">
-          Sample editorial cards for layout and future CMS connection. They are not authoritative
-          accreditation material.
-        </p>
-      </header>
+      <WorkspaceSectionHeader
+        kicker="Learning resources"
+        headingId="featured-heading"
+        heading="Featured knowledge & learning resources"
+        description="Sample editorial cards for layout and future CMS connection. They are not authoritative accreditation material."
+      />
       <div className="ao-workspace-grid ao-workspace-grid-3">
         {FEATURED_RESOURCES.map((resource) => (
           <article key={resource.id} className="ao-card ao-resource-card">

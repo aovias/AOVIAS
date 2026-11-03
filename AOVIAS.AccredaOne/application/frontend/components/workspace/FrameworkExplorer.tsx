@@ -6,6 +6,7 @@ import {
   frameworkAvailabilityLabel,
 } from "../../lib/workspace/frameworkCatalog";
 import { navigateToDiscoveryFramework } from "../../lib/shell/discoverySearch";
+import { WorkspaceSectionHeader } from "../shared/WorkspaceSectionHeader";
 
 function FrameworkCard({
   shortName,
@@ -46,14 +47,12 @@ function FrameworkCard({
 export function FrameworkExplorer() {
   return (
     <section id="frameworks" className="ao-workspace-section" aria-labelledby="frameworks-heading">
-      <header className="ao-workspace-section-header">
-        <p className="ao-kicker">Framework knowledge</p>
-        <h2 id="frameworks-heading">Explore framework knowledge</h2>
-        <p className="ao-workspace-section-lead">
-          AccredaOne is designed to support NABH, JCI, NABL and other frameworks over time. Only
-          fictional NOAF and MCQF records are searchable in the current development synthetic dataset.
-        </p>
-      </header>
+      <WorkspaceSectionHeader
+        kicker="Framework knowledge"
+        headingId="frameworks-heading"
+        heading="Explore framework knowledge"
+        description="AccredaOne is designed to support NABH, JCI, NABL and other frameworks over time. Only fictional NOAF and MCQF records are searchable in the current development synthetic dataset."
+      />
       <div className="ao-workspace-grid ao-workspace-grid-3">
         {FRAMEWORK_CATALOG.map((entry) => (
           <FrameworkCard key={entry.id} {...entry} />
