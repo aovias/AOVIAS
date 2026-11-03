@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useState } from "react";
 import { postDiscoveryQuery } from "../lib/discovery/client";
 import { ELIGIBLE_FRAMEWORK_OPTIONS } from "../lib/discovery/frameworkOptions";
+import { DISCOVERY_SAMPLE_QUERIES } from "../lib/discovery/sampleQueries";
 import type { DiscoveryRequirementSelection } from "../lib/discovery/selection";
 import { DiscoveryApiError, type DiscoveryQueryResponse } from "../lib/discovery/types";
 import { RequirementDetailPanel } from "./RequirementDetailPanel";
@@ -60,20 +61,40 @@ export function KnowledgeDiscoveryPanel() {
     void submit();
   };
 
+  const applySampleQuery = (sampleQuery: string) => {
+    setQuery(sampleQuery);
+    if (view === "validation") {
+      setValidationMessage(null);
+      setView("initial");
+    }
+  };
+
   const isLoading = view === "loading";
+  const showGettingStarted = view === "initial" || view === "validation";
 
   return (
     <section id="library" className="ao-panel ao-discovery">
       <p className="ao-kicker">Knowledge discovery</p>
       <h2>Discover requirements</h2>
-      <p className="ao-discovery-intro">
-        Ask a natural-language question to search the development synthetic dataset. Results are
-        fictional engineering placeholders — not official accreditation standards, scores, or
-        compliance decisions.
-      </p>
+
+      <div className="ao-discovery-getting-started" aria-labelledby="discovery-purpose-heading">
+        <h3 id="discovery-purpose-heading">What this does</h3>
+        <p className="ao-discovery-intro">
+          Discovery helps you explore <strong>fictional</strong> NOAF and MCQF requirement records from
+          AccredaOne&apos;s development synthetic pack. Ask a question in plain language, optionally narrow
+          to one framework, then review grouped results and open a requirement to see source-oriented text,
+          applicability notes, and a separate AccredaOne explanation.
+        </p>
+        <p className="ao-discovery-intro">
+          This is an engineering preview only — not official accreditation content, scoring, or compliance
+          decisions.
+        </p>
+      </div>
+
       <p className="ao-discovery-dataset" role="note">
-        <strong>Development data only:</strong> responses come from pack{" "}
-        <code>mvp-development-synthetic-discovery</code> (classification: synthetic).
+        <strong>Synthetic development data only:</strong> responses come from pack{" "}
+        <code>mvp-development-synthetic-discovery</code> (classification: synthetic). Nothing here is
+        published NABH, JCI, NABL, or other real standard text.
       </p>
 
       <form className="ao-discovery-form" onSubmit={onSubmit} noValidate>
@@ -84,11 +105,40 @@ export function KnowledgeDiscoveryPanel() {
             rows={3}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="e.g. What practices relate to operational assurance?"
+            placeholder="Ask about fictional NOAF or MCQF synthetic requirements — e.g. operational assurance, patient experience, or cross-framework overview."
+            aria-describedby="discovery-query-hint discovery-samples-heading"
             aria-invalid={view === "validation"}
             disabled={isLoading}
           />
+          <span id="discovery-query-hint" className="ao-discovery-field-hint">
+            Search the development dataset in natural language. Edit any text before you press Search.
+          </span>
         </label>
+
+        <div className="ao-discovery-samples" aria-labelledby="discovery-samples-heading">
+          <h4 id="discovery-samples-heading">Try a sample question</h4>
+          <p className="ao-discovery-field-hint">
+            Samples are grounded in the fictional NOAF/MCQF records. Click to fill the box above — they do
+            not search until you submit.
+          </p>
+          <ul className="ao-discovery-sample-list">
+            {DISCOVERY_SAMPLE_QUERIES.map((sample) => (
+              <li key={sample.id}>
+                <button
+                  type="button"
+                  className="ao-discovery-sample"
+                  disabled={isLoading}
+                  aria-label={`Use sample question: ${sample.label}. ${sample.hint}`}
+                  onClick={() => applySampleQuery(sample.query)}
+                >
+                  <span className="ao-discovery-sample-label">{sample.label}</span>
+                  <span className="ao-discovery-sample-hint">{sample.hint}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <label className="ao-discovery-field">
           <span>Framework (optional)</span>
           <select
@@ -96,6 +146,7 @@ export function KnowledgeDiscoveryPanel() {
             value={frameworkCode}
             onChange={(event) => setFrameworkCode(event.target.value)}
             disabled={isLoading}
+            aria-describedby="discovery-framework-hint"
           >
             <option value="">All eligible frameworks (cross-framework discovery)</option>
             {ELIGIBLE_FRAMEWORK_OPTIONS.map((option) => (
@@ -104,6 +155,10 @@ export function KnowledgeDiscoveryPanel() {
               </option>
             ))}
           </select>
+          <span id="discovery-framework-hint" className="ao-discovery-field-hint">
+            Leave this empty to search <strong>all eligible</strong> synthetic frameworks (NOAF and MCQF).
+            Choose one framework to limit results to that fictional framework only.
+          </span>
         </label>
         <div className="ao-discovery-actions">
           <button type="submit" className="ao-discovery-submit" disabled={isLoading}>
@@ -164,6 +219,7 @@ export function KnowledgeDiscoveryPanel() {
 
       {view === "results" && response && !selectedRequirement && (
         <div className="ao-discovery-results" aria-live="polite">
+          <h3 className="ao-discovery-results-heading">Discovery results</h3>
           <p className="ao-discovery-meta">
             Outcome: <code>{response.outcome}</code> · {response.frameworkGroups.length} framework
             {response.frameworkGroups.length === 1 ? "" : "s"} · {response.requirementIds.length}{" "}
@@ -205,10 +261,13 @@ export function KnowledgeDiscoveryPanel() {
         </div>
       )}
 
-      {view === "initial" && (
-        <div className="ao-state">
-          <h3>Ready to search</h3>
-          <p>Enter a question above to discover relevant synthetic requirements from the development dataset.</p>
+      {showGettingStarted && (
+        <div className="ao-state ao-discovery-first-visit">
+          <h3>Ready when you are</h3>
+          <p>
+            Pick a sample question or type your own, then press <strong>Search</strong> to see grouped
+            synthetic requirements below.
+          </p>
         </div>
       )}
     </section>
