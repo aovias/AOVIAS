@@ -113,6 +113,11 @@ public static class SyntheticFixtureLoader
             errors.Add($"Expected {counts.FrameworksIneligible} ineligible frameworks.");
         }
 
+        var disabledFrameworkIds = pack.Frameworks
+            .Where(f => string.Equals(f.EligibilityStatus, "disabled", StringComparison.OrdinalIgnoreCase))
+            .Select(f => f.Id)
+            .ToHashSet(StringComparer.Ordinal);
+
         foreach (var source in pack.Sources)
         {
             TrackId(source.Id, "source");
@@ -121,10 +126,26 @@ public static class SyntheticFixtureLoader
             {
                 errors.Add($"Source '{source.Id}' references unknown framework '{source.FrameworkId}'.");
             }
+            else if (disabledFrameworkIds.Contains(source.FrameworkId))
+            {
+                errors.Add($"Source '{source.Id}' must not attach to disabled framework '{source.FrameworkId}'.");
+            }
 
             if (!string.Equals(source.ContentKind, "source_instrument", StringComparison.Ordinal))
             {
                 errors.Add($"Source '{source.Id}' must have contentKind source_instrument.");
+            }
+        }
+
+        var sourcesByFramework = pack.Sources
+            .GroupBy(s => s.FrameworkId)
+            .ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
+
+        foreach (var frameworkId in eligibleFrameworkIds)
+        {
+            if (!sourcesByFramework.TryGetValue(frameworkId, out var sourceCount) || sourceCount != 1)
+            {
+                errors.Add($"Eligible framework '{frameworkId}' must have exactly one source instrument.");
             }
         }
 
@@ -150,6 +171,10 @@ public static class SyntheticFixtureLoader
             {
                 errors.Add($"Requirement '{requirement.Id}' references unknown framework.");
             }
+            else if (disabledFrameworkIds.Contains(requirement.FrameworkId))
+            {
+                errors.Add($"Requirement '{requirement.Id}' must not attach to disabled framework '{requirement.FrameworkId}'.");
+            }
 
             if (!sourceIds.Contains(requirement.SourceInstrumentId))
             {
@@ -162,6 +187,8 @@ public static class SyntheticFixtureLoader
             }
         }
 
+        var currentVersionCountByFramework = new Dictionary<string, int>(StringComparer.Ordinal);
+
         foreach (var version in pack.FrameworkVersions)
         {
             TrackId(version.Id, "framework-version");
@@ -169,6 +196,24 @@ public static class SyntheticFixtureLoader
             if (!frameworkIds.Contains(version.FrameworkId))
             {
                 errors.Add($"Version '{version.Id}' references unknown framework.");
+            }
+            else if (disabledFrameworkIds.Contains(version.FrameworkId))
+            {
+                errors.Add($"Version '{version.Id}' must not attach to disabled framework '{version.FrameworkId}'.");
+            }
+
+            if (SyntheticFixtureBoundaryVerifier.IsVerifiedCurrentVersionStatus(version.VersionStatus))
+            {
+                currentVersionCountByFramework.TryGetValue(version.FrameworkId, out var count);
+                currentVersionCountByFramework[version.FrameworkId] = count + 1;
+            }
+        }
+
+        foreach (var (frameworkId, currentCount) in currentVersionCountByFramework)
+        {
+            if (currentCount > 1)
+            {
+                errors.Add($"Framework '{frameworkId}' must have at most one verified current version record.");
             }
         }
 
@@ -180,6 +225,10 @@ public static class SyntheticFixtureLoader
             {
                 errors.Add($"Explanation '{explanation.Id}' references unknown framework.");
             }
+            else if (disabledFrameworkIds.Contains(explanation.FrameworkId))
+            {
+                errors.Add($"Explanation '{explanation.Id}' must not attach to disabled framework '{explanation.FrameworkId}'.");
+            }
 
             if (!string.Equals(explanation.ContentKind, "accredaone_explanation", StringComparison.Ordinal))
             {
@@ -187,16 +236,106 @@ public static class SyntheticFixtureLoader
             }
         }
 
+        var explanationsByFramework = pack.Explanations
+            .GroupBy(e => e.FrameworkId)
+            .ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
+
+        foreach (var frameworkId in eligibleFrameworkIds)
+        {
+            if (!explanationsByFramework.TryGetValue(frameworkId, out var explanationCount) || explanationCount != 1)
+            {
+                errors.Add($"Eligible framework '{frameworkId}' must have exactly one explanation.");
+            }
+        }
+
         foreach (var scenario in pack.QueryScenarios)
         {
             TrackId(scenario.Id, "query-scenario");
             AssertSyntheticRecord(scenario.Classification, scenario.Provenance, scenario.Id, errors);
+            ValidateQueryScenarioConsistency(scenario, pack, errors);
         }
 
         if (errors.Count > 0)
         {
             throw new InvalidOperationException("Synthetic fixture validation failed: " + string.Join(' ', errors));
         }
+    }
+
+    private static void ValidateQueryScenarioConsistency(
+        SyntheticQueryScenarioRecord scenario,
+        SyntheticFixturePack pack,
+        List<string> errors)
+    {
+        var scenarioType = scenario.ScenarioType ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(scenarioType))
+        {
+            errors.Add($"Query scenario '{scenario.Id}' must specify scenarioType.");
+            return;
+        }
+
+        if (string.Equals(scenarioType, "explicit_framework", StringComparison.OrdinalIgnoreCase))
+        {
+            if (string.IsNullOrWhiteSpace(scenario.FrameworkCode))
+            {
+                errors.Add($"Query scenario '{scenario.Id}' with explicit_framework requires frameworkCode.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(scenario.ExpectedOutcome))
+            {
+                errors.Add($"Query scenario '{scenario.Id}' must specify expectedOutcome.");
+                return;
+            }
+
+            var framework = pack.Frameworks.FirstOrDefault(f =>
+                string.Equals(f.Code, scenario.FrameworkCode, StringComparison.OrdinalIgnoreCase));
+            var derived = framework switch
+            {
+                null => "no_results",
+                { EligibilityStatus: var status } when string.Equals(status, "eligible", StringComparison.OrdinalIgnoreCase) =>
+                    "bounded_results",
+                _ => "no_results",
+            };
+
+            if (!string.Equals(scenario.ExpectedOutcome, derived, StringComparison.Ordinal))
+            {
+                errors.Add(
+                    $"Query scenario '{scenario.Id}' expectedOutcome '{scenario.ExpectedOutcome}' does not match scenarioType/frameworkCode contract ('{derived}').");
+            }
+
+            return;
+        }
+
+        if (string.Equals(scenarioType, "no_framework_selection", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!string.IsNullOrWhiteSpace(scenario.FrameworkCode))
+            {
+                errors.Add($"Query scenario '{scenario.Id}' with no_framework_selection must not include frameworkCode.");
+            }
+
+            if (!string.Equals(
+                    scenario.ExpectedOutcome,
+                    SyntheticFixtureBoundaryVerifier.OutcomeBoundedCrossFrameworkResults,
+                    StringComparison.Ordinal))
+            {
+                errors.Add(
+                    $"Query scenario '{scenario.Id}' with no_framework_selection must expect {SyntheticFixtureBoundaryVerifier.OutcomeBoundedCrossFrameworkResults}.");
+            }
+
+            return;
+        }
+
+        if (string.Equals(scenarioType, "ambiguous_or_unsupported", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!string.Equals(scenario.ExpectedOutcome, "no_results", StringComparison.Ordinal))
+            {
+                errors.Add($"Query scenario '{scenario.Id}' with ambiguous_or_unsupported must expect no_results.");
+            }
+
+            return;
+        }
+
+        errors.Add($"Query scenario '{scenario.Id}' has unsupported scenarioType '{scenarioType}'.");
     }
 
     private static void AssertSyntheticRecord(string classification, string provenance, string label, List<string> errors)

@@ -21,7 +21,7 @@
     "frameworkCode": null,
     "classification": "synthetic",
     "provenance": "Fictional query scenario for boundary verification",
-    "expectedOutcome": "clarification_required"
+    "expectedOutcome": "bounded_cross_framework_results"
   },
   {
     "id": "SYN-QRY-004",

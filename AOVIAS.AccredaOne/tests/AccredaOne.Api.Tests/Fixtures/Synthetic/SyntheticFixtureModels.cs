@@ -149,5 +149,7 @@ public sealed class SyntheticQueryResolution
 
     public IReadOnlyList<string> RequirementIds { get; init; } = [];
 
+    public IReadOnlyDictionary<string, IReadOnlyList<string>>? RequirementIdsByFrameworkCode { get; init; }
+
     public string? ClarificationReason { get; init; }
 }
