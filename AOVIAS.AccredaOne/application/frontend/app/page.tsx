@@ -1,4 +1,5 @@
 import { AppShell } from "../components/AppShell";
+import { KnowledgeDiscoveryPanel } from "../components/KnowledgeDiscoveryPanel";
 import { PresentationStates } from "../components/PresentationStates";
 
 export default function Home() {
@@ -30,13 +31,7 @@ export default function Home() {
           <p>Sign-in, uploads, scoring, and framework equivalence are not part of this increment.</p>
         </article>
       </section>
-      <section id="library" className="ao-panel">
-        <h2>Knowledge library</h2>
-        <p>
-          The library area is reserved for later discovery and explanation work. It currently shows
-          an empty collection so the layout can be reviewed without inventing accreditation content.
-        </p>
-      </section>
+      <KnowledgeDiscoveryPanel />
       <PresentationStates />
       <p className="ao-footnote">
         DEV-03 engineering foundation. Phase 1 is not authorized. G1 has not passed.
