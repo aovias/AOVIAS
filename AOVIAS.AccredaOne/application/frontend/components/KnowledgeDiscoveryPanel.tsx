@@ -3,7 +3,9 @@
 import { FormEvent, useCallback, useState } from "react";
 import { postDiscoveryQuery } from "../lib/discovery/client";
 import { ELIGIBLE_FRAMEWORK_OPTIONS } from "../lib/discovery/frameworkOptions";
+import type { DiscoveryRequirementSelection } from "../lib/discovery/selection";
 import { DiscoveryApiError, type DiscoveryQueryResponse } from "../lib/discovery/types";
+import { RequirementDetailPanel } from "./RequirementDetailPanel";
 
 type ViewState = "initial" | "loading" | "results" | "no_results" | "error" | "validation";
 
@@ -14,6 +16,9 @@ export function KnowledgeDiscoveryPanel() {
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [response, setResponse] = useState<DiscoveryQueryResponse | null>(null);
+  const [selectedRequirement, setSelectedRequirement] = useState<DiscoveryRequirementSelection | null>(
+    null,
+  );
 
   const submit = useCallback(async () => {
     const trimmed = query.trim();
@@ -27,6 +32,7 @@ export function KnowledgeDiscoveryPanel() {
     setErrorMessage(null);
     setView("loading");
     setResponse(null);
+    setSelectedRequirement(null);
 
     try {
       const result = await postDiscoveryQuery(trimmed, frameworkCode || null);
@@ -147,7 +153,16 @@ export function KnowledgeDiscoveryPanel() {
         </div>
       )}
 
-      {view === "results" && response && (
+      {view === "results" && response && selectedRequirement && (
+        <RequirementDetailPanel
+          selection={selectedRequirement}
+          datasetPackId={response.datasetPackId}
+          datasetClassification={response.datasetClassification}
+          onBack={() => setSelectedRequirement(null)}
+        />
+      )}
+
+      {view === "results" && response && !selectedRequirement && (
         <div className="ao-discovery-results" aria-live="polite">
           <p className="ao-discovery-meta">
             Outcome: <code>{response.outcome}</code> · {response.frameworkGroups.length} framework
@@ -161,24 +176,6 @@ export function KnowledgeDiscoveryPanel() {
                 <h3>{group.displayName}</h3>
                 <p className="ao-discovery-provenance">Framework provenance: {group.frameworkProvenance}</p>
               </header>
-              <div className="ao-discovery-authoritative">
-                <h4>Authoritative source instrument</h4>
-                <p>
-                  <strong>{group.sourceInstrument.title}</strong> ({group.sourceInstrument.id})
-                </p>
-                <p>{group.sourceInstrument.provenance}</p>
-                <p className="ao-discovery-kind">Kind: {group.sourceInstrument.contentKind}</p>
-              </div>
-              {group.accredaOneExplanation && (
-                <div className="ao-discovery-explanation">
-                  <h4>AccredaOne explanation (not source text)</h4>
-                  <p>
-                    <strong>{group.accredaOneExplanation.title}</strong> ({group.accredaOneExplanation.id})
-                  </p>
-                  <p>{group.accredaOneExplanation.body}</p>
-                  <p className="ao-discovery-provenance">{group.accredaOneExplanation.provenance}</p>
-                </div>
-              )}
               <ul className="ao-discovery-requirements">
                 {group.requirements.map((requirement) => (
                   <li key={requirement.id}>
@@ -187,7 +184,19 @@ export function KnowledgeDiscoveryPanel() {
                     {requirement.hierarchyContext && (
                       <p className="ao-discovery-hierarchy">Hierarchy: {requirement.hierarchyContext}</p>
                     )}
-                    <p className="ao-discovery-provenance">Requirement provenance: {requirement.provenance}</p>
+                    <button
+                      type="button"
+                      className="ao-requirement-detail-link"
+                      aria-label={`View details for ${requirement.label}`}
+                      onClick={() =>
+                        setSelectedRequirement({
+                          group,
+                          requirement,
+                        })
+                      }
+                    >
+                      View requirement details
+                    </button>
                   </li>
                 ))}
               </ul>
