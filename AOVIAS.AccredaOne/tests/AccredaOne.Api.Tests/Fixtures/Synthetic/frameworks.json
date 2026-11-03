@@ -1,0 +1,26 @@
+[
+  {
+    "id": "SYN-FW-NOAF-001",
+    "code": "NOAF",
+    "displayName": "Northstar Operational Assurance Framework",
+    "classification": "synthetic",
+    "provenance": "Fictional framework for AccredaOne boundary tests only",
+    "eligibilityStatus": "eligible"
+  },
+  {
+    "id": "SYN-FW-MCQF-001",
+    "code": "MCQF",
+    "displayName": "Meridian Care Quality Framework",
+    "classification": "synthetic",
+    "provenance": "Fictional framework for AccredaOne boundary tests only",
+    "eligibilityStatus": "eligible"
+  },
+  {
+    "id": "SYN-FW-LCF-001",
+    "code": "LCF",
+    "displayName": "Legacy Compass Framework",
+    "classification": "synthetic",
+    "provenance": "Fictional disabled framework for exclusion tests only",
+    "eligibilityStatus": "disabled"
+  }
+]

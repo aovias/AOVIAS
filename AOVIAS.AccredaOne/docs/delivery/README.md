@@ -17,7 +17,9 @@ Programme roadmap and gates: **DEV-PLAN-01** (Confluence page 491848).
 
 **DEV-02 / DEV-03 / DEV-04:** Local engineering foundation (toolchain pins, application shell, API foundation, persistence configuration) is documented under `docs/delivery/` and `docs/architecture/`. DEV-04 is published on canonical `main` (see DEV-04 report).
 
-**DEV-05 / DEV-05R — CLOSED:** Automated checks published at merge **`070fb5b`** ([DEV-05-AUTOMATED-CHECKS-IMPLEMENTATION-REPORT.md](DEV-05-AUTOMATED-CHECKS-IMPLEMENTATION-REPORT.md)). CI remediation published at merge **`8a80da1`** ([DEV-05R-CI-REMEDIATION-REPORT.md](DEV-05R-CI-REMEDIATION-REPORT.md)). Remote GitHub Actions run [**41444633431**](https://github.com/aovias/AOVIAS/actions/runs/41444633431) passed backend and frontend jobs. Design proposal: [DEV-05-AUTOMATED-CHECKS-PROPOSAL.md](DEV-05-AUTOMATED-CHECKS-PROPOSAL.md). G1 **NOT PASSED**; Phase 1 **NOT AUTHORIZED**; DEV-06 not started.
+**DEV-05 / DEV-05R — CLOSED:** Automated checks published at merge **`070fb5b`** ([DEV-05-AUTOMATED-CHECKS-IMPLEMENTATION-REPORT.md](DEV-05-AUTOMATED-CHECKS-IMPLEMENTATION-REPORT.md)). CI remediation published at merge **`8a80da1`** ([DEV-05R-CI-REMEDIATION-REPORT.md](DEV-05R-CI-REMEDIATION-REPORT.md)). Remote GitHub Actions run [**41444633431**](https://github.com/aovias/AOVIAS/actions/runs/41444633431) passed backend and frontend jobs. Design proposal: [DEV-05-AUTOMATED-CHECKS-PROPOSAL.md](DEV-05-AUTOMATED-CHECKS-PROPOSAL.md).
+
+**DEV-06A:** Synthetic fixture pack — in progress on task branch ([DEV-06A-SYNTHETIC-FIXTURE-PACK-REPORT.md](DEV-06A-SYNTHETIC-FIXTURE-PACK-REPORT.md)); test-only; not published. G1 **NOT PASSED**; Phase 1 **NOT AUTHORIZED**.
 
 Create tasks, test plans, and reports from `templates/` and register identifiers when assigned.
 

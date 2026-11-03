@@ -1,5 +1,7 @@
 using System.Text.Json;
 using AccredaOne.Api.Configuration;
+using AccredaOne.Api.DevelopmentSynthetic;
+using AccredaOne.Api.Discovery;
 using AccredaOne.Api.Foundation;
 using AccredaOne.Api.Persistence;
 
@@ -9,6 +11,8 @@ builder.Services.AddProblemDetails();
 builder.Services.Configure<AccredaOneApiOptions>(
     builder.Configuration.GetSection(AccredaOneApiOptions.SectionName));
 builder.Services.AddAccredaOnePersistence(builder.Configuration);
+builder.Services.AddSingleton<IDevelopmentSyntheticDataStore, DevelopmentSyntheticDataStore>();
+builder.Services.AddScoped<IDiscoveryQueryService, DiscoveryQueryService>();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -39,6 +43,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapFoundationEndpoints();
+app.MapDiscoveryEndpoints();
 
 app.Run();
 

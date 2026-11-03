@@ -275,6 +275,223 @@ input {
   font-size: 0.85rem;
 }
 
+.ao-discovery-intro {
+  margin: 0 0 var(--ao-space-3);
+  color: var(--ao-ink-soft);
+  line-height: 1.55;
+  max-width: 72ch;
+}
+
+.ao-discovery-dataset {
+  margin: 0 0 var(--ao-space-4);
+  padding: var(--ao-space-3);
+  border-radius: 10px;
+  background: var(--ao-warning-soft);
+  color: var(--ao-ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.ao-discovery-dataset code {
+  font-family: var(--ao-mono);
+  font-size: 0.85em;
+}
+
+.ao-discovery-form {
+  display: grid;
+  gap: var(--ao-space-4);
+  margin-bottom: var(--ao-space-4);
+}
+
+.ao-discovery-field {
+  display: grid;
+  gap: var(--ao-space-2);
+  font-size: 0.92rem;
+  color: var(--ao-ink-soft);
+}
+
+.ao-discovery-field textarea,
+.ao-discovery-field select {
+  width: 100%;
+  padding: var(--ao-space-3);
+  border: 1px solid var(--ao-line);
+  border-radius: 10px;
+  background: var(--ao-surface-muted);
+  color: var(--ao-ink);
+  resize: vertical;
+}
+
+.ao-discovery-field textarea:focus-visible,
+.ao-discovery-field select:focus-visible {
+  outline: 2px solid var(--ao-accent);
+  outline-offset: 1px;
+}
+
+.ao-discovery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ao-space-2);
+}
+
+.ao-discovery-submit {
+  border: 1px solid var(--ao-accent);
+  background: var(--ao-accent);
+  color: white;
+  border-radius: 999px;
+  padding: 10px 18px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.ao-discovery-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.ao-discovery-retry {
+  border: 1px solid var(--ao-line);
+  background: var(--ao-surface);
+  color: var(--ao-ink);
+  border-radius: 999px;
+  padding: 10px 18px;
+  cursor: pointer;
+}
+
+.ao-discovery-results {
+  display: grid;
+  gap: var(--ao-space-4);
+}
+
+.ao-discovery-meta {
+  margin: 0;
+  color: var(--ao-muted);
+  font-size: 0.88rem;
+}
+
+.ao-discovery-group {
+  padding: var(--ao-space-4);
+  border: 1px solid var(--ao-line);
+  border-radius: var(--ao-radius);
+  background: var(--ao-surface-muted);
+}
+
+.ao-discovery-group h3 {
+  margin: 0 0 var(--ao-space-2);
+}
+
+.ao-discovery-provenance {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ao-muted);
+}
+
+.ao-discovery-authoritative,
+.ao-discovery-explanation {
+  margin-top: var(--ao-space-3);
+  padding: var(--ao-space-3);
+  border-radius: 10px;
+  border: 1px solid var(--ao-line);
+  background: var(--ao-surface);
+}
+
+.ao-discovery-explanation {
+  border-color: #c5ddd9;
+  background: var(--ao-accent-soft);
+}
+
+.ao-discovery-authoritative h4,
+.ao-discovery-explanation h4 {
+  margin: 0 0 var(--ao-space-2);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ao-muted);
+}
+
+.ao-discovery-kind {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--ao-muted);
+}
+
+.ao-discovery-requirements {
+  margin: var(--ao-space-4) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--ao-space-3);
+}
+
+.ao-discovery-requirements li {
+  padding: var(--ao-space-3);
+  border-radius: 10px;
+  border: 1px solid var(--ao-line);
+  background: var(--ao-surface);
+}
+
+.ao-discovery-req-id {
+  margin: 0 0 var(--ao-space-1);
+  font-family: var(--ao-mono);
+  font-size: 0.78rem;
+  color: var(--ao-muted);
+}
+
+.ao-discovery-req-label {
+  margin: 0 0 var(--ao-space-2);
+  font-weight: 600;
+  color: var(--ao-ink);
+}
+
+.ao-discovery-hierarchy {
+  margin: 0 0 var(--ao-space-2);
+  font-size: 0.88rem;
+  color: var(--ao-ink-soft);
+}
+
+.ao-requirement-detail-link {
+  margin-top: var(--ao-space-2);
+  border: 1px solid var(--ao-accent);
+  background: var(--ao-surface);
+  color: var(--ao-accent-strong);
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.ao-requirement-detail-link:hover {
+  background: var(--ao-accent-soft);
+}
+
+.ao-requirement-detail {
+  display: grid;
+  gap: var(--ao-space-4);
+}
+
+.ao-requirement-detail-nav {
+  margin-bottom: 0;
+}
+
+.ao-requirement-detail-header h3 {
+  margin: var(--ao-space-2) 0;
+}
+
+.ao-requirement-detail-section {
+  padding: var(--ao-space-4);
+  border: 1px solid var(--ao-line);
+  border-radius: var(--ao-radius);
+  background: var(--ao-surface-muted);
+}
+
+.ao-requirement-detail-section h4 {
+  margin: 0 0 var(--ao-space-2);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ao-muted);
+}
+
 @media (max-width: 960px) {
   .ao-grid {
     grid-template-columns: 1fr;

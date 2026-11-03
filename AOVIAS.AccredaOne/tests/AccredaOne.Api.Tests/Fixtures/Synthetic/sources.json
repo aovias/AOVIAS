@@ -1,0 +1,18 @@
+[
+  {
+    "id": "SYN-SRC-NOAF-001",
+    "frameworkId": "SYN-FW-NOAF-001",
+    "title": "NOAF Synthetic Source Instrument Alpha",
+    "classification": "synthetic",
+    "provenance": "Fictional source instrument — not a publisher document",
+    "contentKind": "source_instrument"
+  },
+  {
+    "id": "SYN-SRC-MCQF-001",
+    "frameworkId": "SYN-FW-MCQF-001",
+    "title": "MCQF Synthetic Source Instrument Beta",
+    "classification": "synthetic",
+    "provenance": "Fictional source instrument — not a publisher document",
+    "contentKind": "source_instrument"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "SYN-EXP-NOAF-001",
+    "frameworkId": "SYN-FW-NOAF-001",
+    "title": "AccredaOne synthetic explanation for NOAF boundary checks",
+    "body": "This explanation is authored by AccredaOne engineering for tests. It does not quote or paraphrase any real accreditation source.",
+    "classification": "synthetic",
+    "provenance": "AccredaOne-authored synthetic explanation",
+    "contentKind": "accredaone_explanation"
+  },
+  {
+    "id": "SYN-EXP-MCQF-001",
+    "frameworkId": "SYN-FW-MCQF-001",
+    "title": "AccredaOne synthetic explanation for MCQF boundary checks",
+    "body": "This explanation is authored by AccredaOne engineering for tests. It is separate from source instruments and requirements.",
+    "classification": "synthetic",
+    "provenance": "AccredaOne-authored synthetic explanation",
+    "contentKind": "accredaone_explanation"
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "SYN-QRY-001",
+    "scenarioType": "explicit_framework",
+    "frameworkCode": "NOAF",
+    "classification": "synthetic",
+    "provenance": "Fictional query scenario for boundary verification",
+    "expectedOutcome": "bounded_results"
+  },
+  {
+    "id": "SYN-QRY-002",
+    "scenarioType": "explicit_framework",
+    "frameworkCode": "MCQF",
+    "classification": "synthetic",
+    "provenance": "Fictional query scenario for boundary verification",
+    "expectedOutcome": "bounded_results"
+  },
+  {
+    "id": "SYN-QRY-003",
+    "scenarioType": "no_framework_selection",
+    "frameworkCode": null,
+    "classification": "synthetic",
+    "provenance": "Fictional query scenario for boundary verification",
+    "expectedOutcome": "bounded_cross_framework_results"
+  },
+  {
+    "id": "SYN-QRY-004",
+    "scenarioType": "ambiguous_or_unsupported",
+    "frameworkCode": "UNSUPPORTED-SYN-CODE",
+    "classification": "synthetic",
+    "provenance": "Fictional query scenario for boundary verification",
+    "expectedOutcome": "no_results"
+  }
+]
