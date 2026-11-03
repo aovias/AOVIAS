@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { AppFooter } from "./AppFooter";
 import { AppHeader } from "./AppHeader";
 import { AppSidebar } from "./AppSidebar";
 import { useLocationHash } from "../lib/shell/useLocationHash";
@@ -62,6 +63,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         />
         <main className="ao-main" id="main-content">
           {children}
+          <AppFooter />
         </main>
       </div>
     </div>

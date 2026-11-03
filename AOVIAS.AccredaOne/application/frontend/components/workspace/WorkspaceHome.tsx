@@ -19,9 +19,6 @@ export function WorkspaceHome() {
       <SponsoredContent placements={SPONSORED_PLACEMENTS} />
       <KnowledgeIntegrityNotice />
       <PresentationStates />
-      <p className="ao-footnote">
-        DEV-03 engineering foundation. Phase 1 is not authorized. G1 has not passed.
-      </p>
     </div>
   );
 }

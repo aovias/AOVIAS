@@ -13,7 +13,8 @@ AppShell (components/AppShell.tsx)
 │   ├── Collapse control (desktop/tablet ≥961px)
 │   └── Navigation groups + items
 └── MainContent (.ao-main)
-    └── app/page.tsx sections (unchanged landing structure)
+    ├── app/page.tsx workspace sections
+    └── AppFooter (components/AppFooter.tsx) — compact product identity + engineering footnote
 ```
 
 Supporting modules:
@@ -73,7 +74,7 @@ Breakpoint: existing **960px** shell breakpoint (unchanged).
 
 ## Accessibility
 
-- Landmark: `<header>`, `<aside aria-label="Application navigation">`, `<main id="main-content">`
+- Landmark: `<header>`, `<aside aria-label="Application navigation">`, `<main id="main-content">`, `<footer>` (end of main scroll area; does not span sidebar)
 - Menu button: `aria-expanded`, `aria-controls="app-sidebar"`
 - Collapse button: descriptive `aria-label`
 - Keyboard: focus visible on all shell controls; Escape closes mobile drawer
