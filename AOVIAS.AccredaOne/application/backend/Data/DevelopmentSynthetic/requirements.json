@@ -7,7 +7,13 @@
     "hierarchyContext": "NOAF/section-a",
     "versionStatus": "current",
     "classification": "synthetic",
-    "provenance": "Fictional requirement text placeholder"
+    "provenance": "Fictional trace: NOAF section-a instrument fragment (development synthetic pack)",
+    "requirementText": "[Synthetic source placeholder] The organization maintains documented operational assurance checkpoints for critical inpatient services. This text is fictional engineering content, not text from any accreditation publisher.",
+    "applicability": {
+      "summary": "Applies in this synthetic scenario to inpatient operational assurance workflows within the fictional NOAF framework.",
+      "contextTags": ["inpatient-operations", "noaf-section-a", "synthetic-demo"],
+      "disclaimer": "Synthetic applicability metadata only — not an official accreditation or eligibility decision."
+    }
   },
   {
     "id": "SYN-REQ-NOAF-002",
@@ -17,7 +23,13 @@
     "hierarchyContext": "NOAF/section-a",
     "versionStatus": "current",
     "classification": "synthetic",
-    "provenance": "Fictional requirement text placeholder"
+    "provenance": "Fictional trace: NOAF section-a continuity planning stub (development synthetic pack)",
+    "requirementText": "[Synthetic source placeholder] Continuity planning records identify owners, review cadence, and escalation paths for assurance activities. Fictional content for AccredaOne MVP development.",
+    "applicability": {
+      "summary": "Synthetic note: relevant when the fictional hospital runs combined inpatient and ambulatory assurance programs under NOAF section-a.",
+      "contextTags": ["continuity-planning", "multi-site", "synthetic-demo"],
+      "disclaimer": "Synthetic applicability metadata only — not an official accreditation or eligibility decision."
+    }
   },
   {
     "id": "SYN-REQ-NOAF-003",
@@ -27,7 +39,13 @@
     "hierarchyContext": "NOAF/section-b",
     "versionStatus": "current",
     "classification": "synthetic",
-    "provenance": "Fictional requirement text placeholder"
+    "provenance": "Fictional trace: NOAF section-b monitoring stub (development synthetic pack)",
+    "requirementText": "[Synthetic source placeholder] Monitoring signals for section-b assurance themes are recorded with timestamps and responsible roles. Not real standard language.",
+    "applicability": {
+      "summary": "Illustrates section-b scoped synthetic applicability for ambulatory support units in the fictional NOAF dataset.",
+      "contextTags": ["ambulatory-support", "noaf-section-b", "synthetic-demo"],
+      "disclaimer": "Synthetic applicability metadata only — not an official accreditation or eligibility decision."
+    }
   },
   {
     "id": "SYN-REQ-NOAF-004",
@@ -37,7 +55,9 @@
     "hierarchyContext": "NOAF/section-b",
     "versionStatus": "current",
     "classification": "synthetic",
-    "provenance": "Fictional requirement text placeholder"
+    "provenance": "Fictional trace: NOAF section-b improvement cycle stub (development synthetic pack)",
+    "requirementText": "[Synthetic source placeholder] Improvement cycles document findings, actions, and follow-up verification for section-b themes. Engineering placeholder only.",
+    "applicability": null
   },
   {
     "id": "SYN-REQ-MCQF-001",
@@ -47,7 +67,13 @@
     "hierarchyContext": "MCQF/chapter-1",
     "versionStatus": "current",
     "classification": "synthetic",
-    "provenance": "Fictional requirement text placeholder"
+    "provenance": "Fictional trace: MCQF chapter-1 patient experience stub (development synthetic pack)",
+    "requirementText": "[Synthetic source placeholder] Patient experience feedback is collected, categorized, and reviewed on a defined fictional cadence under MCQF chapter 1.",
+    "applicability": {
+      "summary": "Synthetic MCQF example: applies to fictional acute-care sites using chapter-1 patient experience indicators.",
+      "contextTags": ["patient-experience", "mcqf-chapter-1", "synthetic-demo"],
+      "disclaimer": "Synthetic applicability metadata only — not an official accreditation or eligibility decision."
+    }
   },
   {
     "id": "SYN-REQ-MCQF-002",
@@ -57,7 +83,13 @@
     "hierarchyContext": "MCQF/chapter-1",
     "versionStatus": "current",
     "classification": "synthetic",
-    "provenance": "Fictional requirement text placeholder"
+    "provenance": "Fictional trace: MCQF chapter-1 clinical governance stub (development synthetic pack)",
+    "requirementText": "[Synthetic source placeholder] Clinical governance forums review chapter-1 quality indicators and assign accountable leads. Fictional MCQF wording for development.",
+    "applicability": {
+      "summary": "Demonstrates governance-focused synthetic applicability for MCQF chapter-1 in multi-department fictional hospitals.",
+      "contextTags": ["clinical-governance", "mcqf-chapter-1", "synthetic-demo"],
+      "disclaimer": "Synthetic applicability metadata only — not an official accreditation or eligibility decision."
+    }
   },
   {
     "id": "SYN-REQ-MCQF-003",
@@ -67,7 +99,13 @@
     "hierarchyContext": "MCQF/chapter-2",
     "versionStatus": "current",
     "classification": "synthetic",
-    "provenance": "Fictional requirement text placeholder"
+    "provenance": "Fictional trace: MCQF chapter-2 medication safety stub (development synthetic pack)",
+    "requirementText": "[Synthetic source placeholder] Medication safety reviews under chapter 2 record triggers, participants, and outcomes using fictional MCQF templates.",
+    "applicability": {
+      "summary": "Synthetic chapter-2 applicability example for fictional hospitals with centralized pharmacy services.",
+      "contextTags": ["medication-safety", "mcqf-chapter-2", "synthetic-demo"],
+      "disclaimer": "Synthetic applicability metadata only — not an official accreditation or eligibility decision."
+    }
   },
   {
     "id": "SYN-REQ-MCQF-004",
@@ -77,6 +115,8 @@
     "hierarchyContext": "MCQF/chapter-2",
     "versionStatus": "current",
     "classification": "synthetic",
-    "provenance": "Fictional requirement text placeholder"
+    "provenance": "Fictional trace: MCQF chapter-2 workforce competency stub (development synthetic pack)",
+    "requirementText": "[Synthetic source placeholder] Workforce competency checks for chapter-2 topics are scheduled and evidenced in fictional MCQF records.",
+    "applicability": null
   }
 ]

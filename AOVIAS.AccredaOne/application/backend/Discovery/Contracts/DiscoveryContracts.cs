@@ -37,6 +37,18 @@ public sealed class DiscoveryFrameworkGroupResponse
     public IReadOnlyList<DiscoveryRequirementResponse> Requirements { get; init; } = [];
 }
 
+/// <summary>
+/// Synthetic applicability metadata for development discovery only — not an official accreditation determination.
+/// </summary>
+public sealed class DiscoveryRequirementApplicabilityResponse
+{
+    public required string Summary { get; init; }
+
+    public IReadOnlyList<string> ContextTags { get; init; } = [];
+
+    public required string Disclaimer { get; init; }
+}
+
 public sealed class DiscoveryRequirementResponse
 {
     public required string Id { get; init; }
@@ -48,6 +60,11 @@ public sealed class DiscoveryRequirementResponse
     public string? HierarchyContext { get; init; }
 
     public required string SourceInstrumentId { get; init; }
+
+    /// <summary>Synthetic placeholder for authoritative requirement body text (not live publisher content).</summary>
+    public string? RequirementText { get; init; }
+
+    public DiscoveryRequirementApplicabilityResponse? Applicability { get; init; }
 }
 
 public sealed class DiscoverySourceInstrumentResponse

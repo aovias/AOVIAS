@@ -52,6 +52,15 @@ public sealed class DiscoveryQueryService(IDevelopmentSyntheticDataStore dataSto
                 Provenance = r.Provenance,
                 HierarchyContext = r.HierarchyContext,
                 SourceInstrumentId = r.SourceInstrumentId,
+                RequirementText = r.RequirementText,
+                Applicability = r.Applicability is null
+                    ? null
+                    : new DiscoveryRequirementApplicabilityResponse
+                    {
+                        Summary = r.Applicability.Summary,
+                        ContextTags = r.Applicability.ContextTags,
+                        Disclaimer = r.Applicability.Disclaimer,
+                    },
             }).ToList();
 
             flatIds.AddRange(requirementResponses.Select(r => r.Id));

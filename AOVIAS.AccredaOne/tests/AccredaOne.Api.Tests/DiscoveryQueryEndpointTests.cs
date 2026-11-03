@@ -100,6 +100,41 @@ public class DiscoveryQueryEndpointTests : IClassFixture<WebApplicationFactory<P
         Assert.Contains("Fictional", requirement.Provenance, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public async Task Response_includes_requirement_text_and_applicability_for_noaf()
+    {
+        var response = await PostQueryAsync(new DiscoveryQueryRequest { Query = "synthetic topic", FrameworkCode = "NOAF" });
+        var body = await DeserializeAsync(response);
+        var requirement = body.FrameworkGroups[0].Requirements[0];
+        Assert.False(string.IsNullOrWhiteSpace(requirement.RequirementText));
+        Assert.Contains("Synthetic source placeholder", requirement.RequirementText, StringComparison.Ordinal);
+        Assert.NotNull(requirement.Applicability);
+        Assert.Contains("synthetic", requirement.Applicability!.Summary, StringComparison.OrdinalIgnoreCase);
+        Assert.NotEmpty(requirement.Applicability.ContextTags);
+        Assert.Contains("not an official", requirement.Applicability.Disclaimer, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task Response_includes_requirement_text_and_applicability_for_mcqf()
+    {
+        var response = await PostQueryAsync(new DiscoveryQueryRequest { Query = "synthetic topic", FrameworkCode = "MCQF" });
+        var body = await DeserializeAsync(response);
+        var requirement = body.FrameworkGroups[0].Requirements[0];
+        Assert.False(string.IsNullOrWhiteSpace(requirement.RequirementText));
+        Assert.NotNull(requirement.Applicability);
+        Assert.Contains("MCQF", requirement.Applicability!.Summary, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Response_allows_missing_applicability_on_individual_requirements()
+    {
+        var response = await PostQueryAsync(new DiscoveryQueryRequest { Query = "synthetic topic", FrameworkCode = "NOAF" });
+        var body = await DeserializeAsync(response);
+        var withoutApplicability = body.FrameworkGroups[0].Requirements.Single(r => r.Id == "SYN-REQ-NOAF-004");
+        Assert.Null(withoutApplicability.Applicability);
+        Assert.False(string.IsNullOrWhiteSpace(withoutApplicability.RequirementText));
+    }
+
     private Task<HttpResponseMessage> PostQueryAsync(DiscoveryQueryRequest request) =>
         _client.PostAsJsonAsync("/api/v1/discovery/query", request);
 

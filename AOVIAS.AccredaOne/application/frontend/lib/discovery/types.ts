@@ -18,12 +18,20 @@ export type DiscoveryAccredaOneExplanation = {
   contentKind: string;
 };
 
+export type DiscoveryRequirementApplicability = {
+  summary: string;
+  contextTags: string[];
+  disclaimer: string;
+};
+
 export type DiscoveryRequirement = {
   id: string;
   label: string;
   provenance: string;
   hierarchyContext?: string | null;
   sourceInstrumentId: string;
+  requirementText?: string | null;
+  applicability?: DiscoveryRequirementApplicability | null;
 };
 
 export type DiscoveryFrameworkGroup = {
