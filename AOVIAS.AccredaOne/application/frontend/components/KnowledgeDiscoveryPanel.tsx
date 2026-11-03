@@ -1,6 +1,11 @@
 "use client";
 
-import { FormEvent, useCallback, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
+import {
+  DISCOVERY_FRAMEWORK_PREFILL_KEY,
+  DISCOVERY_QUERY_INPUT_ID,
+  DISCOVERY_SEARCH_PREFILL_KEY,
+} from "../lib/shell/discoverySearch";
 import { postDiscoveryQuery } from "../lib/discovery/client";
 import { ELIGIBLE_FRAMEWORK_OPTIONS } from "../lib/discovery/frameworkOptions";
 import { DISCOVERY_SAMPLE_QUERIES } from "../lib/discovery/sampleQueries";
@@ -10,7 +15,13 @@ import { RequirementDetailPanel } from "./RequirementDetailPanel";
 
 type ViewState = "initial" | "loading" | "results" | "no_results" | "error" | "validation";
 
-export function KnowledgeDiscoveryPanel() {
+export type KnowledgeDiscoveryPanelProps = {
+  /** Workspace landing uses discovery-first headings without duplicating the workflow. */
+  presentation?: "default" | "workspace";
+};
+
+export function KnowledgeDiscoveryPanel({ presentation = "default" }: KnowledgeDiscoveryPanelProps) {
+  const isWorkspaceLanding = presentation === "workspace";
   const [query, setQuery] = useState("");
   const [frameworkCode, setFrameworkCode] = useState<string>("");
   const [view, setView] = useState<ViewState>("initial");
@@ -72,24 +83,70 @@ export function KnowledgeDiscoveryPanel() {
   const isLoading = view === "loading";
   const showGettingStarted = view === "initial" || view === "validation";
 
-  return (
-    <section id="library" className="ao-panel ao-discovery">
-      <p className="ao-kicker">Knowledge discovery</p>
-      <h2>Discover requirements</h2>
+  useEffect(() => {
+    const applyHeaderPrefill = () => {
+      if (window.location.hash !== "#library") {
+        return;
+      }
+      const prefill = sessionStorage.getItem(DISCOVERY_SEARCH_PREFILL_KEY);
+      const frameworkPrefill = sessionStorage.getItem(DISCOVERY_FRAMEWORK_PREFILL_KEY);
+      if (!prefill && !frameworkPrefill) {
+        return;
+      }
+      if (prefill) {
+        sessionStorage.removeItem(DISCOVERY_SEARCH_PREFILL_KEY);
+        setQuery(prefill);
+      }
+      if (frameworkPrefill) {
+        sessionStorage.removeItem(DISCOVERY_FRAMEWORK_PREFILL_KEY);
+        setFrameworkCode(frameworkPrefill);
+      }
+      setValidationMessage(null);
+      setView("initial");
+    };
+    applyHeaderPrefill();
+    window.addEventListener("hashchange", applyHeaderPrefill);
+    return () => window.removeEventListener("hashchange", applyHeaderPrefill);
+  }, []);
 
-      <div className="ao-discovery-getting-started" aria-labelledby="discovery-purpose-heading">
-        <h3 id="discovery-purpose-heading">What this does</h3>
-        <p className="ao-discovery-intro">
-          Discovery helps you explore <strong>fictional</strong> NOAF and MCQF requirement records from
-          AccredaOne&apos;s development synthetic pack. Ask a question in plain language, optionally narrow
-          to one framework, then review grouped results and open a requirement to see source-oriented text,
-          applicability notes, and a separate AccredaOne explanation.
-        </p>
-        <p className="ao-discovery-intro">
-          This is an engineering preview only — not official accreditation content, scoring, or compliance
-          decisions.
-        </p>
-      </div>
+  const queryPlaceholder = isWorkspaceLanding
+    ? "e.g. What requirements relate to patient identification and safety?"
+    : "Ask about fictional NOAF or MCQF synthetic requirements — e.g. operational assurance, patient experience, or cross-framework overview.";
+
+  return (
+    <section
+      id="library"
+      className={
+        isWorkspaceLanding ? "ao-panel ao-discovery ao-discovery-workspace" : "ao-panel ao-discovery"
+      }
+    >
+      <p className="ao-kicker">Knowledge discovery</p>
+      {isWorkspaceLanding ? (
+        <>
+          <h2>What would you like to understand?</h2>
+          <p className="ao-workspace-section-lead ao-discovery-workspace-lead">
+            Ask a question about accreditation requirements in natural language.
+          </p>
+        </>
+      ) : (
+        <h2>Discover requirements</h2>
+      )}
+
+      {!isWorkspaceLanding && (
+        <div className="ao-discovery-getting-started" aria-labelledby="discovery-purpose-heading">
+          <h3 id="discovery-purpose-heading">What this does</h3>
+          <p className="ao-discovery-intro">
+            Discovery helps you explore <strong>fictional</strong> NOAF and MCQF requirement records from
+            AccredaOne&apos;s development synthetic pack. Ask a question in plain language, optionally narrow
+            to one framework, then review grouped results and open a requirement to see source-oriented text,
+            applicability notes, and a separate AccredaOne explanation.
+          </p>
+          <p className="ao-discovery-intro">
+            This is an engineering preview only — not official accreditation content, scoring, or compliance
+            decisions.
+          </p>
+        </div>
+      )}
 
       <p className="ao-discovery-dataset" role="note">
         <strong>Synthetic development data only:</strong> responses come from pack{" "}
@@ -101,11 +158,12 @@ export function KnowledgeDiscoveryPanel() {
         <label className="ao-discovery-field">
           <span>Your question</span>
           <textarea
+            id={DISCOVERY_QUERY_INPUT_ID}
             name="query"
             rows={3}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Ask about fictional NOAF or MCQF synthetic requirements — e.g. operational assurance, patient experience, or cross-framework overview."
+            placeholder={queryPlaceholder}
             aria-describedby="discovery-query-hint discovery-samples-heading"
             aria-invalid={view === "validation"}
             disabled={isLoading}

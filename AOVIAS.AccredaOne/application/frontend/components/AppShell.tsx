@@ -1,46 +1,68 @@
 "use client";
 
-import { useState } from "react";
-
-const links = [
-  { href: "#overview", label: "Workspace" },
-  { href: "#library", label: "Knowledge library" },
-  { href: "#states", label: "Presentation states" },
-];
+import { useCallback, useEffect, useState } from "react";
+import { AppHeader } from "./AppHeader";
+import { AppSidebar } from "./AppSidebar";
+import { useLocationHash } from "../lib/shell/useLocationHash";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
+  const activeHash = useLocationHash();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const closeMobileNav = useCallback(() => setMobileNavOpen(false), []);
+
+  useEffect(() => {
+    if (!mobileNavOpen) {
+      document.documentElement.classList.remove("ao-scroll-lock");
+      return;
+    }
+    document.documentElement.classList.add("ao-scroll-lock");
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileNavOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.documentElement.classList.remove("ao-scroll-lock");
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [mobileNavOpen]);
+
+  const shellClass = [
+    "ao-shell",
+    sidebarCollapsed ? "ao-shell-sidebar-collapsed" : "",
+    mobileNavOpen ? "ao-shell-mobile-nav-open" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <div className="ao-shell">
-      <header className="ao-header">
+    <div className={shellClass}>
+      <AppHeader
+        mobileNavOpen={mobileNavOpen}
+        onMobileNavToggle={() => setMobileNavOpen((open) => !open)}
+      />
+      {mobileNavOpen ? (
         <button
-          className="ao-menu"
           type="button"
-          aria-expanded={open}
-          aria-controls="app-sidebar"
-          onClick={() => setOpen((value) => !value)}
-        >
-          Menu
-        </button>
-        <div className="ao-brand">
-          <strong>AccredaOne</strong>
-          <span>Accreditation knowledge discovery and explanation</span>
-        </div>
-        <p className="ao-header-note">Engineering foundation · not a live accreditation system</p>
-      </header>
+          className="ao-sidebar-backdrop"
+          aria-label="Close navigation menu"
+          onClick={closeMobileNav}
+        />
+      ) : null}
       <div className="ao-body">
-        <aside id="app-sidebar" className={open ? "ao-sidebar ao-sidebar-open" : "ao-sidebar"}>
-          <p>Navigation</p>
-          <nav aria-label="Application">
-            {links.map((link) => (
-              <a key={link.href} href={link.href} onClick={() => setOpen(false)}>
-                {link.label}
-              </a>
-            ))}
-          </nav>
-        </aside>
-        <main className="ao-main">{children}</main>
+        <AppSidebar
+          activeHash={activeHash}
+          mobileOpen={mobileNavOpen}
+          collapsed={sidebarCollapsed}
+          onMobileClose={closeMobileNav}
+          onCollapsedChange={setSidebarCollapsed}
+        />
+        <main className="ao-main" id="main-content">
+          {children}
+        </main>
       </div>
     </div>
   );
